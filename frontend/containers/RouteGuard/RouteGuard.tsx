@@ -27,12 +27,12 @@ const RouteGuard = ({ children }) => {
     // redirect to signin page if accessing a private page and not logged in
     const publicPaths = ['/signin'];
     const path = url.split('?')[0];
-    const userService = {
-      userValue: null,
-    };
 
-    if (!userService.userValue && !publicPaths.includes(path)) {
+    const userCache = localStorage.getItem('ianthe.user');
+
+    if (!userCache && !publicPaths.includes(path)) {
       setAuthorized(false);
+
       router.push({
         pathname: '/signin',
         query: { returnUrl: router.asPath },
