@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import userService from '../../services/userService';
 import { useRouter } from 'next/router';
 import { Alert } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 const Copyright = (props: any) => {
   return (
@@ -31,6 +32,7 @@ const Copyright = (props: any) => {
 export default function SignIn() {
   const router = useRouter();
   const [showSigninError, setShowSigninError] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   // TODO: redirect user to home if a user is already signed in
   useEffect(() => {
@@ -46,6 +48,8 @@ export default function SignIn() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    setIsSigningIn(true);
+
     const data = new FormData(event.currentTarget);
     const signinInfo = {
       email: data.get('email'),
@@ -57,18 +61,20 @@ export default function SignIn() {
 
       if (!res) {
         setShowSigninError(true);
-
+        setIsSigningIn(false);
         return;
       }
 
       localStorage.setItem('ianthe.user', JSON.stringify(res));
 
       const returnUrl = router.query.returnUrl || '/';
-      console.log(returnUrl);
+      
       router.push(Array.isArray(returnUrl) ? returnUrl[0] : returnUrl);
     } catch (error) {
       console.error(error);
     }
+
+    setIsSigningIn(false);
   };
 
   return (
@@ -120,14 +126,15 @@ export default function SignIn() {
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
-          <Button
-            type="submit"
+          <LoadingButton
             fullWidth
-            variant="contained"
+            loading={isSigningIn}
+            type="submit"
             sx={{ mt: 3, mb: 2 }}
+            variant="contained"
           >
             Sign In
-          </Button>
+          </LoadingButton>
           {/* <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
