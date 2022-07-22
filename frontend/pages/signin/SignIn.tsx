@@ -85,6 +85,7 @@ export default function SignIn() {
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign in
+          {process.env.NEXT_PUBLIC_HOST}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           {showSigninError && (
