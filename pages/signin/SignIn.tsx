@@ -1,27 +1,28 @@
 import { useEffect, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import userService from '../../services/userService';
 import { useRouter } from 'next/router';
-import { Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Checkbox,
+  Container,
+  CssBaseline,
+  FormControlLabel,
+  Grid,
+  Link,
+  TextField,
+  Typography,
+} from '@mui/material';
+import userService from '../../services/userService';
 
 const Copyright = (props: any) => {
   return (
     <Typography
-      variant="body2"
-      color="text.secondary"
       align="center"
+      color="text.secondary"
+      variant="body2"
       {...props}
     >
       {`Copyright © Ianthe ${new Date().getFullYear()}.`}
@@ -68,7 +69,7 @@ export default function SignIn() {
       localStorage.setItem('ianthe.user', JSON.stringify(res));
 
       const returnUrl = router.query.returnUrl || '/';
-      
+
       router.push(Array.isArray(returnUrl) ? returnUrl[0] : returnUrl);
     } catch (error) {
       console.error(error);
@@ -135,7 +136,7 @@ export default function SignIn() {
           >
             Sign In
           </LoadingButton>
-          {/* <Grid container>
+          <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
                 Forgot password?
@@ -146,7 +147,7 @@ export default function SignIn() {
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
-          </Grid> */}
+          </Grid>
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />

@@ -1,6 +1,7 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import RouteGuard from '../containers/RouteGuard';
+import UserContext from '../contexts/UserContext';
 
 import '../styles/globals.css';
 
@@ -10,9 +11,11 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       <Head>
         <title>Ianthe</title>
       </Head>
-      <RouteGuard>
-        <Component {...pageProps} />
-      </RouteGuard>
+      <UserContext>
+        <RouteGuard>
+          <Component {...pageProps} />
+        </RouteGuard>
+      </UserContext>
     </>
   );
 };
