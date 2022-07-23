@@ -2,12 +2,17 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { SubmitHandler } from 'react-hook-form';
 import { setUser } from '../../redux/features/users/usersSlice';
-import { Inputs } from './signin.type';
 import store from '../../redux/store';
 import usersUtils from '../../utilities/usersUtils';
 import { useGetUserByEmailAndPasswordMutation } from '../../redux/api/usersApi';
 
 const USER_KEY = 'ianthe.user';
+
+type Inputs = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+};
 
 const useSignIn = () => {
   const router = useRouter();

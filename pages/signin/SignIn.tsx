@@ -1,8 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
-import { SerializedError } from '@reduxjs/toolkit';
 import {
   Alert,
   AlertTitle,
@@ -17,8 +15,13 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Inputs } from './signin.type';
 import useSignIn from './useSignIn';
+
+type Inputs = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+};
 
 const Copyright = (props: any) => {
   return (
