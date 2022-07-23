@@ -1,5 +1,3 @@
-import { Box } from '@mui/material';
-import Image from 'next/image';
 import Link from 'next/link';
 import Dashboard from '../components/Dashboard';
 import Layout from '../components/Layout';

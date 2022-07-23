@@ -2,10 +2,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { SignInInfo, User } from '../types/User';
 
+const HOST = process.env.NEXT_PUBLIC_HOST;
+
 // Define a service using a base URL and expected endpoints
 const usersApi = createApi({
   reducerPath: 'usersApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: HOST }),
   endpoints: (builder) => ({
     getUserByEmailAndPassword: builder.mutation<User, SignInInfo>({
       query: (signInInfo) => ({
