@@ -17,7 +17,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Inputs } from './signInTypes';
+import { Inputs } from './signin.type';
 import useSignIn from './useSignIn';
 
 const Copyright = (props: any) => {
