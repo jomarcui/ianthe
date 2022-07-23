@@ -16,6 +16,9 @@ import {
   Typography,
 } from '@mui/material';
 import userService from '../../services/userService';
+import store from '../../store';
+import { setUser } from '../../features/users/usersSlice';
+import usersUtils from '../../utilities/users';
 
 const Copyright = (props: any) => {
   return (
@@ -32,16 +35,15 @@ const Copyright = (props: any) => {
 
 export default function SignIn() {
   const router = useRouter();
+  const [rememberMe, setRememberMe] = useState(false);
   const [showSigninError, setShowSigninError] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   // TODO: redirect user to home if a user is already signed in
   useEffect(() => {
-    const userCache = localStorage.getItem('ianthe.user');
+    const user = usersUtils.getSignedInUser();
 
-    if (userCache) {
-      router.push('/');
-    }
+    //if (user) router.push('/');
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -58,15 +60,17 @@ export default function SignIn() {
     };
 
     try {
-      const res = await userService.signin(signinInfo);
+      const user = await userService.signin(signinInfo);
 
-      if (!res) {
+      if (!user) {
         setShowSigninError(true);
         setIsSigningIn(false);
         return;
       }
 
-      localStorage.setItem('ianthe.user', JSON.stringify(res));
+      if (rememberMe) localStorage.setItem('ianthe.user', JSON.stringify(user));
+
+      store.dispatch(setUser(user));
 
       const returnUrl = router.query.returnUrl || '/';
 

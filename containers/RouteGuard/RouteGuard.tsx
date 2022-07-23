@@ -1,5 +1,6 @@
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import usersUtils from '../../utilities/users';
 
 const RouteGuard = ({ children }) => {
   const [authorized, setAuthorized] = useState(false);
@@ -28,11 +29,12 @@ const RouteGuard = ({ children }) => {
   const authCheck = (url: string) => {
     // redirect to signin page if accessing a private page and not logged in
     const publicPaths = ['/signin'];
+
     const path = url.split('?')[0];
 
-    const userCache = localStorage.getItem('ianthe.user');
+    const { user } = usersUtils.getSignedInUser();
 
-    if (!userCache && !publicPaths.includes(path)) {
+    if (!user && !publicPaths.includes(path)) {
       setAuthorized(false);
 
       router.push({
