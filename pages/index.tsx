@@ -5,9 +5,6 @@ import Layout from '../components/Layout';
 const Home = () => (
   <Layout>
     <Dashboard />
-    <Link href="/signin">
-      <a>Sign-out</a>
-    </Link>
   </Layout>
 );
 

@@ -41,7 +41,9 @@ const useSignIn = () => {
 
       router.push(Array.isArray(returnUrl) ? returnUrl[0] : returnUrl);
     }
-  }, [data, router]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (formData) => {
     const { email, password, rememberMe } = formData;
