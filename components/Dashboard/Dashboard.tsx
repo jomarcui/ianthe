@@ -158,13 +158,8 @@ const Dashboard = () => {
   ];
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth={false}>
       <Stack spacing={2}>
-        <NavigationItem>
-          <NextLink href="/signout" passHref>
-            <Link variant="body2">Sign Out</Link>
-          </NextLink>
-        </NavigationItem>
         <GameScreen>
           <div style={{ background: 'rgba(0,0,0,.3)', padding: '1rem' }}>
             <LiveMatch>

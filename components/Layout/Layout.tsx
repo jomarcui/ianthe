@@ -1,11 +1,13 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import MenuAppBar from '../MenuAppBar';
 
 const theme = createTheme();
 
-const Layout = ({ children }) => {
-  return <ThemeProvider theme={theme}>
+const Layout = ({ children }) => (
+  <ThemeProvider theme={theme}>
+    <MenuAppBar />
     {children}
-    </ThemeProvider>;
-};
+  </ThemeProvider>
+);
 
 export default Layout;
