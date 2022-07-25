@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { SubmitHandler } from 'react-hook-form';
 import { setUser } from '../../redux/features/users/usersSlice';
+import { useGetUserByEmailAndPasswordMutation } from '../../redux/api/usersApi';
 import store from '../../redux/store';
 import usersUtils from '../../utilities/usersUtils';
-import { useGetUserByEmailAndPasswordMutation } from '../../redux/api/usersApi';
 
 const USER_KEY = 'ianthe.user';
 
@@ -22,7 +22,7 @@ const useSignIn = () => {
 
   // TODO: redirect user to home if a user is already signed in
   useEffect(() => {
-    const user = usersUtils.getSignedInUser();
+    const user = usersUtils.getSignedInUser(USER_KEY);
 
     if (user) router.push('/');
 
@@ -31,9 +31,7 @@ const useSignIn = () => {
 
   useEffect(() => {
     if (data) {
-      const userStringified = JSON.stringify(data);
-
-      sessionStorage.setItem(USER_KEY, userStringified);
+      usersUtils.setSignedInUser({ key: USER_KEY, user: data });
 
       store.dispatch(setUser(data));
 

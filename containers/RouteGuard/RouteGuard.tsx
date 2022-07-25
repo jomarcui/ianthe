@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import usersUtils from '../../utilities/usersUtils';
 
+const USER_KEY = 'ianthe.user';
+
 const RouteGuard = ({ children }) => {
   const [authorized, setAuthorized] = useState(false);
   const router = useRouter();
@@ -32,7 +34,7 @@ const RouteGuard = ({ children }) => {
 
     const path = url.split('?')[0];
 
-    const user = usersUtils.getSignedInUser();
+    const user = usersUtils.getSignedInUser(USER_KEY);
 
     if (!user && !publicPaths.includes(path)) {
       setAuthorized(false);

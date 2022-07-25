@@ -13,16 +13,16 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import {
-  AccountCircle,
-  Mail as MailIcon,
-  Menu as MenuIcon,
-  MoreVert as MoreIcon,
-  Notifications as NotificationsIcon,
-} from '@mui/icons-material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import MailIcon from '@mui/icons-material/Mail';
+import MenuIcon from '@mui/icons-material/Menu';
+import MoneyIcon from '@mui/icons-material/Money';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import usersUtils from '../../utilities/usersUtils';
-import store from '../../redux/store';
-import { setUser as signOutUser } from '../../redux/features/users/usersSlice';
+
+const USER_KEY = 'ianthe.user';
 
 const MenuAppBar = () => {
   const [user, setUser] = useState(null);
@@ -30,12 +30,7 @@ const MenuAppBar = () => {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
 
-  useEffect(() => setUser(usersUtils.getSignedInUser()), []);
-
-  useEffect(() => {
-    // console.log()
-    // if (user) signOutUser(user);
-  }, [user]);
+  useEffect(() => setUser(usersUtils.getSignedInUser(USER_KEY)), []);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -60,8 +55,9 @@ const MenuAppBar = () => {
   };
 
   const handleSignOut = () => {
+    handleMenuClose();
     setUser(null);
-    // store.dispatch(signOutUser(null));
+    usersUtils.removeSignedInUser(USER_KEY);
   };
 
   const renderMenuItems = (
@@ -87,7 +83,7 @@ const MenuAppBar = () => {
     </Menu>
   );
 
-  const renderMobileMenuItems = (
+  const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
@@ -106,10 +102,10 @@ const MenuAppBar = () => {
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
-            <MailIcon />
+            <ReceiptIcon />
           </Badge>
         </IconButton>
-        <p>Messages</p>
+        <p>Transactions</p>
       </MenuItem>
       <MenuItem>
         <IconButton
@@ -118,10 +114,10 @@ const MenuAppBar = () => {
           color="inherit"
         >
           <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
+            <MoneyIcon />
           </Badge>
         </IconButton>
-        <p>Notifications</p>
+        <p>Wins</p>
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
@@ -131,7 +127,7 @@ const MenuAppBar = () => {
           aria-haspopup="true"
           color="inherit"
         >
-          <AccountCircle />
+          <AccountCircleIcon />
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -178,7 +174,7 @@ const MenuAppBar = () => {
           onClick={handleProfileMenuOpen}
           color="inherit"
         >
-          <AccountCircle />
+          <AccountCircleIcon />
         </IconButton>
       </Box>
       <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -190,7 +186,7 @@ const MenuAppBar = () => {
           onClick={handleMobileMenuOpen}
           color="inherit"
         >
-          <MoreIcon />
+          <MoreVertIcon />
         </IconButton>
       </Box>
     </>
@@ -221,7 +217,7 @@ const MenuAppBar = () => {
           {renderUserMenu(user)}
         </Toolbar>
       </AppBar>
-      {renderMobileMenuItems}
+      {renderMobileMenu}
       {renderMenuItems}
     </Box>
   );
