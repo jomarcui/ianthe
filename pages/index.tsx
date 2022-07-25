@@ -23,7 +23,7 @@ const Home = () => {
 
   const scores = teams.map((team) => ({
     ...team,
-    score: 4,
+    score: Math.floor(Math.random() * 100),
   }));
 
   const bet = {

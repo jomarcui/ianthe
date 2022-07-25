@@ -44,7 +44,7 @@ const useSignIn = () => {
   }, [data]);
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (formData) => {
-    const { email, password, rememberMe } = formData;
+    const { email, password } = formData;
 
     const signinInfo = {
       email,
