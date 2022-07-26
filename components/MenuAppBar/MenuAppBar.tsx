@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import {
   AppBar,
@@ -20,18 +20,15 @@ import MoneyIcon from '@mui/icons-material/Money';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import usersUtils from '../../utilities/usersUtils';
-import { USER_KEY } from '../../constants';
+import store from '../../redux/store';
+import { setUser } from '../../redux/features/users/usersSlice';
 
 const MenuAppBar = () => {
-  const [user, setUser] = useState(null);
   const [adminMenuAnchorEl, setAdminMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
-
-  useEffect(() => setUser(usersUtils.getSignedInUser(USER_KEY)), []);
 
   const isAdminMenuOpen = Boolean(adminMenuAnchorEl);
   const isMenuOpen = Boolean(anchorEl);
@@ -39,6 +36,14 @@ const MenuAppBar = () => {
   const adminMenuId = 'admin-menu';
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
+
+  let user = store.getState().users.user;
+  
+  useEffect(() => {
+    return () => unsubscribe();
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAdminMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setAdminMenuAnchorEl(event.currentTarget);
@@ -61,9 +66,12 @@ const MenuAppBar = () => {
 
   const handleSignOut = () => {
     handleMenuClose();
-    setUser(null);
-    usersUtils.removeSignedInUser(USER_KEY);
+    store.dispatch(setUser(null));
   };
+
+  const updateUser = () => user = store.getState().users.user;
+
+  const unsubscribe = store.subscribe(updateUser);
 
   const renderAdminMenuItems = (
     <Menu
@@ -81,8 +89,11 @@ const MenuAppBar = () => {
       open={isAdminMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Games</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Odds</MenuItem>
+      <MenuItem onClick={handleMenuClose}>
+        <Link href="/dashboard">
+          <a>Dashboard</a>
+        </Link>
+      </MenuItem>
     </Menu>
   );
 

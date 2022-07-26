@@ -18,10 +18,8 @@ import {
   Typography,
 } from '@mui/material';
 import store from '../../redux/store';
-import usersUtils from '../../utilities/usersUtils';
 import { useGetUserByEmailAndPasswordMutation } from '../../redux/api/usersApi';
 import { setUser } from '../../redux/features/users/usersSlice';
-import { USER_KEY } from '../../constants';
 
 type Inputs = {
   email: string;
@@ -63,22 +61,24 @@ const SignIn = () => {
     useGetUserByEmailAndPasswordMutation();
 
   useEffect(() => {
-    const user = usersUtils.getSignedInUser(USER_KEY);
-
+    const user = store.getState().users.user;
+    
     if (user) router.push('/');
-  }, [router]);
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (data) {
-      usersUtils.setSignedInUser({ key: USER_KEY, user: data });
-
       store.dispatch(setUser(data));
 
       const returnUrl = router.query.returnUrl || '/';
 
       router.push(Array.isArray(returnUrl) ? returnUrl[0] : returnUrl);
     }
-  }, [data, router]);
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (formData) => {
     const { email, password } = formData;

@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { Team } from '../../enums';
 
-const useTeams = (teams) => {
+const useTeams = (teams: any[]) => {
   const home = teams.find(({ team }) => team === Team.Home);
   const visitor = teams.find(({ team }) => team === Team.Visitor);
 
