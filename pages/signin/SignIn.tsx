@@ -1,4 +1,6 @@
-import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {
@@ -15,7 +17,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import useSignIn from './useSignIn';
+import store from '../../redux/store';
+import usersUtils from '../../utilities/usersUtils';
+import { useGetUserByEmailAndPasswordMutation } from '../../redux/api/usersApi';
+import { setUser } from '../../redux/features/users/usersSlice';
+
+const USER_KEY = 'ianthe.user';
 
 type Inputs = {
   email: string;
@@ -43,7 +50,7 @@ const Error = ({ error }) => (
   </Alert>
 );
 
-export default function SignIn() {
+const SignIn = () => {
   const {
     register,
     handleSubmit,
@@ -51,7 +58,39 @@ export default function SignIn() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const { data, error, isLoading, handleFormSubmit } = useSignIn();
+  const router = useRouter();
+
+  const [signIn, { data, error, isLoading }] =
+    useGetUserByEmailAndPasswordMutation();
+
+  useEffect(() => {
+    const user = usersUtils.getSignedInUser(USER_KEY);
+
+    if (user) router.push('/');
+  }, [router]);
+
+  useEffect(() => {
+    if (data) {
+      usersUtils.setSignedInUser({ key: USER_KEY, user: data });
+
+      store.dispatch(setUser(data));
+
+      const returnUrl = router.query.returnUrl || '/';
+
+      router.push(Array.isArray(returnUrl) ? returnUrl[0] : returnUrl);
+    }
+  }, [data, router]);
+
+  const handleFormSubmit: SubmitHandler<Inputs> = async (formData) => {
+    const { email, password } = formData;
+
+    const signinInfo = {
+      email,
+      password,
+    };
+
+    await signIn(signinInfo).unwrap();
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -147,4 +186,6 @@ export default function SignIn() {
       <Copyright sx={{ mt: 8, mb: 4 }} />
     </Container>
   );
-}
+};
+
+export default SignIn;
