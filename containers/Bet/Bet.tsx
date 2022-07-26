@@ -26,8 +26,15 @@ const Bet = ({ bet: { odds, teams } }) => {
   );
 };
 
-const TeamGridItem = ({ team: { name } }) => (
-  <Grid item p={2} xs={6}>
+const TeamGridItem = ({ team: { name, team } }) => (
+  <Grid
+    item
+    p={2}
+    xs={6}
+    sx={{
+      borderLeft: team === Team.Visitor && '1px solid #c1d5e3',
+    }}
+  >
     <Typography align="center" variant="body2">
       {name}
     </Typography>
