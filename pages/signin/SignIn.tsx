@@ -41,7 +41,7 @@ const Copyright = (props: any) => {
 };
 
 const Error = ({ error }) => (
-  <Alert severity="error" sx={{ my: 2 }}>
+  <Alert severity="error" sx={{ my: 2 }} variant="filled">
     <AlertTitle>{error.error}</AlertTitle>
     {error.status}
   </Alert>
@@ -62,10 +62,10 @@ const SignIn = () => {
 
   useEffect(() => {
     const user = store.getState().users.user;
-    
+
     if (user) router.push('/');
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -76,8 +76,8 @@ const SignIn = () => {
 
       router.push(Array.isArray(returnUrl) ? returnUrl[0] : returnUrl);
     }
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (formData) => {
@@ -116,7 +116,7 @@ const SignIn = () => {
           {error && <Error error={error} />}
 
           {data === null && (
-            <Alert severity="warning" sx={{ my: 2 }}>
+            <Alert severity="warning" sx={{ my: 2 }} variant="filled">
               User not found.
             </Alert>
           )}
