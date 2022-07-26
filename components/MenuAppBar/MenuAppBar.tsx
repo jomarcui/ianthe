@@ -245,14 +245,13 @@ const MenuAppBar = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
-            Ianthe
-          </Typography>
+          <Link href="/">
+            <a>
+              <Typography variant="h6" noWrap component="div">
+                Ianthe
+              </Typography>
+            </a>
+          </Link>
           <Box sx={{ flexGrow: 1 }} />
           {renderUserMenu(user)}
         </Toolbar>
