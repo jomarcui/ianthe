@@ -50,7 +50,7 @@ const Scores = ({ scores }) => {
         variant="h6"
         sx={{ border: '1px solid #fff', color: '#fff' }}
       >
-        {`${23} - ${16}`}
+        {`${homeScore} - ${visitorScore}`}
       </Typography>
     </Box>
   );

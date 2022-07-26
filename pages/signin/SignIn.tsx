@@ -21,8 +21,7 @@ import store from '../../redux/store';
 import usersUtils from '../../utilities/usersUtils';
 import { useGetUserByEmailAndPasswordMutation } from '../../redux/api/usersApi';
 import { setUser } from '../../redux/features/users/usersSlice';
-
-const USER_KEY = 'ianthe.user';
+import { USER_KEY } from '../../constants';
 
 type Inputs = {
   email: string;

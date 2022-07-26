@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { USER_KEY } from '../../constants';
 import usersUtils from '../../utilities/usersUtils';
-
-const USER_KEY = 'ianthe.user';
 
 const RouteGuard = ({ children }) => {
   const [authorized, setAuthorized] = useState(false);

@@ -21,44 +21,70 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import usersUtils from '../../utilities/usersUtils';
-
-const USER_KEY = 'ianthe.user';
+import { USER_KEY } from '../../constants';
 
 const MenuAppBar = () => {
   const [user, setUser] = useState(null);
+  const [adminMenuAnchorEl, setAdminMenuAnchorEl] =
+    React.useState<null | HTMLElement>(null);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
 
   useEffect(() => setUser(usersUtils.getSignedInUser(USER_KEY)), []);
 
+  const isAdminMenuOpen = Boolean(adminMenuAnchorEl);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const adminMenuId = 'admin-menu';
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
+  const handleAdminMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
+    setAdminMenuAnchorEl(event.currentTarget);
 
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
+    handleMobileAdminMenuClose();
   };
 
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
+    setAnchorEl(event.currentTarget);
+
+  const handleMobileAdminMenuClose = () => setAdminMenuAnchorEl(null);
+
+  const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
+
+  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setMobileMoreAnchorEl(event.currentTarget);
-  };
 
   const handleSignOut = () => {
     handleMenuClose();
     setUser(null);
     usersUtils.removeSignedInUser(USER_KEY);
   };
+
+  const renderAdminMenuItems = (
+    <Menu
+      anchorEl={adminMenuAnchorEl}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      id={adminMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      open={isAdminMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <MenuItem onClick={handleMenuClose}>Games</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Odds</MenuItem>
+    </Menu>
+  );
 
   const renderMenuItems = (
     <Menu
@@ -197,10 +223,13 @@ const MenuAppBar = () => {
       <AppBar position="static">
         <Toolbar>
           <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
+            aria-controls={adminMenuId}
             aria-label="open drawer"
+            aria-haspopup="true"
+            color="inherit"
+            edge="start"
+            onClick={handleAdminMenuOpen}
+            size="large"
             sx={{ mr: 2 }}
           >
             <MenuIcon />
@@ -217,6 +246,7 @@ const MenuAppBar = () => {
           {renderUserMenu(user)}
         </Toolbar>
       </AppBar>
+      {renderAdminMenuItems}
       {renderMobileMenu}
       {renderMenuItems}
     </Box>
