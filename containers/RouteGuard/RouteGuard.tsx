@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { USER_KEY } from '../../constants';
-import usersUtils from '../../utilities/usersUtils';
+import store from '../../redux/store';
 
 const RouteGuard = ({ children }) => {
   const [authorized, setAuthorized] = useState(false);
@@ -29,11 +28,11 @@ const RouteGuard = ({ children }) => {
 
   const authCheck = (url: string) => {
     // redirect to signin page if accessing a private page and not logged in
-    const publicPaths = ['/signin'];
+    const publicPaths = ['/', '/signin'];
 
     const path = url.split('?')[0];
 
-    const user = usersUtils.getSignedInUser(USER_KEY);
+    const user = store.getState().users.user;
 
     if (!user && !publicPaths.includes(path)) {
       setAuthorized(false);

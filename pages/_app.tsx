@@ -13,7 +13,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <title>Ianthe</title>
       </Head>
       <Provider store={store}>
-        <Component {...pageProps} />
+        <RouteGuard>
+          <Component {...pageProps} />
+        </RouteGuard>
       </Provider>
     </>
   );

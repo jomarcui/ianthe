@@ -22,6 +22,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import store from '../../redux/store';
 import { setUser } from '../../redux/features/users/usersSlice';
+import { useRouter } from 'next/router';
 
 const MenuAppBar = () => {
   const [adminMenuAnchorEl, setAdminMenuAnchorEl] =
@@ -29,6 +30,7 @@ const MenuAppBar = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
+  const router = useRouter();
 
   const isAdminMenuOpen = Boolean(adminMenuAnchorEl);
   const isMenuOpen = Boolean(anchorEl);
@@ -67,6 +69,7 @@ const MenuAppBar = () => {
   const handleSignOut = () => {
     handleMenuClose();
     store.dispatch(setUser(null));
+    router.push('/');
   };
 
   const updateUser = () => user = store.getState().users.user;
