@@ -1,7 +1,12 @@
 import Layout from "../../components/Layout";
+import Games from "../../containers/Management/Games";
 
 const Dashboard = () => {
-    return <Layout>1</Layout>;
+    return (
+      <Layout>
+        <Games />
+      </Layout>
+    );
 }
 
 export default Dashboard
