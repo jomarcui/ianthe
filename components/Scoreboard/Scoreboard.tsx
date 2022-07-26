@@ -9,7 +9,7 @@ const BackgroundColorFill = styled.div`
 `;
 
 const Container = styled.div`
-  background: url('/david-beckham-adidas-soccer-wallpaper.jpg');
+  background: url('/scoreboard-background.jpg');
   background-size: cover;
   height: 25vh;
 `;
