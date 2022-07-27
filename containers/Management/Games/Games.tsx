@@ -140,8 +140,8 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
                 labelId="select-home-label"
                 {...register('home', { required: true })}
               >
-                {teams.map(({ id, name }) => (
-                  <MenuItem key={id} value={id}>
+                {teams.map(({ _id, name }) => (
+                  <MenuItem key={_id} value={_id}>
                     {name}
                   </MenuItem>
                 ))}
@@ -160,8 +160,8 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
                 labelId="select-visitor-label"
                 {...register('visitor', { required: true })}
               >
-                {teams.map(({ id, name }) => (
-                  <MenuItem key={id} value={id}>
+                {teams.map(({ _id, name }) => (
+                  <MenuItem key={_id} value={_id}>
                     {name}
                   </MenuItem>
                 ))}
