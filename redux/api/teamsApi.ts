@@ -4,10 +4,10 @@ const HOST = process.env.NEXT_PUBLIC_HOST;
 
 type Team = {
   _id: string;
-  league_id: number;
-  name: string;
-  sport_id: number;
   createdAt: Date;
+  leagueId: number;
+  name: string;
+  sportId: number;
   updatedAt: Date;
 };
 

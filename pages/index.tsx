@@ -1,6 +1,6 @@
-import Layout from '../components/Layout';
-import Scoreboard from '../components/Scoreboard';
-import Bet from '../containers/Bet';
+import ComponentsLayout from '../components/Layout';
+import ComponentsScoreboard from '../components/Scoreboard';
+import ContainersBet from '../containers/Bet';
 import { Team } from '../enums';
 
 const Home = () => {
@@ -32,10 +32,10 @@ const Home = () => {
   };
 
   return (
-    <Layout>
-      <Scoreboard scores={scores} />
-      <Bet bet={bet} />
-    </Layout>
+    <ComponentsLayout>
+      <ComponentsScoreboard scores={scores} />
+      <ContainersBet bet={bet} />
+    </ComponentsLayout>
   );
 };
 

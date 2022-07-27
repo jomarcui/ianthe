@@ -40,11 +40,11 @@ const MenuAppBar = () => {
   const mobileMenuId = 'primary-search-account-menu-mobile';
 
   let user = store.getState().users.user;
-  
+
   useEffect(() => {
     return () => unsubscribe();
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdminMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
@@ -72,7 +72,7 @@ const MenuAppBar = () => {
     router.push('/');
   };
 
-  const updateUser = () => user = store.getState().users.user;
+  const updateUser = () => (user = store.getState().users.user);
 
   const unsubscribe = store.subscribe(updateUser);
 
@@ -93,8 +93,8 @@ const MenuAppBar = () => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>
-        <Link href="/dashboard">
-          <a>Dashboard</a>
+        <Link href="/schedules">
+          <a>Schedules</a>
         </Link>
       </MenuItem>
     </Menu>
