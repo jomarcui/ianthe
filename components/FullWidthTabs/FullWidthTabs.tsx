@@ -28,7 +28,6 @@ const a11yProps = (index: number) => ({
 });
 
 const FullWidthTabs = <T,>(props: FullWidthTabsProps<T>) => {
-  console.log(props);
   const theme = useTheme();
 
   const [value, setValue] = React.useState(0);
@@ -37,37 +36,27 @@ const FullWidthTabs = <T,>(props: FullWidthTabsProps<T>) => {
     setValue(newValue);
   };
 
-  const handleChangeIndex = (index: number) => {
-    setValue(index);
-  };
-
   return (
     <Box sx={{ bgcolor: 'background.paper' }}>
       <AppBar position="static">
         <Tabs
-          value={value}
-          onChange={handleChange}
+          aria-label="full width tabs"
           indicatorColor="secondary"
+          onChange={handleChange}
           textColor="inherit"
+          value={value}
           variant="fullWidth"
-          aria-label="full width tabs example"
         >
           {props.tabs.map(({ header: { key, label } }) => (
             <Tab key={key} label={label} {...a11yProps(key)} />
           ))}
         </Tabs>
       </AppBar>
-      <SwipeableViews
-        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-        index={value}
-        onChangeIndex={handleChangeIndex}
-      >
-        {props.tabs.map(({ header: { key }, body }) => (
-          <TabPanel index={key} key={key} dir={theme.direction} value={key}>
-            {body}
-          </TabPanel>
-        ))}
-      </SwipeableViews>
+      {props.tabs.map(({ header: { key }, body }) => (
+        <TabPanel index={key} key={key} dir={theme.direction} value={value}>
+          {body}
+        </TabPanel>
+      ))}
     </Box>
   );
 };
