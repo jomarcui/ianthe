@@ -56,6 +56,7 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
     register,
     reset,
     formState: { errors },
+    watch,
   } = useForm<Inputs>({
     defaultValues: {
       home: '',
@@ -65,6 +66,7 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
     },
   });
   const [errorDuplicateSchedule, setErrorDuplicateSchedule] = useState(null);
+  const watchFields = watch(['home', 'visitor']);
 
   const handleClose = () => {
     reset();
@@ -141,7 +143,11 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
                 {...register('home', { required: true })}
               >
                 {teams.map(({ _id, name }) => (
-                  <MenuItem key={_id} value={_id}>
+                  <MenuItem
+                    disabled={_id === watchFields[1]}
+                    key={_id}
+                    value={_id}
+                  >
                     {name}
                   </MenuItem>
                 ))}
@@ -161,7 +167,11 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
                 {...register('visitor', { required: true })}
               >
                 {teams.map(({ _id, name }) => (
-                  <MenuItem key={_id} value={_id}>
+                  <MenuItem
+                    disabled={_id === watchFields[0]}
+                    key={_id}
+                    value={_id}
+                  >
                     {name}
                   </MenuItem>
                 ))}
