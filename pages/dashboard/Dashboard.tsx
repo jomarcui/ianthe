@@ -1,5 +1,5 @@
 import Layout from "../../components/Layout";
-import Schedules from "../../containers/Management/Schedules";
+import Schedules from "../../containers/Schedules";
 
 const Dashboard = () => {
     return (
