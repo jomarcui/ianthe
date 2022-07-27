@@ -31,6 +31,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import store from '../../../redux/store';
 import { setSchedule } from '../../../redux/features/schedulesSlice';
+import { useTeamsQuery } from '../../../redux/api/teamsApi';
 
 type Inputs = {
   home: string;
@@ -224,43 +225,16 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
 const Games = () => {
   const [gameScheduleFormOpen, setGameScheduleFormOpen] = useState(false);
   const [scheduleHasBeenAdded, setScheduleHasBeenAdded] = useState(false);
+  const { data, error, isLoading, isSuccess } = useTeamsQuery();
 
-  useEffect(() => {
-    return () => unsubscribe();
+  // useEffect(() => {
+  //   return () => unsubscribe();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const pbaTeams = [
-    {
-      id: 1,
-      name: 'Barangay Ginebra San Miguel',
-    },
-    {
-      id: 2,
-      name: 'Blackwater Bossing',
-    },
-    {
-      id: 3,
-      name: 'Converge FiberXers',
-    },
-    {
-      id: 4,
-      name: 'Magnolia Hotshots',
-    },
-    {
-      id: 5,
-      name: 'Meralco Bolts',
-    },
-    {
-      id: 6,
-      name: 'NLEX Road Warriors',
-    },
-  ];
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const schedules = store.getState().schedules.schedules;
-
-  const unsubscribe = store.subscribe(() => setScheduleHasBeenAdded(true));
+  // const unsubscribe = store.subscribe(() => setScheduleHasBeenAdded(true));
 
   // const games = [
   //   {
@@ -309,11 +283,9 @@ const Games = () => {
                 time: Date;
                 visitor: string;
               }) => {
-                const { name: homeName } = pbaTeams.find(
-                  ({ id }) => id === Number(home)
-                );
-                const { name: visitorName } = pbaTeams.find(
-                  ({ id }) => id === Number(visitor)
+                const { name: homeName } = data.find(({ _id }) => _id === home);
+                const { name: visitorName } = data.find(
+                  ({ _id }) => _id === visitor
                 );
 
                 const key = `${homeName}${visitorName}`;
@@ -343,9 +315,9 @@ const Games = () => {
       <ScheduleForm
         open={gameScheduleFormOpen}
         setOpen={setGameScheduleFormOpen}
-        teams={pbaTeams}
+        teams={data}
       />
-      <Snackbar
+      {/* <Snackbar
         autoHideDuration={6000}
         onClose={() => setScheduleHasBeenAdded(false)}
         open={scheduleHasBeenAdded}
@@ -358,7 +330,7 @@ const Games = () => {
         >
           A schedule has been added!
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Box>
   );
 };
