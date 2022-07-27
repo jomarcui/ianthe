@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import {
   Alert,
+  Backdrop,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -13,7 +15,6 @@ import {
   MenuItem,
   Select,
   Slide,
-  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -241,14 +242,7 @@ const Games = () => {
   const [scheduleHasBeenAdded, setScheduleHasBeenAdded] = useState(false);
   const { data, error, isLoading, isSuccess } = useTeamsQuery();
 
-  // useEffect(() => {
-  //   return () => unsubscribe();
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   const schedules = store.getState().schedules.schedules;
-  // const unsubscribe = store.subscribe(() => setScheduleHasBeenAdded(true));
 
   // const games = [
   //   {
@@ -273,79 +267,75 @@ const Games = () => {
   const handleGameScheduleFormOpen = () => setGameScheduleFormOpen(true);
 
   return (
-    <Box>
-      <h2>Game Schedule</h2>
-      <TableContainer component={Box}>
-        <Table aria-label="Game Schedule">
-          <TableHead>
-            <TableRow>
-              <TableCell>Teams</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Time</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {schedules.map(
-              ({
-                home,
-                date,
-                time,
-                visitor,
-              }: {
-                home: string;
-                date: Date;
-                time: Date;
-                visitor: string;
-              }) => {
-                const { name: homeName } = data.find(({ _id }) => _id === home);
-                const { name: visitorName } = data.find(
-                  ({ _id }) => _id === visitor
-                );
+    <>
+      <Box>
+        <h2>Game Schedule</h2>
+        <TableContainer component={Box}>
+          <Table aria-label="Game Schedule">
+            <TableHead>
+              <TableRow>
+                <TableCell>Teams</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Time</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {schedules.map(
+                ({
+                  home,
+                  date,
+                  time,
+                  visitor,
+                }: {
+                  home: string;
+                  date: Date;
+                  time: Date;
+                  visitor: string;
+                }) => {
+                  const { name: homeName } = data.find(
+                    ({ _id }) => _id === home,
+                  );
+                  const { name: visitorName } = data.find(
+                    ({ _id }) => _id === visitor,
+                  );
 
-                const key = `${homeName}${visitorName}`;
-                const teams = `${homeName} vs ${visitorName}`;
+                  const key = `${homeName}${visitorName}`;
+                  const teams = `${homeName} vs ${visitorName}`;
 
-                return (
-                  <TableRow key={key}>
-                    <TableCell>{teams}</TableCell>
-                    <TableCell>{date.toLocaleDateString()}</TableCell>
-                    <TableCell>{time.toLocaleTimeString()}</TableCell>
-                  </TableRow>
-                );
-              }
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Box m={2} textAlign="end">
-        <LoadingButton
-          onClick={handleGameScheduleFormOpen}
-          loading={false}
-          variant="contained"
-        >
-          Add Schedule
-        </LoadingButton>
+                  return (
+                    <TableRow key={key}>
+                      <TableCell>{teams}</TableCell>
+                      <TableCell>{date.toLocaleDateString()}</TableCell>
+                      <TableCell>{time.toLocaleTimeString()}</TableCell>
+                    </TableRow>
+                  );
+                },
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box m={2} textAlign="end">
+          <LoadingButton
+            onClick={handleGameScheduleFormOpen}
+            loading={false}
+            variant="contained"
+          >
+            Add Schedule
+          </LoadingButton>
+        </Box>
+        <ScheduleForm
+          open={gameScheduleFormOpen}
+          setOpen={setGameScheduleFormOpen}
+          teams={data}
+        />
       </Box>
-      <ScheduleForm
-        open={gameScheduleFormOpen}
-        setOpen={setGameScheduleFormOpen}
-        teams={data}
-      />
-      {/* <Snackbar
-        autoHideDuration={6000}
-        onClose={() => setScheduleHasBeenAdded(false)}
-        open={scheduleHasBeenAdded}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
       >
-        <Alert
-          onClose={() => setScheduleHasBeenAdded(false)}
-          severity="success"
-          sx={{ width: '100%' }}
-          variant="filled"
-        >
-          A schedule has been added!
-        </Alert>
-      </Snackbar> */}
-    </Box>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </>
   );
 };
 
