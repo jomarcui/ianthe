@@ -21,7 +21,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import store from '../../redux/store';
-import { setUser } from '../../redux/features/users/usersSlice';
+import { setUser } from '../../redux/features/usersSlice';
 import { useRouter } from 'next/router';
 
 const MenuAppBar = () => {

@@ -32,6 +32,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import store from '../../../redux/store';
 import { setSchedule } from '../../../redux/features/schedulesSlice';
 import { useTeamsQuery } from '../../../redux/api/teamsApi';
+import { add } from 'date-fns';
 
 type Inputs = {
   home: string;
@@ -186,6 +187,9 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
                   inputFormat="MM/dd/yyyy"
                   inputRef={ref}
                   label="Date"
+                  minDate={add(new Date(),{
+                    days: 1
+                  })}
                   onChange={onChange}
                   renderInput={(params) => <TextField {...params} />}
                   value={value}

@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import store from '../../redux/store';
 import { useGetUserByEmailAndPasswordMutation } from '../../redux/api/usersApi';
-import { setUser } from '../../redux/features/users/usersSlice';
+import { setUser } from '../../redux/features/usersSlice';
 
 type Inputs = {
   email: string;
