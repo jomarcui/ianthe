@@ -23,6 +23,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Typography,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -242,7 +243,7 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
 
 const Games = () => {
   const [gameScheduleFormOpen, setGameScheduleFormOpen] = useState(false);
-  const [scheduleHasBeenAdded, setScheduleHasBeenAdded] = useState(false);
+  // const [scheduleHasBeenAdded, setScheduleHasBeenAdded] = useState(false);
   const { data, error, isLoading, isSuccess } = useTeamsQuery();
 
   const schedules = store.getState().schedules.schedules;
@@ -326,20 +327,112 @@ const Games = () => {
         key: PhilippineSportsLeague.PBL,
         label: PhilippineSportsLeague[PhilippineSportsLeague.PBL],
       },
-      body: <div>PBL</div>
+      body: (
+        <TableContainer component={Box}>
+          <Table aria-label="Game Schedule">
+            <TableHead>
+              <TableRow>
+                <TableCell>Teams</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Time</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {schedules.map(
+                ({
+                  home,
+                  date,
+                  time,
+                  visitor,
+                }: {
+                  home: string;
+                  date: Date;
+                  time: Date;
+                  visitor: string;
+                }) => {
+                  const { name: homeName } = data.find(
+                    ({ _id }) => _id === home,
+                  );
+                  const { name: visitorName } = data.find(
+                    ({ _id }) => _id === visitor,
+                  );
+
+                  const key = `${homeName}${visitorName}`;
+                  const teams = `${homeName} vs ${visitorName}`;
+
+                  return (
+                    <TableRow key={key}>
+                      <TableCell>{teams}</TableCell>
+                      <TableCell>{date.toLocaleDateString()}</TableCell>
+                      <TableCell>{time.toLocaleTimeString()}</TableCell>
+                    </TableRow>
+                  );
+                },
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ),
     },{
       header: {
         key: PhilippineSportsLeague.PVL,
         label: PhilippineSportsLeague[PhilippineSportsLeague.PVL],
       },
-      body: <div>PVL</div>
+      body: (
+        <TableContainer component={Box}>
+          <Table aria-label="Game Schedule">
+            <TableHead>
+              <TableRow>
+                <TableCell>Teams</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Time</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {schedules.map(
+                ({
+                  home,
+                  date,
+                  time,
+                  visitor,
+                }: {
+                  home: string;
+                  date: Date;
+                  time: Date;
+                  visitor: string;
+                }) => {
+                  const { name: homeName } = data.find(
+                    ({ _id }) => _id === home,
+                  );
+                  const { name: visitorName } = data.find(
+                    ({ _id }) => _id === visitor,
+                  );
+
+                  const key = `${homeName}${visitorName}`;
+                  const teams = `${homeName} vs ${visitorName}`;
+
+                  return (
+                    <TableRow key={key}>
+                      <TableCell>{teams}</TableCell>
+                      <TableCell>{date.toLocaleDateString()}</TableCell>
+                      <TableCell>{time.toLocaleTimeString()}</TableCell>
+                    </TableRow>
+                  );
+                },
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ),
     }
   ];
 
   return (
     <>
       <Box>
-        <h2>Game Schedule</h2>
+        <Box sx={{ bgcolor: '#1976d2' }}>
+          <Typography align='center' color='#fff' variant='h6'>Game Schedule</Typography>
+        </Box>
         <FullWidthTabs tabs={tabs} />
         <Box m={2} textAlign="end">
           <LoadingButton
