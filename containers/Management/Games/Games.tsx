@@ -30,10 +30,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { add } from 'date-fns';
+
+import FullWidthTabs from '../../../components/FullWidthTabs/FullWidthTabs';
 import store from '../../../redux/store';
 import { setSchedule } from '../../../redux/features/schedulesSlice';
 import { useTeamsQuery } from '../../../redux/api/teamsApi';
-import { add } from 'date-fns';
+import { PhilippineSportsLeague } from '../../../enums';
 
 type Inputs = {
   home: string;
@@ -266,10 +269,13 @@ const Games = () => {
 
   const handleGameScheduleFormOpen = () => setGameScheduleFormOpen(true);
 
-  return (
-    <>
-      <Box>
-        <h2>Game Schedule</h2>
+  const tabs = [
+    {
+      header: {
+        key: PhilippineSportsLeague.PBA,
+        label: PhilippineSportsLeague[PhilippineSportsLeague.PBA],
+      },
+      body: (
         <TableContainer component={Box}>
           <Table aria-label="Game Schedule">
             <TableHead>
@@ -314,6 +320,27 @@ const Games = () => {
             </TableBody>
           </Table>
         </TableContainer>
+      ),
+    }, {
+      header: {
+        key: PhilippineSportsLeague.PBL,
+        label: PhilippineSportsLeague[PhilippineSportsLeague.PBL],
+      },
+      body: <div>PBL</div>
+    },{
+      header: {
+        key: PhilippineSportsLeague.PVL,
+        label: PhilippineSportsLeague[PhilippineSportsLeague.PVL],
+      },
+      body: <div>PVL</div>
+    }
+  ];
+
+  return (
+    <>
+      <Box>
+        <h2>Game Schedule</h2>
+        <FullWidthTabs tabs={tabs} />
         <Box m={2} textAlign="end">
           <LoadingButton
             onClick={handleGameScheduleFormOpen}
