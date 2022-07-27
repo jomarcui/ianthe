@@ -41,6 +41,7 @@ import { PhilippineSportsLeague } from '../../../enums';
 
 type Inputs = {
   home: string;
+  leagueId: string,
   date: Date | null;
   time: Date | null;
   visitor: string;
@@ -55,7 +56,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
+const ScheduleForm = ({ leagues = [], open = false, setOpen, teams = [] }) => {
   const {
     control,
     handleSubmit,
@@ -66,6 +67,7 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
   } = useForm<Inputs>({
     defaultValues: {
       home: '',
+      leagueId: '',
       date: null,
       time: null,
       visitor: '',
@@ -80,11 +82,6 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
   };
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (formData) => {
-    if (formData.home === formData.visitor) {
-      setErrorDuplicateSchedule("Home and visitor teams can't be the same!");
-      return;
-    }
-
     const schedules = store.getState().schedules.schedules;
 
     const schedule = schedules.find(
@@ -135,6 +132,26 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
                 {errorDuplicateSchedule}
               </Alert>
             )}
+
+            <FormControl
+              error={errors.leagueId?.type === 'required'}
+              required
+              fullWidth
+            >
+              <InputLabel id="select-league-id-label">League</InputLabel>
+              <Select
+                id="select-league-id"
+                label="League"
+                labelId="select-league-id-label"
+                {...register('leagueId', { required: true })}
+              >
+                {leagues.map(({ key, value }) => (
+                  <MenuItem key={key} value={key}>
+                    {value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <FormControl
               error={errors.home?.type === 'required'}
@@ -192,8 +209,8 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
                   inputFormat="MM/dd/yyyy"
                   inputRef={ref}
                   label="Date"
-                  minDate={add(new Date(),{
-                    days: 1
+                  minDate={add(new Date(), {
+                    days: 1,
                   })}
                   onChange={onChange}
                   renderInput={(params) => <TextField {...params} />}
@@ -241,12 +258,18 @@ const ScheduleForm = ({ open = false, setOpen, teams = [] }) => {
   );
 };
 
-const Games = () => {
+const Schedules = () => {
   const [gameScheduleFormOpen, setGameScheduleFormOpen] = useState(false);
   // const [scheduleHasBeenAdded, setScheduleHasBeenAdded] = useState(false);
   const { data, error, isLoading, isSuccess } = useTeamsQuery();
 
   const schedules = store.getState().schedules.schedules;
+console.log(schedules)
+  const pbaSchedules = schedules.filter(({ leagueId }) => leagueId === PhilippineSportsLeague.PBA);
+  const pblSchedules = schedules.filter(({ leagueId }) => leagueId === PhilippineSportsLeague.PBL);
+  const pvlSchedules = schedules.filter(
+    ({ leagueId }) => leagueId === PhilippineSportsLeague.PVL,
+  );
 
   // const games = [
   //   {
@@ -287,7 +310,7 @@ const Games = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {schedules.map(
+              {pbaSchedules.map(
                 ({
                   home,
                   date,
@@ -338,7 +361,7 @@ const Games = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {schedules.map(
+              {pblSchedules.map(
                 ({
                   home,
                   date,
@@ -389,7 +412,7 @@ const Games = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {schedules.map(
+              {pvlSchedules.map(
                 ({
                   home,
                   date,
@@ -427,11 +450,26 @@ const Games = () => {
     }
   ];
 
+  const philippineSportsLeagues = [
+    {
+      key: PhilippineSportsLeague.PBA,
+      value: PhilippineSportsLeague[PhilippineSportsLeague.PBA]
+    },{
+      key: PhilippineSportsLeague.PBL,
+      value: PhilippineSportsLeague[PhilippineSportsLeague.PBL]
+    },{
+      key: PhilippineSportsLeague.PVL,
+      value: PhilippineSportsLeague[PhilippineSportsLeague.PVL]
+    }
+  ]
+
   return (
     <>
       <Box>
         <Box sx={{ bgcolor: '#1976d2' }}>
-          <Typography align='center' color='#fff' variant='h6'>Game Schedule</Typography>
+          <Typography align="center" color="#fff" variant="h6">
+            Game Schedule
+          </Typography>
         </Box>
         <FullWidthTabs tabs={tabs} />
         <Box m={2} textAlign="end">
@@ -444,6 +482,7 @@ const Games = () => {
           </LoadingButton>
         </Box>
         <ScheduleForm
+          leagues={philippineSportsLeagues}
           open={gameScheduleFormOpen}
           setOpen={setGameScheduleFormOpen}
           teams={data}
@@ -459,4 +498,4 @@ const Games = () => {
   );
 };
 
-export default Games;
+export default Schedules;
