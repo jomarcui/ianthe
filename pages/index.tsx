@@ -13,7 +13,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { compareAsc, format } from 'date-fns';
+import { compareAsc, format, isToday } from 'date-fns';
 import { useSchedulesQuery } from '../redux/api/schedulesApi';
 import { Schedule } from '../types';
 import { useTeamsQuery } from '../redux/api/teamsApi';
@@ -52,8 +52,7 @@ const Home = () => {
     const { initialism } = leaguesUtils(leagues).findById(_id);
 
     const schedule = schedules.filter(
-      ({ date, leagueId }) =>
-        _id === leagueId && compareAsc(new Date(date), new Date()) === 0
+      ({ date, leagueId }) => _id === leagueId && isToday(new Date(date))
     );
 
     return {
