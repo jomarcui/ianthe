@@ -29,6 +29,19 @@ const Home = () => {
     useSchedulesQuery();
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
 
+  const isLoading = isLeaguesLoading || isSchedulesLoading || isTeamsLoading;
+
+  if (isLoading) {
+    return (
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
+
   const bet = {
     odds: 0.2,
   };
@@ -47,8 +60,6 @@ const Home = () => {
     };
   });
 
-  const isLoading = isLeaguesLoading || isSchedulesLoading || isTeamsLoading;
-
   return (
     <Layout>
       <Box>
@@ -60,7 +71,7 @@ const Home = () => {
                 borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
               }}
             >
-              {initialism}
+              <strong>{initialism}</strong>
             </ListSubheader>
             {schedules.map((schedule, index) => (
               <ScheduleListItem key={index} schedule={schedule} />
@@ -68,26 +79,17 @@ const Home = () => {
           </List>
         ))}
       </Box>
-
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </Layout>
   );
 };
 
 const ScheduleListItem = ({
-  key,
   schedule: {
     date,
     leagueId,
     teams: { home, visitor },
   },
 }: {
-  key: Key;
   schedule: Schedule;
 }) => {
   const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
@@ -119,8 +121,8 @@ const ScheduleListItem = ({
   return (
     <ListItem divider>
       <ListItemAvatar>
-        <Avatar>
-          <SportsBasketballIcon />
+        <Avatar sx={{ bgcolor: '#ecf0f1' }}>
+          <SportsBasketballIcon color={isSoon ? 'warning' : 'success'} />
         </Avatar>
       </ListItemAvatar>
       <ListItemText primary={primary} secondary={secondary} />

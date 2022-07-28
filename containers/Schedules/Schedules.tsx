@@ -18,7 +18,7 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import { compareAsc } from 'date-fns';
+import { compareAsc, format } from 'date-fns';
 
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
@@ -30,7 +30,7 @@ const getStatusIcon = (dayScheduled: Date) => {
 
   switch (result) {
     case -1:
-      return <DoneIcon color="info" titleAccess="Event finished" />;
+      return <DoneIcon color="disabled" titleAccess="Event finished" />;
 
     case 0:
       return <CellTowerIcon color="success" titleAccess="Live" />;
@@ -47,7 +47,7 @@ const Schedules = () => {
   const { isLoading: isTeamsLoading } = useTeamsQuery();
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<string>(
-    '62e14be33b17ae7b977921e9',
+    '62e14be33b17ae7b977921e9'
   );
 
   useEffect(() => {
@@ -59,8 +59,20 @@ const Schedules = () => {
   }, [leagues]);
 
   const isLoading = isLeaguesLoading || isSchedulesLoading || isTeamsLoading;
-  const schedulesFiltered = schedules?.filter(
-    ({ leagueId }) => leagueId === selectedLeague,
+
+  if (isLoading) {
+    return (
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
+
+  const schedulesFiltered = schedules.filter(
+    ({ leagueId }) => leagueId === selectedLeague
   );
   const tableHeaders = ['Status', 'Teams', 'Date', 'Time', 'Actions'];
 
@@ -90,7 +102,7 @@ const Schedules = () => {
               ))}
           </Tabs>
         </Box>
-        <SchedulesTable
+        <SchedulesList
           data={{ headers: tableHeaders, body: schedulesFiltered }}
         />
         <Box m={2} textAlign="end">
@@ -109,23 +121,17 @@ const Schedules = () => {
           sportId="62e14b643b17ae7b977921e8"
         />
       </Box>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </>
   );
 };
 
-const SchedulesTable = ({ data: { headers = [], body = [] } }) => {
+const SchedulesList = ({ data: { headers = [], body = [] } }) => {
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
 
   if (isTeamsLoading) return null;
 
   return (
-    <List>
+    <List disablePadding>
       {body.map(
         ({
           date,
@@ -137,7 +143,7 @@ const SchedulesTable = ({ data: { headers = [], body = [] } }) => {
           const dayScheduled = new Date(date);
           const { name: homeName } = teams.find(({ _id }) => _id === home);
           const { name: visitorName } = teams.find(
-            ({ _id }) => _id === visitor,
+            ({ _id }) => _id === visitor
           );
 
           const key = `${homeName}${visitorName}${dayScheduled}`;
@@ -145,11 +151,16 @@ const SchedulesTable = ({ data: { headers = [], body = [] } }) => {
 
           const primary = (() => (
             <Stack>
-              <div>{homeName}</div>
-              <div>vs</div>
-              <div>{visitorName}</div>
+              <Typography variant="caption">{homeName}</Typography>
+              <Typography variant="caption">{visitorName}</Typography>
             </Stack>
           ))();
+
+          const secondary = (
+            <Typography variant="caption">
+              {format(dayScheduled, `EE MM/dd/yyyy 'at' h:mm a`)}
+            </Typography>
+          );
 
           return (
             <ListItem
@@ -161,13 +172,10 @@ const SchedulesTable = ({ data: { headers = [], body = [] } }) => {
               }
             >
               <ListItemAvatar>{statusIcon}</ListItemAvatar>
-              <ListItemText
-                primary={primary}
-                secondary={dayScheduled.toDateString()}
-              />
+              <ListItemText primary={primary} secondary={secondary} />
             </ListItem>
           );
-        },
+        }
       )}
     </List>
   );
