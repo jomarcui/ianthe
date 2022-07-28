@@ -23,14 +23,24 @@ const schedulesApi = createApi({
     }),
     addSchedule: build.mutation<Schedule, any>({
       query: (schedule) => ({
-        url: `schedules/add`,
+        url: 'schedules/add',
         method: 'POST',
         body: schedule,
+      }),
+    }),
+    deleteSchedule: build.mutation<Schedule, any>({
+      query: (id) => ({
+        url: `schedules/${id}`,
+        method: 'DELETE',
       }),
     }),
   }),
 });
 
-export const { useAddScheduleMutation, useSchedulesQuery } = schedulesApi;
+export const {
+  useAddScheduleMutation,
+  useDeleteScheduleMutation,
+  useSchedulesQuery,
+} = schedulesApi;
 
 export default schedulesApi;

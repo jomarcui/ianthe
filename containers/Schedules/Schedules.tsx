@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CellTowerIcon from '@mui/icons-material/CellTower';
+import DeleteIcon from '@mui/icons-material/Delete';
 import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
 import ScheduleIcon from '@mui/icons-material/Schedule';
@@ -22,7 +23,10 @@ import { compareAsc, format, isToday } from 'date-fns';
 
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
-import { useSchedulesQuery } from '../../redux/api/schedulesApi';
+import {
+  useDeleteScheduleMutation,
+  useSchedulesQuery,
+} from '../../redux/api/schedulesApi';
 import ScheduleForm from './ScheduleForm';
 
 const getStatusIcon = (dayScheduled: Date) => {
@@ -127,16 +131,26 @@ const Schedules = () => {
 
 const SchedulesList = ({ data: { headers = [], body = [] } }) => {
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+  const [
+    deleteSchedule,
+    { isLoading: isScheduleDeleting, isSuccess: isScheduleDeleted },
+  ] = useDeleteScheduleMutation();
 
   if (isTeamsLoading) return null;
+
+  const handleDelete = async (id: string) => {
+    await deleteSchedule(id).unwrap();
+  };
 
   return (
     <List disablePadding>
       {body.map(
         ({
+          _id,
           date,
           teams: { home, visitor },
         }: {
+          _id: string;
           date: Date;
           teams: { home: string; visitor: string };
         }) => {
@@ -183,13 +197,26 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
 
           return (
             <ListItem
+              disabled={isScheduleDeleted}
               key={key}
               secondaryAction={(() => {
                 if (!matchHasEnded) {
                   return (
-                    <IconButton>
-                      <EditIcon />
-                    </IconButton>
+                    <Stack direction="row">
+                      <IconButton>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        disabled={isScheduleDeleting}
+                        onClick={() => handleDelete(_id)}
+                      >
+                        {isScheduleDeleting ? (
+                          <CircularProgress size="1rem" />
+                        ) : (
+                          <DeleteIcon fontSize="small" />
+                        )}
+                      </IconButton>
+                    </Stack>
                   );
                 }
 

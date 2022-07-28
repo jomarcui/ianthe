@@ -11,7 +11,7 @@ const usersApi = createApi({
   endpoints: (build) => ({
     getUserByEmailAndPassword: build.mutation<User, SignInInfo>({
       query: (signInInfo) => ({
-        url: `users/auth`,
+        url: 'users/auth',
         method: 'POST',
         body: signInInfo,
       }),
