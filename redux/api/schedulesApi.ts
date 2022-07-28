@@ -8,7 +8,10 @@ type Schedule = {
   date: Date;
   leagueId: string;
   sportId: string;
-  teams: [];
+  teams: {
+    home: string;
+    visitor: string;
+  };
 };
 
 const schedulesApi = createApi({

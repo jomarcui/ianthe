@@ -1,16 +1,131 @@
+import { Key } from 'react';
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import {
+  Avatar,
+  Backdrop,
+  Box,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListSubheader,
+  Stack,
+  Typography,
+} from '@mui/material';
+import { compareAsc, format } from 'date-fns';
+import { useSchedulesQuery } from '../redux/api/schedulesApi';
+import { Schedule } from '../types';
+import { useTeamsQuery } from '../redux/api/teamsApi';
+import { useLeaguesQuery } from '../redux/api/leaguesApi';
 import Layout from '../components/Layout';
+import leaguesUtils from '../utilities/leaguesUtils';
+import teamsUtils from '../utilities/teamsUtils';
 
 const Home = () => {
   // Display events for today
+  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
+  const { data: schedules, isLoading: isSchedulesLoading } =
+    useSchedulesQuery();
+  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
 
-  
   const bet = {
     odds: 0.2,
   };
 
-  return <Layout>
-    <div>1</div>
-  </Layout>;
+  const leagueSchedules = leagues.map(({ _id }) => {
+    const { initialism } = leaguesUtils(leagues).findById(_id);
+
+    const schedule = schedules.filter(
+      ({ date, leagueId }) =>
+        _id === leagueId && compareAsc(new Date(date), new Date()) > -1
+    );
+
+    return {
+      initialism,
+      schedules: [...schedule],
+    };
+  });
+
+  const isLoading = isLeaguesLoading || isSchedulesLoading || isTeamsLoading;
+
+  return (
+    <Layout>
+      <Box>
+        {leagueSchedules.map(({ initialism, schedules }, index) => (
+          <List disablePadding key={index}>
+            <ListSubheader
+              sx={{
+                bgcolor: '#ecf0f1',
+                borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+              }}
+            >
+              {initialism}
+            </ListSubheader>
+            {schedules.map((schedule, index) => (
+              <ScheduleListItem key={index} schedule={schedule} />
+            ))}
+          </List>
+        ))}
+      </Box>
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </Layout>
+  );
+};
+
+const ScheduleListItem = ({
+  key,
+  schedule: {
+    date,
+    leagueId,
+    teams: { home, visitor },
+  },
+}: {
+  key: Key;
+  schedule: Schedule;
+}) => {
+  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
+  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+  const { name: homeName } = teamsUtils(teams).findById(home);
+  const { name: visitorName } = teamsUtils(teams).findById(visitor);
+
+  const isSoon = compareAsc(new Date(date), new Date()) === 1;
+
+  const primary = (
+    <Stack>
+      <Typography variant="caption">{homeName}</Typography>
+      <Typography variant="caption">{visitorName}</Typography>
+    </Stack>
+  );
+
+  const secondary = (() => {
+    if (isSoon) {
+      return (
+        <Typography variant="caption">
+          {format(new Date(date), 'h:mm a')}
+        </Typography>
+      );
+    }
+
+    return null;
+  })();
+
+  return (
+    <ListItem divider>
+      <ListItemAvatar>
+        <Avatar>
+          <SportsBasketballIcon />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText primary={primary} secondary={secondary} />
+    </ListItem>
+  );
 };
 
 export default Home;
