@@ -148,7 +148,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
                   <TeamsSelect
                     field={field}
                     teams={teamsFiltered}
-                    watchFields={watchFields}
+                    watchField={watchFields[1]}
                   />
                 )}
               />
@@ -167,7 +167,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
                   <TeamsSelect
                     field={field}
                     teams={teamsFiltered}
-                    watchFields={watchFields}
+                    watchField={watchFields[0]}
                   />
                 )}
               />
@@ -230,10 +230,10 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
   );
 };
 
-const TeamsSelect = ({ field, teams, watchFields }) => (
+const TeamsSelect = ({ field, teams, watchField }) => (
   <Select {...field}>
     {teams.map(({ _id, name }) => (
-      <MenuItem disabled={_id === watchFields[1]} key={_id} value={_id}>
+      <MenuItem disabled={_id === watchField} key={_id} value={_id}>
         {name}
       </MenuItem>
     ))}
