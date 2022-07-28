@@ -70,18 +70,18 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
   ] = useAddScheduleMutation();
 
   useEffect(() => {
-    if (addScheduleError) setError(addScheduleError['data'])
+    if (addScheduleError) setError(addScheduleError['data']);
   }, [addScheduleError]);
 
   if (!leagues || !teams) return null;
-  
+
   const { name } = leagues.find(({ _id }) => _id === leagueId);
   const teamsFiltered = teams.filter(
-    ({ leagueId: dataLeagueId }) => dataLeagueId === leagueId,
+    ({ leagueId: dataLeagueId }) => dataLeagueId === leagueId
   );
 
   const [home, visitor] = watch(['home', 'visitor']);
-  
+
   const handleClose = () => {
     reset();
     setError(null);
@@ -96,7 +96,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
       leagueId,
       sportId,
       teams: { home, visitor },
-    }
+    };
 
     await addSchedule(newSchedule).unwrap();
 
@@ -138,6 +138,38 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
               {...register('sportId', { required: true })}
             />
 
+            <Controller
+              control={control}
+              name="date"
+              render={({ field: { onChange, value, ref } }) => (
+                <MobileDatePicker
+                  inputFormat="MM/dd/yyyy"
+                  inputRef={ref}
+                  label="Date"
+                  minDate={new Date()}
+                  onChange={onChange}
+                  renderInput={(params) => <TextField {...params} />}
+                  value={value}
+                />
+              )}
+              rules={{ required: true }}
+            />
+
+            <Controller
+              control={control}
+              name="date"
+              render={({ field: { onChange, value, ref } }) => (
+                <TimePicker
+                  inputRef={ref}
+                  label="Time"
+                  onChange={onChange}
+                  renderInput={(params) => <TextField {...params} />}
+                  value={value}
+                />
+              )}
+              rules={{ required: true }}
+            />
+
             <FormControl
               error={errors.home?.type === 'required'}
               required
@@ -175,40 +207,6 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
                 )}
               />
             </FormControl>
-
-            <Controller
-              control={control}
-              name="date"
-              render={({ field: { onChange, value, ref } }) => (
-                <MobileDatePicker
-                  inputFormat="MM/dd/yyyy"
-                  inputRef={ref}
-                  label="Date"
-                  minDate={add(new Date(), {
-                    days: 1,
-                  })}
-                  onChange={onChange}
-                  renderInput={(params) => <TextField {...params} />}
-                  value={value}
-                />
-              )}
-              rules={{ required: true }}
-            />
-
-            <Controller
-              control={control}
-              name="date"
-              render={({ field: { onChange, value, ref } }) => (
-                <TimePicker
-                  inputRef={ref}
-                  label="Time"
-                  onChange={onChange}
-                  renderInput={(params) => <TextField {...params} />}
-                  value={value}
-                />
-              )}
-              rules={{ required: true }}
-            />
 
             <Grid container>
               <Grid item xs>
