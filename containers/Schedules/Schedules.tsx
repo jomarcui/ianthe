@@ -21,9 +21,9 @@ import {
 import { compareAsc } from 'date-fns';
 
 import { useTeamsQuery } from '../../redux/api/teamsApi';
-import ScheduleForm from './ScheduleForm';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import { useSchedulesQuery } from '../../redux/api/schedulesApi';
+import ScheduleForm from './ScheduleForm';
 
 const getStatusIcon = (dayScheduled: Date) => {
   const result = compareAsc(dayScheduled, new Date());
@@ -44,7 +44,7 @@ const Schedules = () => {
   const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
   const { data: schedules, isLoading: isSchedulesLoading } =
     useSchedulesQuery();
-  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+  const { isLoading: isTeamsLoading } = useTeamsQuery();
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<string>(
     '62e14be33b17ae7b977921e9',

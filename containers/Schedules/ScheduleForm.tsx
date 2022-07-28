@@ -23,8 +23,6 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { add } from 'date-fns';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { useTeamsQuery } from '../../redux/api/teamsApi';
-import { setSchedule } from '../../redux/features/schedulesSlice';
-import store from '../../redux/store';
 import { LoadingButton } from '@mui/lab';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import { useAddScheduleMutation } from '../../redux/api/schedulesApi';
