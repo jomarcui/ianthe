@@ -138,38 +138,6 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
               {...register('sportId', { required: true })}
             />
 
-            <Controller
-              control={control}
-              name="date"
-              render={({ field: { onChange, value, ref } }) => (
-                <MobileDatePicker
-                  inputFormat="MM/dd/yyyy"
-                  inputRef={ref}
-                  label="Date"
-                  minDate={new Date()}
-                  onChange={onChange}
-                  renderInput={(params) => <TextField {...params} />}
-                  value={value}
-                />
-              )}
-              rules={{ required: true }}
-            />
-
-            <Controller
-              control={control}
-              name="date"
-              render={({ field: { onChange, value, ref } }) => (
-                <TimePicker
-                  inputRef={ref}
-                  label="Time"
-                  onChange={onChange}
-                  renderInput={(params) => <TextField {...params} />}
-                  value={value}
-                />
-              )}
-              rules={{ required: true }}
-            />
-
             <FormControl
               error={errors.home?.type === 'required'}
               required
@@ -207,6 +175,38 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
                 )}
               />
             </FormControl>
+
+            <Controller
+              control={control}
+              name="date"
+              render={({ field: { onChange, value, ref } }) => (
+                <MobileDatePicker
+                  inputFormat="MM/dd/yyyy"
+                  inputRef={ref}
+                  label="Date"
+                  minDate={new Date()}
+                  onChange={onChange}
+                  renderInput={(params) => <TextField {...params} />}
+                  value={value}
+                />
+              )}
+              rules={{ required: true }}
+            />
+
+            <Controller
+              control={control}
+              name="date"
+              render={({ field: { onChange, value, ref } }) => (
+                <TimePicker
+                  inputRef={ref}
+                  label="Time"
+                  onChange={onChange}
+                  renderInput={(params) => <TextField {...params} />}
+                  value={value}
+                />
+              )}
+              rules={{ required: true }}
+            />
 
             <Grid container>
               <Grid item xs>
