@@ -9,19 +9,17 @@ import {
   Box,
   CircularProgress,
   IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Stack,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tabs,
   Typography,
 } from '@mui/material';
-import { compareAsc } from 'date-fns'
+import { compareAsc } from 'date-fns';
 
-import store from '../../redux/store';
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import ScheduleForm from './ScheduleForm';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
@@ -32,23 +30,24 @@ const getStatusIcon = (dayScheduled: Date) => {
 
   switch (result) {
     case -1:
-      return <DoneIcon color="info" titleAccess='Event finished' />
+      return <DoneIcon color="info" titleAccess="Event finished" />;
 
     case 0:
-      return <CellTowerIcon color="success" titleAccess='Live' />;
+      return <CellTowerIcon color="success" titleAccess="Live" />;
 
     case 1:
-      return <ScheduleIcon color="warning" titleAccess='Happening soon' />
+      return <ScheduleIcon color="warning" titleAccess="Happening soon" />;
   }
-}
+};
 
 const Schedules = () => {
   const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
-  const { data: schedules, isLoading: isSchedulesLoading } = useSchedulesQuery();
+  const { data: schedules, isLoading: isSchedulesLoading } =
+    useSchedulesQuery();
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<string>(
-    '62e14be33b17ae7b977921e9'
+    '62e14be33b17ae7b977921e9',
   );
 
   useEffect(() => {
@@ -69,7 +68,7 @@ const Schedules = () => {
     setSelectedLeague(newValue);
 
   const handleScheduleFormOpen = () => setScheduleFormOpen(true);
-  
+
   return (
     <>
       <Box>
@@ -120,58 +119,57 @@ const Schedules = () => {
   );
 };
 
-const SchedulesTable = ({data: { headers = [], body = [] }}) => {
+const SchedulesTable = ({ data: { headers = [], body = [] } }) => {
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
 
   if (isTeamsLoading) return null;
-  
+
   return (
-    <TableContainer component={Box}>
-      <Table aria-label="Game Schedule">
-        <TableHead>
-          <TableRow>
-            {headers.map((header, index) => (
-              <TableCell key={index}>{header}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {body.map(
-            ({
-              date,
-              teams: { home, visitor },
-            }: {
-              date: string;
-              teams: { home: string; visitor: string };
-            }) => {
-              const dayScheduled = new Date(date);
-              const { name: homeName } = teams.find(({ _id }) => _id === home);
-              const { name: visitorName } = teams.find(
-                ({ _id }) => _id === visitor,
-              );
+    <List>
+      {body.map(
+        ({
+          date,
+          teams: { home, visitor },
+        }: {
+          date: Date;
+          teams: { home: string; visitor: string };
+        }) => {
+          const dayScheduled = new Date(date);
+          const { name: homeName } = teams.find(({ _id }) => _id === home);
+          const { name: visitorName } = teams.find(
+            ({ _id }) => _id === visitor,
+          );
 
-              const key = `${homeName}${visitorName}${dayScheduled}`;
-              const competingTeams = `${homeName} vs ${visitorName}`;
-              const statusIcon = getStatusIcon(dayScheduled);
+          const key = `${homeName}${visitorName}${dayScheduled}`;
+          const statusIcon = getStatusIcon(dayScheduled);
 
-              return (
-                <TableRow key={key}>
-                  <TableCell>{statusIcon}</TableCell>
-                  <TableCell>{competingTeams}</TableCell>
-                  <TableCell>{dayScheduled.toLocaleDateString()}</TableCell>
-                  <TableCell>{dayScheduled.toLocaleTimeString()}</TableCell>
-                  <TableCell>
-                    <IconButton aria-label="Edit">
-                      <EditIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              );
-            },
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          const primary = (() => (
+            <Stack>
+              <div>{homeName}</div>
+              <div>vs</div>
+              <div>{visitorName}</div>
+            </Stack>
+          ))();
+
+          return (
+            <ListItem
+              key={key}
+              secondaryAction={
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              }
+            >
+              <ListItemAvatar>{statusIcon}</ListItemAvatar>
+              <ListItemText
+                primary={primary}
+                secondary={dayScheduled.toDateString()}
+              />
+            </ListItem>
+          );
+        },
+      )}
+    </List>
   );
 };
 
