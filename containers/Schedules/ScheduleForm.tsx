@@ -27,12 +27,13 @@ import { setSchedule } from '../../redux/features/schedulesSlice';
 import store from '../../redux/store';
 import { LoadingButton } from '@mui/lab';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
+import { useAddScheduleMutation } from '../../redux/api/schedulesApi';
 
 type FormInputs = {
   home: string;
   leagueId: string;
   date: Date | null;
-  time: Date | null;
+  sportId: string;
   visitor: string;
 };
 
@@ -45,7 +46,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
+const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
   const {
     control,
     handleSubmit,
@@ -56,15 +57,19 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
   } = useForm<FormInputs>({
     defaultValues: {
       leagueId,
+      sportId,
       home: '',
       date: null,
-      time: null,
       visitor: '',
     },
   });
   const [errorDuplicateSchedule, setErrorDuplicateSchedule] = useState(null);
   const { data: leagues } = useLeaguesQuery();
   const { data: teams, error, isLoading, isSuccess } = useTeamsQuery();
+  const [
+    addSchedule,
+    { data, error: addScheduleError, isLoading: isAddScheduleLoading },
+  ] = useAddScheduleMutation();
 
   if (!leagues || !teams) return null;
   
@@ -81,32 +86,17 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
   };
 
   const handleFormSubmit: SubmitHandler<FormInputs> = async (formData) => {
-    const schedules = store.getState().schedules.schedules;
+    const { date, home, leagueId, sportId, visitor } = formData;
 
-    const schedule = schedules.find(
-      ({
-        home,
-        date,
-        time,
-        visitor,
-      }: {
-        home: string;
-        date: Date;
-        time: Date;
-        visitor: string;
-      }) =>
-        home === formData.home &&
-        date.toLocaleDateString() === formData.date.toLocaleDateString() &&
-        time.toLocaleTimeString() === formData.time.toLocaleTimeString() &&
-        visitor === formData.visitor,
-    );
-
-    if (schedule) {
-      setErrorDuplicateSchedule('This schedule already exists!');
-      return;
+    const newSchedule = {
+      date,
+      leagueId,
+      sportId,
+      teams: { home, visitor },
     }
-    console.log('formData', formData);
-    store.dispatch(setSchedule(formData));
+
+    await addSchedule(newSchedule).unwrap();
+
     handleClose();
   };
 
@@ -134,9 +124,15 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
             )}
 
             <input
-              id="text-leagues"
+              id="hidden-leagueId"
               type="hidden"
               {...register('leagueId', { required: true })}
+            />
+
+            <input
+              id="hidden-sportId"
+              type="hidden"
+              {...register('sportId', { required: true })}
             />
 
             <FormControl
@@ -198,7 +194,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
 
             <Controller
               control={control}
-              name="time"
+              name="date"
               render={({ field: { onChange, value, ref } }) => (
                 <TimePicker
                   inputRef={ref}

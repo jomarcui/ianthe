@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const HOST = process.env.NEXT_PUBLIC_HOST;
 
-type Leagues = {
+type League = {
   _id: string;
   name: string;
   initialism: string;
@@ -12,8 +12,8 @@ type Leagues = {
 const leaguesApi = createApi({
   reducerPath: 'leaguesApi',
   baseQuery: fetchBaseQuery({ baseUrl: HOST }),
-  endpoints: (builder) => ({
-    leagues: builder.query<Leagues[], void>({
+  endpoints: (build) => ({
+    leagues: build.query<League[], void>({
       query: () => '/leagues',
     }),
   }),

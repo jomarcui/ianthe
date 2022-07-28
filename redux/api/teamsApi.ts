@@ -14,8 +14,8 @@ type Team = {
 const teamsApi = createApi({
   reducerPath: 'teamsApi',
   baseQuery: fetchBaseQuery({ baseUrl: HOST }),
-  endpoints: (builder) => ({
-    teams: builder.query<Team[], void>({
+  endpoints: (build) => ({
+    teams: build.query<Team[], void>({
       query: () => '/teams',
     }),
   }),

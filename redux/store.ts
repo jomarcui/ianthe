@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import leaguesApi from './api/leaguesApi';
+import schedulesApi from './api/schedulesApi';
 import sportsApi from './api/sportsApi';
 import teamsApi from './api/teamsApi';
 import usersApi from './api/usersApi';
@@ -11,6 +12,7 @@ const store = configureStore({
     schedules: schedulesSlice,
     users: usersSlice,
     [leaguesApi.reducerPath]: leaguesApi.reducer,
+    [schedulesApi.reducerPath]: schedulesApi.reducer,
     [sportsApi.reducerPath]: sportsApi.reducer,
     [teamsApi.reducerPath]: teamsApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,

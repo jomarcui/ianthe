@@ -14,8 +14,8 @@ const HOST = process.env.NEXT_PUBLIC_HOST;
 const sportsApi = createApi({
   reducerPath: 'sportsApi',
   baseQuery: fetchBaseQuery({ baseUrl: HOST }),
-  endpoints: (builder) => ({
-    sports: builder.query<unknown[], void>({
+  endpoints: (build) => ({
+    sports: build.query<unknown[], void>({
       query: () => '/sports',
     }),
   }),

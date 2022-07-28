@@ -8,8 +8,8 @@ const HOST = process.env.NEXT_PUBLIC_HOST;
 const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: fetchBaseQuery({ baseUrl: HOST }),
-  endpoints: (builder) => ({
-    getUserByEmailAndPassword: builder.mutation<User, SignInInfo>({
+  endpoints: (build) => ({
+    getUserByEmailAndPassword: build.mutation<User, SignInInfo>({
       query: (signInInfo) => ({
         url: `users/auth`,
         method: 'POST',

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import EditIcon from '@mui/icons-material/Edit';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
   Box,
   CircularProgress,
+  IconButton,
   Tab,
   Table,
   TableBody,
@@ -19,9 +21,11 @@ import store from '../../redux/store';
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import ScheduleForm from './ScheduleForm';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
+import { useSchedulesQuery } from '../../redux/api/schedulesApi';
 
 const Schedules = () => {
   const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
+  const { data: schedules, isLoading: isSchedulesLoading } = useSchedulesQuery();
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<string>(
@@ -36,39 +40,17 @@ const Schedules = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leagues]);
 
-  const isLoading = isLeaguesLoading || isTeamsLoading;
-  const schedules = store.getState().schedules.schedules;
-  const schedulesFiltered = schedules.filter(
+  const isLoading = isLeaguesLoading || isSchedulesLoading || isTeamsLoading;
+  const schedulesFiltered = schedules?.filter(
     ({ leagueId }) => leagueId === selectedLeague,
   );
   const tableHeaders = ['Teams', 'Date', 'Time', 'Actions'];
 
-  // const games = [
-  //   {
-  //     league: PhilippineSportsLeague.PBA,
-  //     schedule: null,
-  //     sport: Sport.BasketBall,
-  //     teams: [
-  //       {
-  //         name: 'Barangay Ginebra San Miguel',
-  //         src: null,
-  //         team: Team.Home,
-  //       },
-  //       {
-  //         name: 'Meralco Bolts',
-  //         src: null,
-  //         team: Team.Visitor,
-  //       }
-  //     ],
-  //   },
-  // ];
-
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: string) =>
     setSelectedLeague(newValue);
-  };
 
   const handleScheduleFormOpen = () => setScheduleFormOpen(true);
-
+  
   return (
     <>
       <Box>
@@ -106,6 +88,7 @@ const Schedules = () => {
           leagueId={selectedLeague}
           open={scheduleFormOpen}
           setOpen={setScheduleFormOpen}
+          sportId="62e14b643b17ae7b977921e8"
         />
       </Box>
       <Backdrop
@@ -122,7 +105,7 @@ const SchedulesTable = ({data: { headers = [], body = [] }}) => {
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
 
   if (isTeamsLoading) return null;
-
+  
   return (
     <TableContainer component={Box}>
       <Table aria-label="Game Schedule">
@@ -135,20 +118,14 @@ const SchedulesTable = ({data: { headers = [], body = [] }}) => {
         </TableHead>
         <TableBody>
           {body.map(
-            (
-              {
-                home,
-                date,
-                time,
-                visitor,
-              }: {
-                home: string;
-                date: Date;
-                time: Date;
-                visitor: string;
-              },
-              index,
-            ) => {
+            ({
+              date,
+              teams: { home, visitor },
+            }: {
+              date: string;
+              teams: { home: string; visitor: string };
+            }) => {
+              const dayScheduled = new Date(date);
               const { name: homeName } = teams.find(({ _id }) => _id === home);
               const { name: visitorName } = teams.find(
                 ({ _id }) => _id === visitor,
@@ -160,8 +137,13 @@ const SchedulesTable = ({data: { headers = [], body = [] }}) => {
               return (
                 <TableRow key={key}>
                   <TableCell>{competingTeams}</TableCell>
-                  <TableCell>{date.toLocaleDateString()}</TableCell>
-                  <TableCell>{time.toLocaleTimeString()}</TableCell>
+                  <TableCell>{dayScheduled.toLocaleDateString()}</TableCell>
+                  <TableCell>{dayScheduled.toLocaleTimeString()}</TableCell>
+                  <TableCell>
+                    <IconButton aria-label="Edit">
+                      <EditIcon />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               );
             },
