@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import CellTowerIcon from '@mui/icons-material/CellTower';
+import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import { LoadingButton } from '@mui/lab';
 import {
   Backdrop,
@@ -16,12 +19,28 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
+import { compareAsc } from 'date-fns'
 
 import store from '../../redux/store';
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import ScheduleForm from './ScheduleForm';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import { useSchedulesQuery } from '../../redux/api/schedulesApi';
+
+const getStatusIcon = (dayScheduled: Date) => {
+  const result = compareAsc(dayScheduled, new Date());
+
+  switch (result) {
+    case -1:
+      return <DoneIcon color="info" titleAccess='Event finished' />
+
+    case 0:
+      return <CellTowerIcon color="success" titleAccess='Live' />;
+
+    case 1:
+      return <ScheduleIcon color="warning" titleAccess='Happening soon' />
+  }
+}
 
 const Schedules = () => {
   const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
@@ -44,7 +63,7 @@ const Schedules = () => {
   const schedulesFiltered = schedules?.filter(
     ({ leagueId }) => leagueId === selectedLeague,
   );
-  const tableHeaders = ['Teams', 'Date', 'Time', 'Actions'];
+  const tableHeaders = ['Status', 'Teams', 'Date', 'Time', 'Actions'];
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) =>
     setSelectedLeague(newValue);
@@ -131,11 +150,13 @@ const SchedulesTable = ({data: { headers = [], body = [] }}) => {
                 ({ _id }) => _id === visitor,
               );
 
-              const key = `${homeName}${visitorName}`;
+              const key = `${homeName}${visitorName}${dayScheduled}`;
               const competingTeams = `${homeName} vs ${visitorName}`;
+              const statusIcon = getStatusIcon(dayScheduled);
 
               return (
                 <TableRow key={key}>
+                  <TableCell>{statusIcon}</TableCell>
                   <TableCell>{competingTeams}</TableCell>
                   <TableCell>{dayScheduled.toLocaleDateString()}</TableCell>
                   <TableCell>{dayScheduled.toLocaleTimeString()}</TableCell>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -63,13 +63,17 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
       visitor: '',
     },
   });
-  const [errorDuplicateSchedule, setErrorDuplicateSchedule] = useState(null);
+  const [error, setError] = useState(null);
   const { data: leagues } = useLeaguesQuery();
-  const { data: teams, error, isLoading, isSuccess } = useTeamsQuery();
+  const { data: teams } = useTeamsQuery();
   const [
     addSchedule,
     { data, error: addScheduleError, isLoading: isAddScheduleLoading },
   ] = useAddScheduleMutation();
+
+  useEffect(() => {
+    if (addScheduleError) setError(addScheduleError['data'])
+  }, [addScheduleError]);
 
   if (!leagues || !teams) return null;
   
@@ -78,10 +82,11 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
     ({ leagueId: dataLeagueId }) => dataLeagueId === leagueId,
   );
 
-  const watchFields = watch(['home', 'visitor']);
-
+  const [home, visitor] = watch(['home', 'visitor']);
+  
   const handleClose = () => {
     reset();
+    setError(null);
     setOpen(false);
   };
 
@@ -117,9 +122,9 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
             my={2}
             spacing={2}
           >
-            {errorDuplicateSchedule && (
+            {error && (
               <Alert severity="error" variant="filled">
-                {errorDuplicateSchedule}
+                {error}
               </Alert>
             )}
 
@@ -148,7 +153,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
                   <TeamsSelect
                     field={field}
                     teams={teamsFiltered}
-                    watchField={watchFields[1]}
+                    watchField={visitor}
                   />
                 )}
               />
@@ -167,7 +172,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
                   <TeamsSelect
                     field={field}
                     teams={teamsFiltered}
-                    watchField={watchFields[0]}
+                    watchField={home}
                   />
                 )}
               />
@@ -218,7 +223,11 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
                 </Button>
               </Grid>
               <Grid item>
-                <LoadingButton type="submit" variant="contained">
+                <LoadingButton
+                  loading={isAddScheduleLoading}
+                  type="submit"
+                  variant="contained"
+                >
                   Save
                 </LoadingButton>
               </Grid>
