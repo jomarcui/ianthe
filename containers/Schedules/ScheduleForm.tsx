@@ -13,8 +13,7 @@ import {
   Grid,
   Button,
   Slide,
-  Backdrop,
-  CircularProgress,
+  DialogContentText,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -26,6 +25,8 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import { setSchedule } from '../../redux/features/schedulesSlice';
 import store from '../../redux/store';
+import { LoadingButton } from '@mui/lab';
+import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 
 type FormInputs = {
   home: string;
@@ -62,12 +63,14 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
     },
   });
   const [errorDuplicateSchedule, setErrorDuplicateSchedule] = useState(null);
-  const { data, error, isLoading, isSuccess } = useTeamsQuery();
+  const { data: leagues } = useLeaguesQuery();
+  const { data: teams, error, isLoading, isSuccess } = useTeamsQuery();
 
-  if (isLoading) return null;
-
-  const teams = data.filter(
-    ({ leagueId: dataLeagueId }) => dataLeagueId === leagueId
+  if (!leagues || !teams) return null;
+  
+  const { name } = leagues.find(({ _id }) => _id === leagueId);
+  const teamsFiltered = teams.filter(
+    ({ leagueId: dataLeagueId }) => dataLeagueId === leagueId,
   );
 
   const watchFields = watch(['home', 'visitor']);
@@ -95,7 +98,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
         home === formData.home &&
         date.toLocaleDateString() === formData.date.toLocaleDateString() &&
         time.toLocaleTimeString() === formData.time.toLocaleTimeString() &&
-        visitor === formData.visitor
+        visitor === formData.visitor,
     );
 
     if (schedule) {
@@ -115,8 +118,9 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <DialogTitle>Add Game Schedule</DialogTitle>
+        <DialogTitle>Add Schedule</DialogTitle>
         <DialogContent>
+          <DialogContentText>{name}</DialogContentText>
           <Stack
             component="form"
             onSubmit={handleSubmit(handleFormSubmit)}
@@ -145,17 +149,11 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
                 control={control}
                 name="home"
                 render={({ field }) => (
-                  <Select {...field}>
-                    {teams.map(({ _id, name }) => (
-                      <MenuItem
-                        disabled={_id === watchFields[1]}
-                        key={_id}
-                        value={_id}
-                      >
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <TeamsSelect
+                    field={field}
+                    teams={teamsFiltered}
+                    watchFields={watchFields}
+                  />
                 )}
               />
             </FormControl>
@@ -170,17 +168,11 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
                 control={control}
                 name="visitor"
                 render={({ field }) => (
-                  <Select {...field}>
-                    {teams.map(({ _id, name }) => (
-                      <MenuItem
-                        disabled={_id === watchFields[0]}
-                        key={_id}
-                        value={_id}
-                      >
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <TeamsSelect
+                    field={field}
+                    teams={teamsFiltered}
+                    watchFields={watchFields}
+                  />
                 )}
               />
             </FormControl>
@@ -230,22 +222,26 @@ const ScheduleForm = ({ leagueId, open = false, setOpen }) => {
                 </Button>
               </Grid>
               <Grid item>
-                <Button type="submit" variant="contained">
+                <LoadingButton type="submit" variant="contained">
                   Save
-                </Button>
+                </LoadingButton>
               </Grid>
             </Grid>
           </Stack>
         </DialogContent>
       </Dialog>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </LocalizationProvider>
   );
 };
+
+const TeamsSelect = ({ field, teams, watchFields }) => (
+  <Select {...field}>
+    {teams.map(({ _id, name }) => (
+      <MenuItem disabled={_id === watchFields[1]} key={_id} value={_id}>
+        {name}
+      </MenuItem>
+    ))}
+  </Select>
+);
 
 export default ScheduleForm;

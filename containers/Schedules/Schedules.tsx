@@ -36,7 +36,12 @@ const Schedules = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leagues]);
 
+  const isLoading = isLeaguesLoading || isTeamsLoading;
   const schedules = store.getState().schedules.schedules;
+  const schedulesFiltered = schedules.filter(
+    ({ leagueId }) => leagueId === selectedLeague,
+  );
+  const tableHeaders = ['Teams', 'Date', 'Time', 'Actions'];
 
   // const games = [
   //   {
@@ -64,233 +69,30 @@ const Schedules = () => {
 
   const handleScheduleFormOpen = () => setScheduleFormOpen(true);
 
-  // const tabs = [
-  //   {
-  //     header: {
-  //       key: PhilippineSportsLeague.PBA,
-  //       label: PhilippineSportsLeague[PhilippineSportsLeague.PBA],
-  //     },
-  //     body: (
-  //       <TableContainer component={Box}>
-  //         <Table aria-label="Game Schedule">
-  //           <TableHead>
-  //             <TableRow>
-  //               <TableCell>Teams</TableCell>
-  //               <TableCell>Date</TableCell>
-  //               <TableCell>Time</TableCell>
-  //             </TableRow>
-  //           </TableHead>
-  //           <TableBody>
-  //             {pbaSchedules.map(
-  //               ({
-  //                 home,
-  //                 date,
-  //                 time,
-  //                 visitor,
-  //               }: {
-  //                 home: string;
-  //                 date: Date;
-  //                 time: Date;
-  //                 visitor: string;
-  //               }) => {
-  //                 const { name: homeName } = data.find(
-  //                   ({ _id }) => _id === home,
-  //                 );
-  //                 const { name: visitorName } = data.find(
-  //                   ({ _id }) => _id === visitor,
-  //                 );
-
-  //                 const key = `${homeName}${visitorName}`;
-  //                 const teams = `${homeName} vs ${visitorName}`;
-
-  //                 return (
-  //                   <TableRow key={key}>
-  //                     <TableCell>{teams}</TableCell>
-  //                     <TableCell>{date.toLocaleDateString()}</TableCell>
-  //                     <TableCell>{time.toLocaleTimeString()}</TableCell>
-  //                   </TableRow>
-  //                 );
-  //               },
-  //             )}
-  //           </TableBody>
-  //         </Table>
-  //       </TableContainer>
-  //     ),
-  //   }, {
-  //     header: {
-  //       key: PhilippineSportsLeague.PBL,
-  //       label: PhilippineSportsLeague[PhilippineSportsLeague.PBL],
-  //     },
-  //     body: (
-  //       <TableContainer component={Box}>
-  //         <Table aria-label="Game Schedule">
-  //           <TableHead>
-  //             <TableRow>
-  //               <TableCell>Teams</TableCell>
-  //               <TableCell>Date</TableCell>
-  //               <TableCell>Time</TableCell>
-  //             </TableRow>
-  //           </TableHead>
-  //           <TableBody>
-  //             {pblSchedules.map(
-  //               ({
-  //                 home,
-  //                 date,
-  //                 time,
-  //                 visitor,
-  //               }: {
-  //                 home: string;
-  //                 date: Date;
-  //                 time: Date;
-  //                 visitor: string;
-  //               }) => {
-  //                 const { name: homeName } = data.find(
-  //                   ({ _id }) => _id === home,
-  //                 );
-  //                 const { name: visitorName } = data.find(
-  //                   ({ _id }) => _id === visitor,
-  //                 );
-
-  //                 const key = `${homeName}${visitorName}`;
-  //                 const teams = `${homeName} vs ${visitorName}`;
-
-  //                 return (
-  //                   <TableRow key={key}>
-  //                     <TableCell>{teams}</TableCell>
-  //                     <TableCell>{date.toLocaleDateString()}</TableCell>
-  //                     <TableCell>{time.toLocaleTimeString()}</TableCell>
-  //                   </TableRow>
-  //                 );
-  //               },
-  //             )}
-  //           </TableBody>
-  //         </Table>
-  //       </TableContainer>
-  //     ),
-  //   },{
-  //     header: {
-  //       key: PhilippineSportsLeague.PVL,
-  //       label: PhilippineSportsLeague[PhilippineSportsLeague.PVL],
-  //     },
-  //     body: (
-  //       <TableContainer component={Box}>
-  //         <Table aria-label="Game Schedule">
-  //           <TableHead>
-  //             <TableRow>
-  //               <TableCell>Teams</TableCell>
-  //               <TableCell>Date</TableCell>
-  //               <TableCell>Time</TableCell>
-  //             </TableRow>
-  //           </TableHead>
-  //           <TableBody>
-  //             {pvlSchedules.map(
-  //               ({
-  //                 home,
-  //                 date,
-  //                 time,
-  //                 visitor,
-  //               }: {
-  //                 home: string;
-  //                 date: Date;
-  //                 time: Date;
-  //                 visitor: string;
-  //               }) => {
-  //                 const { name: homeName } = data.find(
-  //                   ({ _id }) => _id === home,
-  //                 );
-  //                 const { name: visitorName } = data.find(
-  //                   ({ _id }) => _id === visitor,
-  //                 );
-
-  //                 const key = `${homeName}${visitorName}`;
-  //                 const teams = `${homeName} vs ${visitorName}`;
-
-  //                 return (
-  //                   <TableRow key={key}>
-  //                     <TableCell>{teams}</TableCell>
-  //                     <TableCell>{date.toLocaleDateString()}</TableCell>
-  //                     <TableCell>{time.toLocaleTimeString()}</TableCell>
-  //                   </TableRow>
-  //                 );
-  //               },
-  //             )}
-  //           </TableBody>
-  //         </Table>
-  //       </TableContainer>
-  //     ),
-  //   }
-  // ];
-
   return (
     <>
       <Box>
-        <Box sx={{ bgcolor: '#1976d2' }}>
-          <Typography align="center" color="#fff" variant="h6">
-            Game Schedule
-          </Typography>
+        <Typography my={2} component="h6" align="center" variant="h6">
+          Game Schedule
+        </Typography>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs
+            aria-label="secondary tabs example"
+            indicatorColor="secondary"
+            onChange={handleChange}
+            textColor="secondary"
+            value={selectedLeague}
+            variant="fullWidth"
+          >
+            {leagues?.length &&
+              leagues.map(({ _id, initialism }) => (
+                <Tab key={_id} label={initialism} value={_id} />
+              ))}
+          </Tabs>
         </Box>
-        <Tabs
-          aria-label="secondary tabs example"
-          indicatorColor="secondary"
-          onChange={handleChange}
-          textColor="secondary"
-          value={selectedLeague}
-          variant="fullWidth"
-        >
-          {leagues?.length &&
-            leagues.map(({ _id, initialism }) => (
-              <Tab key={_id} label={initialism} value={_id} />
-            ))}
-        </Tabs>
-        <TableContainer component={Box}>
-          <Table aria-label="Game Schedule">
-            <TableHead>
-              <TableRow>
-                <TableCell>Teams</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Time</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {schedules
-                .filter(({ leagueId }) => leagueId === selectedLeague)
-                .map(
-                  (
-                    {
-                      home,
-                      date,
-                      time,
-                      visitor,
-                    }: {
-                      home: string;
-                      date: Date;
-                      time: Date;
-                      visitor: string;
-                    },
-                    index
-                  ) => {
-                    const { name: homeName } = teams.find(
-                      ({ _id }) => _id === home
-                    );
-                    const { name: visitorName } = teams.find(
-                      ({ _id }) => _id === visitor
-                    );
-
-                    const key = `${homeName}${visitorName}`;
-                    const competingTeams = `${homeName} vs ${visitorName}`;
-
-                    return (
-                      <TableRow key={key}>
-                        <TableCell>{competingTeams}</TableCell>
-                        <TableCell>{date.toLocaleDateString()}</TableCell>
-                        <TableCell>{time.toLocaleTimeString()}</TableCell>
-                      </TableRow>
-                    );
-                  }
-                )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <SchedulesTable
+          data={{ headers: tableHeaders, body: schedulesFiltered }}
+        />
         <Box m={2} textAlign="end">
           <LoadingButton
             onClick={handleScheduleFormOpen}
@@ -308,11 +110,65 @@ const Schedules = () => {
       </Box>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLeaguesLoading || isTeamsLoading}
+        open={isLoading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
     </>
+  );
+};
+
+const SchedulesTable = ({data: { headers = [], body = [] }}) => {
+  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+
+  if (isTeamsLoading) return null;
+
+  return (
+    <TableContainer component={Box}>
+      <Table aria-label="Game Schedule">
+        <TableHead>
+          <TableRow>
+            {headers.map((header, index) => (
+              <TableCell key={index}>{header}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {body.map(
+            (
+              {
+                home,
+                date,
+                time,
+                visitor,
+              }: {
+                home: string;
+                date: Date;
+                time: Date;
+                visitor: string;
+              },
+              index,
+            ) => {
+              const { name: homeName } = teams.find(({ _id }) => _id === home);
+              const { name: visitorName } = teams.find(
+                ({ _id }) => _id === visitor,
+              );
+
+              const key = `${homeName}${visitorName}`;
+              const competingTeams = `${homeName} vs ${visitorName}`;
+
+              return (
+                <TableRow key={key}>
+                  <TableCell>{competingTeams}</TableCell>
+                  <TableCell>{date.toLocaleDateString()}</TableCell>
+                  <TableCell>{time.toLocaleTimeString()}</TableCell>
+                </TableRow>
+              );
+            },
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
