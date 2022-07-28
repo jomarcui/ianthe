@@ -18,7 +18,7 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import { compareAsc, format } from 'date-fns';
+import { compareAsc, format, isToday } from 'date-fns';
 
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
@@ -36,7 +36,7 @@ const getStatusIcon = (dayScheduled: Date) => {
       return <CellTowerIcon color="success" titleAccess="Live" />;
 
     case 1:
-      return <ScheduleIcon color="warning" titleAccess="Happening soon" />;
+      return <ScheduleIcon color="info" titleAccess="Happening soon" />;
   }
 };
 
@@ -172,7 +172,12 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
               color={matchHasEnded && 'text.disabled'}
               variant="caption"
             >
-              {format(dayScheduled, `EE MM/dd/yyyy 'at' h:mm a`)}
+              {format(
+                dayScheduled,
+                isToday(dayScheduled)
+                  ? `'Today at' h:mm a`
+                  : `EE MM/dd/yyyy 'at' h:mm a`
+              )}
             </Typography>
           );
 
