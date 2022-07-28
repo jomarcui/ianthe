@@ -146,18 +146,32 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
             ({ _id }) => _id === visitor
           );
 
+          const matchHasEnded = compareAsc(dayScheduled, new Date()) < 0;
           const key = `${homeName}${visitorName}${dayScheduled}`;
           const statusIcon = getStatusIcon(dayScheduled);
 
           const primary = (() => (
             <Stack>
-              <Typography variant="caption">{homeName}</Typography>
-              <Typography variant="caption">{visitorName}</Typography>
+              <Typography
+                color={matchHasEnded && 'text.disabled'}
+                variant="caption"
+              >
+                {homeName}
+              </Typography>
+              <Typography
+                color={matchHasEnded && 'text.disabled'}
+                variant="caption"
+              >
+                {visitorName}
+              </Typography>
             </Stack>
           ))();
 
           const secondary = (
-            <Typography variant="caption">
+            <Typography
+              color={matchHasEnded && 'text.disabled'}
+              variant="caption"
+            >
               {format(dayScheduled, `EE MM/dd/yyyy 'at' h:mm a`)}
             </Typography>
           );
@@ -165,11 +179,17 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
           return (
             <ListItem
               key={key}
-              secondaryAction={
-                <IconButton>
-                  <EditIcon />
-                </IconButton>
-              }
+              secondaryAction={(() => {
+                if (!matchHasEnded) {
+                  return (
+                    <IconButton>
+                      <EditIcon />
+                    </IconButton>
+                  );
+                }
+
+                return null;
+              })()}
             >
               <ListItemAvatar>{statusIcon}</ListItemAvatar>
               <ListItemText primary={primary} secondary={secondary} />

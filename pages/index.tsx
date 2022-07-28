@@ -53,7 +53,7 @@ const Home = () => {
 
     const schedule = schedules.filter(
       ({ date, leagueId }) =>
-        _id === leagueId && compareAsc(new Date(date), new Date()) > -1
+        _id === leagueId && compareAsc(new Date(date), new Date()) === 0
     );
 
     return {
