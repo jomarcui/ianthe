@@ -5,9 +5,9 @@ const HOST = process.env.NEXT_PUBLIC_HOST;
 type Team = {
   _id: string;
   createdAt: Date;
-  leagueId: number;
+  leagueId: string;
   name: string;
-  sportId: number;
+  sportId: string;
   updatedAt: Date;
 };
 

@@ -1,21 +1,13 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Sport } from '../../types';
 
 const HOST = process.env.NEXT_PUBLIC_HOST;
-
-// type Team = {
-//   _id: string;
-//   league_id: number;
-//   name: string;
-//   sport_id: number;
-//   createdAt: Date;
-//   updatedAt: Date;
-// };
 
 const sportsApi = createApi({
   reducerPath: 'sportsApi',
   baseQuery: fetchBaseQuery({ baseUrl: HOST }),
   endpoints: (build) => ({
-    sports: build.query<unknown[], void>({
+    sports: build.query<Sport[], void>({
       query: () => '/sports',
     }),
   }),

@@ -28,6 +28,7 @@ import {
   useSchedulesQuery,
 } from '../../redux/api/schedulesApi';
 import ScheduleForm from './ScheduleForm';
+import { useSportsQuery } from '../../redux/api/sportsApi';
 
 const getStatusIcon = (dayScheduled: Date) => {
   const result = compareAsc(dayScheduled, new Date());
@@ -48,11 +49,13 @@ const Schedules = () => {
   const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
   const { data: schedules, isLoading: isSchedulesLoading } =
     useSchedulesQuery();
-  const { isLoading: isTeamsLoading } = useTeamsQuery();
+    const { data: sports, isLoading: isSportsLoading } = useSportsQuery();
+  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<string>(
     '62e14be33b17ae7b977921e9'
   );
+  const [selectedSportId, setSelectedSportId] = useState('62e14b643b17ae7b977921e8')
 
   useEffect(() => {
     if (isLeaguesLoading) return;
@@ -62,7 +65,8 @@ const Schedules = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leagues]);
 
-  const isLoading = isLeaguesLoading || isSchedulesLoading || isTeamsLoading;
+  const isLoading =
+    isLeaguesLoading || isSchedulesLoading || isSportsLoading || isTeamsLoading;
 
   if (isLoading) {
     return (
@@ -80,8 +84,14 @@ const Schedules = () => {
   );
   const tableHeaders = ['Status', 'Teams', 'Date', 'Time', 'Actions'];
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) =>
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setSelectedLeague(newValue);
+    
+    const { sportId } = teams.find(({ leagueId }) => leagueId === newValue)
+    const { _id : id } = sports.find(({ _id }) => _id === sportId);
+    
+    setSelectedSportId(id);
+  }
 
   const handleScheduleFormOpen = () => setScheduleFormOpen(true);
 
@@ -122,7 +132,7 @@ const Schedules = () => {
           leagueId={selectedLeague}
           open={scheduleFormOpen}
           setOpen={setScheduleFormOpen}
-          sportId="62e14b643b17ae7b977921e8"
+          sportId={selectedSportId}
         />
       </Box>
     </>

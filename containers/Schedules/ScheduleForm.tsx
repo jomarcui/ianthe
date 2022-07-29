@@ -27,7 +27,6 @@ import { LoadingButton } from '@mui/lab';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import {
   useAddScheduleMutation,
-  useSchedulesQuery,
 } from '../../redux/api/schedulesApi';
 
 type FormInputs = {
@@ -76,7 +75,6 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
       isSuccess: isScheduleSuccess,
     },
   ] = useAddScheduleMutation();
-  // const { refetch } = useSchedulesQuery();
 
   // const ws = new WebSocket(process.env.NEXT_PUBLIC_HOST.replace(/^http/, 'ws')); //'ws://localhost:5000'
 
@@ -104,8 +102,8 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
   };
 
   const handleFormSubmit: SubmitHandler<FormInputs> = async (formData) => {
-    const { date, home, leagueId, sportId, visitor } = formData;
-
+    const { date, home, visitor } = formData;
+    
     const newSchedule = {
       date,
       leagueId,
@@ -118,8 +116,6 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
     // ws.addEventListener('open', () => {
     //   ws.send('Hello, server!');
     // });
-
-    // refetch();
 
     handleClose();
   };

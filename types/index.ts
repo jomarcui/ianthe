@@ -16,6 +16,11 @@ export type Schedule = {
   };
 };
 
+export type Sport = {
+  _id: string;
+  name: string;
+};
+
 export type Team = {
   _id: string;
   createdAt: Date;
