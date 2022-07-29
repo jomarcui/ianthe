@@ -197,7 +197,6 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
 
           return (
             <ListItem
-              disabled={isScheduleDeleted}
               key={key}
               secondaryAction={(() => {
                 if (!matchHasEnded) {
