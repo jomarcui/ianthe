@@ -30,10 +30,11 @@ import {
 } from '../../redux/api/schedulesApi';
 
 type FormInputs = {
+  date: Date | null;
   home: string;
   leagueId: string;
-  date: Date | null;
   sportId: string;
+  status: string;
   visitor: string;
 };
 
@@ -58,8 +59,9 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
     defaultValues: {
       leagueId,
       sportId,
-      home: '',
       date: null,
+      home: '',
+      status: 'Soon',
       visitor: '',
     },
   });
@@ -102,14 +104,17 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
   };
 
   const handleFormSubmit: SubmitHandler<FormInputs> = async (formData) => {
-    const { date, home, visitor } = formData;
+    const { date, home, status, visitor } = formData;
     
     const newSchedule = {
       date,
       leagueId,
       sportId,
+      status,
       teams: { home, visitor },
     };
+
+    console.log(newSchedule)
 
     await addSchedule(newSchedule).unwrap();
 
@@ -153,6 +158,12 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
               id="hidden-sportId"
               type="hidden"
               {...register('sportId', { required: true })}
+            />
+
+            <input
+              id="hidden-status"
+              type="hidden"
+              {...register('status', { required: true })}
             />
 
             <FormControl

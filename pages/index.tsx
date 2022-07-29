@@ -24,8 +24,7 @@ import teamsUtils from '../utilities/teamsUtils';
 // import { skipToken } from '@reduxjs/toolkit/dist/query';
 
 const Home = () => {
-  // Display events for today
-  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
+  const { data: leagues, error: isLeaguesError, isLoading: isLeaguesLoading } = useLeaguesQuery();
   const { data: schedules, isLoading: isSchedulesLoading } =
     useSchedulesQuery();
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
@@ -44,7 +43,7 @@ const Home = () => {
       </Layout>
     );
   }
-
+console.log(isLeaguesError)
   const bet = {
     odds: 0.2,
   };

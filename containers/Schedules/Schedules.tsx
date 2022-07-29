@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CellTowerIcon from '@mui/icons-material/CellTower';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
@@ -180,74 +181,58 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
           const { name: visitorName } = teams.find(
             ({ _id }) => _id === visitor
           );
-
-          const matchHasEnded = compareAsc(dayScheduled, new Date()) < 0;
+          
           const key = `${homeName}${visitorName}${dayScheduled}`;
           const statusIcon = getStatusIcon(dayScheduled);
 
-          const primary = (() => (
+          const Primary = ({ home, visitor }) => (
             <Stack>
-              <Typography
-                color={matchHasEnded && 'text.disabled'}
-                variant="caption"
-              >
-                {homeName}
-              </Typography>
-              <Typography
-                color={matchHasEnded && 'text.disabled'}
-                variant="caption"
-              >
-                {visitorName}
-              </Typography>
+              <Typography variant="caption">{home}</Typography>
+              <Typography variant="caption">{visitor}</Typography>
             </Stack>
-          ))();
+          );
 
-          const secondary = (
+          const Secondary = ({ schedule }) => (
             <Typography
-              color={matchHasEnded && 'text.disabled'}
               variant="caption"
             >
               {format(
-                dayScheduled,
-                isToday(dayScheduled)
+                schedule,
+                isToday(schedule)
                   ? `'Today at' h:mm a`
                   : `EE MM/dd/yyyy 'at' h:mm a`
               )}
             </Typography>
+          )
+
+          const SecondaryAction = ({ id }) => (
+            <Stack direction="row">
+              <IconButton>
+                <EditIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                disabled={isDisabled}
+                onClick={() => setIdToDelete(id)}
+              >
+                {isDisabled ? (
+                  <CircularProgress size="1rem" />
+                ) : (
+                  <DeleteIcon fontSize="small" />
+                )}
+              </IconButton>
+            </Stack>
           );
 
           const isDisabled =
             (isScheduleDeleting || isScheduleDeleted) && _id === idToDelete;
 
           return (
-            <ListItem
-              key={key}
-              secondaryAction={(() => {
-                if (!matchHasEnded) {
-                  return (
-                    <Stack direction="row">
-                      <IconButton>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        disabled={isDisabled}
-                        onClick={() => setIdToDelete(_id)}
-                      >
-                        {isDisabled ? (
-                          <CircularProgress size="1rem" />
-                        ) : (
-                          <DeleteIcon fontSize="small" />
-                        )}
-                      </IconButton>
-                    </Stack>
-                  );
-                }
-
-                return null;
-              })()}
-            >
+            <ListItem key={key} secondaryAction={<SecondaryAction id={_id} />}>
               <ListItemAvatar>{statusIcon}</ListItemAvatar>
-              <ListItemText primary={primary} secondary={secondary} />
+              <ListItemText
+                primary={<Primary home={homeName} visitor={visitorName} />}
+                secondary={<Secondary schedule={dayScheduled} />}
+              />
             </ListItem>
           );
         }
