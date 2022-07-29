@@ -21,6 +21,7 @@ import { useLeaguesQuery } from '../redux/api/leaguesApi';
 import Layout from '../components/Layout';
 import leaguesUtils from '../utilities/leaguesUtils';
 import teamsUtils from '../utilities/teamsUtils';
+// import { skipToken } from '@reduxjs/toolkit/dist/query';
 
 const Home = () => {
   // Display events for today
@@ -60,6 +61,16 @@ const Home = () => {
       schedules: [...schedule],
     };
   });
+
+  // const ws = new WebSocket('ws://localhost:5000');
+
+  // ws.addEventListener('open', () => {
+  //   ws.send('Hello, server!');
+  // });
+
+  // ws.addEventListener('message', (event) => {
+  //   console.log('Message from server', event.data);
+  // });
 
   return (
     <Layout>

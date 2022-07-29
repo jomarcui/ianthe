@@ -25,7 +25,10 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import { LoadingButton } from '@mui/lab';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
-import { useAddScheduleMutation } from '../../redux/api/schedulesApi';
+import {
+  useAddScheduleMutation,
+  useSchedulesQuery,
+} from '../../redux/api/schedulesApi';
 
 type FormInputs = {
   home: string;
@@ -66,8 +69,20 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
   const { data: teams } = useTeamsQuery();
   const [
     addSchedule,
-    { data, error: addScheduleError, isLoading: isAddScheduleLoading },
+    {
+      data,
+      error: addScheduleError,
+      isLoading: isAddScheduleLoading,
+      isSuccess: isScheduleSuccess,
+    },
   ] = useAddScheduleMutation();
+  const { refetch } = useSchedulesQuery();
+
+  // const ws = new WebSocket(process.env.NEXT_PUBLIC_HOST.replace(/^http/, 'ws')); //'ws://localhost:5000'
+
+  // ws.addEventListener('message', (event) => {
+  //   console.log('Message from server', event.data);
+  // });
 
   useEffect(() => {
     if (addScheduleError) setError(addScheduleError['data']);
@@ -99,6 +114,12 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
     };
 
     await addSchedule(newSchedule).unwrap();
+
+    // ws.addEventListener('open', () => {
+    //   ws.send('Hello, server!');
+    // });
+
+    refetch();
 
     handleClose();
   };

@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import build from 'next/dist/build';
 
 const HOST = process.env.NEXT_PUBLIC_HOST;
 
@@ -17,9 +16,11 @@ type Schedule = {
 const schedulesApi = createApi({
   reducerPath: 'schedulesApi',
   baseQuery: fetchBaseQuery({ baseUrl: HOST }),
+  tagTypes: ['Schedule'],
   endpoints: (build) => ({
     schedules: build.query<Schedule[], void>({
       query: () => '/schedules',
+      providesTags: ['Schedule'],
     }),
     addSchedule: build.mutation<Schedule, any>({
       query: (schedule) => ({
@@ -27,12 +28,14 @@ const schedulesApi = createApi({
         method: 'POST',
         body: schedule,
       }),
+      invalidatesTags: ['Schedule'],
     }),
     deleteSchedule: build.mutation<Schedule, any>({
       query: (id) => ({
         url: `schedules/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Schedule'],
     }),
   }),
 });
