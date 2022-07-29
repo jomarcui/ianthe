@@ -20,7 +20,11 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).concat([
+      leaguesApi.middleware,
+      schedulesApi.middleware,
+      teamsApi.middleware,
+    ]),
 });
 
 export default store;

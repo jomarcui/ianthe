@@ -76,7 +76,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
       isSuccess: isScheduleSuccess,
     },
   ] = useAddScheduleMutation();
-  const { refetch } = useSchedulesQuery();
+  // const { refetch } = useSchedulesQuery();
 
   // const ws = new WebSocket(process.env.NEXT_PUBLIC_HOST.replace(/^http/, 'ws')); //'ws://localhost:5000'
 
@@ -119,7 +119,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
     //   ws.send('Hello, server!');
     // });
 
-    refetch();
+    // refetch();
 
     handleClose();
   };
