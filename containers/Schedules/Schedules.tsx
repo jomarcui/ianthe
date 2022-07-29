@@ -81,7 +81,6 @@ const StyledMenu = styled((props: MenuProps) => (
 }));
 
 const getStatusIcon = (status : Status) => {
-  console.log(status)
   switch (status) {
     case Status.Ended:
       return <CheckCircleIcon color="disabled" titleAccess="Match has ended" />;
@@ -131,6 +130,7 @@ const Schedules = () => {
   const schedulesFiltered = schedules.filter(
     ({ leagueId }) => leagueId === selectedLeague
   );
+
   const tableHeaders = ['Status', 'Teams', 'Date', 'Time', 'Actions'];
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -193,12 +193,10 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
 
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
 
-  const [
-    deleteSchedule,
-    { isLoading: isScheduleDeleting, isSuccess: isScheduleDeleted },
-  ] = useDeleteScheduleMutation();
+  const [deleteSchedule, { isLoading: isScheduleDeleting }] =
+    useDeleteScheduleMutation();
 
-  const [updateScheduleStatus, { isLoading: isUpdateScheduleStatusLoading }] =
+  const [updateScheduleStatus, { isLoading: isScheduleUpdating }] =
     useUpdateScheduleStatusMutation();
 
   if (isTeamsLoading) return null;
@@ -306,18 +304,14 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
             return (
               <>
                 <Stack direction="row">
-                  <IconButton onClick={handleClick}>
+                  <IconButton disabled={isDisabled} onClick={handleClick}>
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <IconButton
                     disabled={isDisabled}
                     onClick={() => handleDelete(id)}
                   >
-                    {isDisabled ? (
-                      <CircularProgress size="1rem" />
-                    ) : (
-                      <DeleteIcon fontSize="small" />
-                    )}
+                    <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Stack>
                 <StyledMenu
@@ -344,7 +338,7 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
           };
 
           const isDisabled =
-            (isScheduleDeleting || isScheduleDeleted) &&
+            (isScheduleDeleting || isScheduleUpdating) &&
             _id === scheduleIdSelected;
 
           return (
@@ -360,7 +354,11 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
               }
             >
               <ListItemAvatar>
-                <StatusIcon status={status} />
+                {isDisabled ? (
+                  <CircularProgress size="1rem" />
+                ) : (
+                  <StatusIcon status={status} />
+                )}
               </ListItemAvatar>
               <ListItemText
                 primary={<Primary home={homeName} visitor={visitorName} />}

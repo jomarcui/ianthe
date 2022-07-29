@@ -74,6 +74,7 @@ const Home = () => {
   return (
     <Layout>
       <Box>
+        <Typography m={1} component="h6" variant='h6'>Today&apos;s events</Typography>
         {leagueSchedules.map(({ initialism, schedules }, index) => (
           <List disablePadding key={index}>
             <ListSubheader
