@@ -5,9 +5,11 @@ import {
   Backdrop,
   Box,
   CircularProgress,
+  Grid,
   List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
   ListSubheader,
   Stack,
@@ -24,7 +26,11 @@ import teamsUtils from '../utilities/teamsUtils';
 // import { skipToken } from '@reduxjs/toolkit/dist/query';
 
 const Home = () => {
-  const { data: leagues, error: isLeaguesError, isLoading: isLeaguesLoading } = useLeaguesQuery();
+  const {
+    data: leagues,
+    error: isLeaguesError,
+    isLoading: isLeaguesLoading,
+  } = useLeaguesQuery();
   const { data: schedules, isLoading: isSchedulesLoading } =
     useSchedulesQuery();
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
@@ -43,7 +49,7 @@ const Home = () => {
       </Layout>
     );
   }
-  
+
   const bet = {
     odds: 0.2,
   };
@@ -52,7 +58,7 @@ const Home = () => {
     const { initialism } = leaguesUtils(leagues).findById(_id);
 
     const schedule = schedules.filter(
-      ({ date, leagueId }) => _id === leagueId && isToday(new Date(date))
+      ({ date, leagueId }) => _id === leagueId && isToday(new Date(date)),
     );
 
     return {
@@ -74,7 +80,9 @@ const Home = () => {
   return (
     <Layout>
       <Box>
-        <Typography m={1} component="h6" variant='h6'>Today&apos;s events</Typography>
+        <Typography m={1} component="h6" variant="h6">
+          Today&apos;s events
+        </Typography>
         {leagueSchedules.map(({ initialism, schedules }, index) => (
           <List disablePadding key={index}>
             <ListSubheader
@@ -113,27 +121,52 @@ const ScheduleListItem = ({
   const isSoon = compareAsc(new Date(date), new Date()) === 1;
 
   const primary = (
-    <Stack>
-      <Typography variant="caption">{homeName}</Typography>
+    <Grid container spacing={0.25}>
+      <Grid item xs={8}>
+        <Box p={1}>
+        <Typography variant="caption">{homeName}</Typography>
+        </Box>
+        
+      </Grid>
+      <Grid item xs={4}>
+        <Box p={1} sx={{bgcolor: '#EFEFEF', borderColor: '#EFEFEF'}}>
+          <Typography variant="caption">4.15</Typography>
+        </Box>
+      </Grid>
+      <Grid item xs={8}>
+      <Box p={1}>
       <Typography variant="caption">{visitorName}</Typography>
-    </Stack>
+</Box>
+        
+      </Grid>
+      <Grid item xs={4}>
+        <Box p={1} sx={{bgcolor: '#EFEFEF', borderColor: '#EFEFEF'}}>
+          <Typography variant="caption">1.18</Typography>
+        </Box>
+      </Grid>
+    </Grid>
+    // <Stack>
+    //   <Typography variant="caption">{homeName}</Typography>
+    //   <Typography variant="caption">{visitorName}</Typography>
+    // </Stack>
   );
 
   const secondary = (
-    <Typography variant="caption">
+    <Typography p={1} variant="caption">
       {format(new Date(date), 'h:mm a')}
     </Typography>
   );
 
   return (
-    <ListItem divider>
+    <ListItemButton divider>
       <ListItemAvatar>
         <Avatar sx={{ bgcolor: '#ecf0f1' }}>
           <SportsBasketballIcon />
         </Avatar>
       </ListItemAvatar>
-      <ListItemText primary={primary} secondary={secondary} />
-    </ListItem>
+      {/* <div>{primary}</div> */}
+      <ListItemText primary={primary} />
+    </ListItemButton>
   );
 };
 
