@@ -1,8 +1,9 @@
-import { Key } from 'react';
+import { useEffect, useState } from 'react';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
 import {
   Avatar,
-  Backdrop,
   Box,
   CircularProgress,
   Grid,
@@ -23,49 +24,28 @@ import { useLeaguesQuery } from '../redux/api/leaguesApi';
 import Layout from '../components/Layout';
 import leaguesUtils from '../utilities/leaguesUtils';
 import teamsUtils from '../utilities/teamsUtils';
-// import { skipToken } from '@reduxjs/toolkit/dist/query';
 
 const Home = () => {
-  const {
-    data: leagues,
-    error: isLeaguesError,
-    isLoading: isLeaguesLoading,
-  } = useLeaguesQuery();
-  const { data: schedules, isLoading: isSchedulesLoading } =
-    useSchedulesQuery();
-  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+  const [skipLeagues, setSkipLeagues] = useState(true);
+  const [skipSchedules, setSkipSchedules] = useState(true);
 
-  const isLoading = isLeaguesLoading || isSchedulesLoading || isTeamsLoading;
+  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery(
+    undefined,
+    { skip: skipLeagues }
+  );
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={isLoading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </Layout>
-    );
-  }
+  const { data: schedules, isLoading: isSchedulesLoading } = useSchedulesQuery(
+    undefined,
+    { skip: skipSchedules }
+  );
 
-  const bet = {
-    odds: 0.2,
-  };
+  useEffect(() => {
+    setSkipLeagues(false);
+  }, []);
 
-  const leagueSchedules = leagues.map(({ _id }) => {
-    const { initialism } = leaguesUtils(leagues).findById(_id);
-
-    const schedule = schedules.filter(
-      ({ date, leagueId }) => _id === leagueId && isToday(new Date(date)),
-    );
-
-    return {
-      initialism,
-      schedules: [...schedule],
-    };
-  });
+  useEffect(() => {
+    setSkipSchedules(false);
+  }, [leagues]);
 
   // const ws = new WebSocket('ws://localhost:5000');
 
@@ -80,25 +60,70 @@ const Home = () => {
   return (
     <Layout>
       <Box>
-        <Typography m={1} component="h6" variant="h6">
-          Today&apos;s events
-        </Typography>
-        {leagueSchedules.map(({ initialism, schedules }, index) => (
-          <List disablePadding key={index}>
+        <Box sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)', p: 1 }}>
+          <Typography component="h6" variant="h6">
+            Today&apos;s events
+          </Typography>
+        </Box>
+
+        {isLeaguesLoading && (
+          <List disablePadding>
             <ListSubheader
               sx={{
                 bgcolor: '#ecf0f1',
                 borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-                p: 2
+                p: 1,
               }}
             >
-              <Typography variant="subtitle1">{initialism}</Typography>
+              <Loader
+                Text={<Typography variant="body1">Loading leagues</Typography>}
+              />
             </ListSubheader>
-            {schedules.map((schedule, index) => (
-              <ScheduleListItem key={index} schedule={schedule} />
-            ))}
           </List>
-        ))}
+        )}
+
+        {leagues && (
+          <>
+            {leagues.map(({ _id, sportsId }) => {
+              const { initialism } = leaguesUtils(leagues).findById(_id);
+
+              return (
+                <List disablePadding key={initialism}>
+                  <ListSubheader
+                    sx={{
+                      bgcolor: '#ecf0f1',
+                      borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                      p: 1,
+                    }}
+                  >
+                    <Stack direction="row" spacing={1}>
+                      <SportsIcon sportsId={sportsId} />
+                      <Typography variant="body1">{initialism}</Typography>
+                    </Stack>
+                  </ListSubheader>
+
+                  {isSchedulesLoading && (
+                    <>
+                      <ListItem>
+                        <Loader />
+                      </ListItem>
+                    </>
+                  )}
+
+                  {schedules &&
+                    schedules
+                      .filter(
+                        ({ date, leagueId }) =>
+                          _id === leagueId && isToday(new Date(date))
+                      )
+                      .map((schedule, index) => (
+                        <ScheduleListItem key={index} schedule={schedule} />
+                      ))}
+                </List>
+              );
+            })}
+          </>
+        )}
       </Box>
     </Layout>
   );
@@ -107,19 +132,24 @@ const Home = () => {
 const ScheduleListItem = ({
   schedule: {
     date,
-    leagueId,
-    status,
+    sportId,
     teams: { home, visitor },
   },
 }: {
   schedule: Schedule;
 }) => {
-  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+
+  if (isTeamsLoading) {
+    return (
+      <ListItem>
+        <Loader />
+      </ListItem>
+    );
+  }
+
   const { name: homeName } = teamsUtils(teams).findById(home);
   const { name: visitorName } = teamsUtils(teams).findById(visitor);
-
-  const isSoon = compareAsc(new Date(date), new Date()) === 1;
 
   const primary = (
     <Grid container spacing={0.25}>
@@ -128,7 +158,7 @@ const ScheduleListItem = ({
           <Typography>{homeName}</Typography>
         </Box>
       </Grid>
-      <Grid item xs={2} style={{textAlign: 'right'}}>
+      <Grid item xs={2} style={{ textAlign: 'right' }}>
         <Box
           sx={{
             bgcolor: '#EFEFEF',
@@ -146,41 +176,55 @@ const ScheduleListItem = ({
           <Typography>{visitorName}</Typography>
         </Box>
       </Grid>
-      <Grid item xs={2} style={{textAlign: 'right'}}>
-        <Box sx={{
+      <Grid item xs={2} style={{ textAlign: 'right' }}>
+        <Box
+          sx={{
             bgcolor: '#EFEFEF',
             borderColor: '#EFEFEF',
             display: 'inline-block',
             p: 1,
             ml: 'auto',
-          }}>
+          }}
+        >
           <Typography>1.18</Typography>
         </Box>
       </Grid>
+      <Grid item xs={12}>
+        <Typography p={1}>{format(new Date(date), 'h:mm a')}</Typography>
+      </Grid>
     </Grid>
-    // <Stack>
-    //   <Typography variant="caption">{homeName}</Typography>
-    //   <Typography variant="caption">{visitorName}</Typography>
-    // </Stack>
-  );
-
-  const secondary = (
-    <Typography p={1}>
-      {format(new Date(date), 'h:mm a')}
-    </Typography>
   );
 
   return (
     <ListItemButton divider>
       <ListItemAvatar>
         <Avatar sx={{ bgcolor: '#ecf0f1' }}>
-          <SportsBasketballIcon />
+          <SportsIcon sportsId={sportId} />
         </Avatar>
       </ListItemAvatar>
-      {/* <div>{primary}</div> */}
       <ListItemText primary={primary} />
     </ListItemButton>
   );
+};
+
+const Loader = ({ Text }: { Text?: React.ReactNode }) => (
+  <Stack direction="row" spacing={1}>
+    <CircularProgress size="1rem" />
+    {Text && Text}
+  </Stack>
+);
+
+const SportsIcon = ({ sportsId }) => {
+  switch (sportsId) {
+    case '62e14b643b17ae7b977921e8':
+      return <SportsBasketballIcon />;
+
+    case '62e14b553b17ae7b977921e7':
+      return <SportsBaseballIcon />;
+
+    default:
+      return <SportsVolleyballIcon />;
+  }
 };
 
 export default Home;
