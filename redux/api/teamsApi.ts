@@ -1,15 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Team } from '../../types';
 
 const HOST = process.env.NEXT_PUBLIC_HOST;
-
-type Team = {
-  _id: string;
-  createdAt: Date;
-  leagueId: string;
-  name: string;
-  sportId: string;
-  updatedAt: Date;
-};
 
 const teamsApi = createApi({
   reducerPath: 'teamsApi',

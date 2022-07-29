@@ -24,8 +24,7 @@ export type Sport = {
 export type Team = {
   _id: string;
   createdAt: Date;
-  leagueId: number;
+  leagueId: string;
   name: string;
-  sportId: number;
-  updatedAt: Date;
+  sportId: string;
 };
