@@ -135,11 +135,22 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
     deleteSchedule,
     { isLoading: isScheduleDeleting, isSuccess: isScheduleDeleted },
   ] = useDeleteScheduleMutation();
+  const [idToDelete, setIdToDelete] = useState(null);
+
+  useEffect(() => {
+    if (idToDelete) {
+      handleDelete(idToDelete);
+    }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idToDelete]);
 
   if (isTeamsLoading) return null;
 
   const handleDelete = async (id: string) => {
     await deleteSchedule(id).unwrap();
+
+    setIdToDelete(null);
   };
 
   return (
@@ -195,6 +206,9 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
             </Typography>
           );
 
+          const isDisabled =
+            (isScheduleDeleting || isScheduleDeleted) && _id === idToDelete;
+
           return (
             <ListItem
               key={key}
@@ -206,10 +220,10 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
                         <EditIcon fontSize="small" />
                       </IconButton>
                       <IconButton
-                        disabled={isScheduleDeleting}
-                        onClick={() => handleDelete(_id)}
+                        disabled={isDisabled}
+                        onClick={() => setIdToDelete(_id)}
                       >
-                        {isScheduleDeleting ? (
+                        {isDisabled ? (
                           <CircularProgress size="1rem" />
                         ) : (
                           <DeleteIcon fontSize="small" />
