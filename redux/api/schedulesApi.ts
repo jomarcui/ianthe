@@ -1,17 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Status } from '../../enums';
+import { Schedule } from '../../types';
 
 const HOST = process.env.NEXT_PUBLIC_HOST;
-
-type Schedule = {
-  _id: string;
-  date: Date;
-  leagueId: string;
-  sportId: string;
-  teams: {
-    home: string;
-    visitor: string;
-  };
-};
 
 const schedulesApi = createApi({
   reducerPath: 'schedulesApi',
@@ -37,6 +28,14 @@ const schedulesApi = createApi({
       }),
       invalidatesTags: ['Schedule'],
     }),
+    updateScheduleStatus: build.mutation<Schedule, any>({
+      query: ({ id, status }: { id: string; status: Status }) => ({
+        url: `schedules/update/status/${id}`,
+        method: 'PATCH',
+        body: { status },
+      }),
+      invalidatesTags: ['Schedule'],
+    }),
   }),
 });
 
@@ -44,6 +43,7 @@ export const {
   useAddScheduleMutation,
   useDeleteScheduleMutation,
   useSchedulesQuery,
+  useUpdateScheduleStatusMutation,
 } = schedulesApi;
 
 export default schedulesApi;

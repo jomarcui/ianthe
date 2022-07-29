@@ -1,3 +1,5 @@
+import { Status } from "../enums";
+
 export type League = {
   _id: string;
   name: string;
@@ -10,6 +12,7 @@ export type Schedule = {
   date: Date;
   leagueId: string;
   sportId: string;
+  status: Status;
   teams: {
     home: string;
     visitor: string;

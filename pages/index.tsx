@@ -43,7 +43,7 @@ const Home = () => {
       </Layout>
     );
   }
-console.log(isLeaguesError)
+  
   const bet = {
     odds: 0.2,
   };
@@ -98,6 +98,7 @@ const ScheduleListItem = ({
   schedule: {
     date,
     leagueId,
+    status,
     teams: { home, visitor },
   },
 }: {
@@ -117,23 +118,17 @@ const ScheduleListItem = ({
     </Stack>
   );
 
-  const secondary = (() => {
-    if (isSoon) {
-      return (
-        <Typography variant="caption">
-          {format(new Date(date), 'h:mm a')}
-        </Typography>
-      );
-    }
-
-    return null;
-  })();
+  const secondary = (
+    <Typography variant="caption">
+      {format(new Date(date), 'h:mm a')}
+    </Typography>
+  );
 
   return (
     <ListItem divider>
       <ListItemAvatar>
         <Avatar sx={{ bgcolor: '#ecf0f1' }}>
-          <SportsBasketballIcon color={isSoon ? 'warning' : 'success'} />
+          <SportsBasketballIcon />
         </Avatar>
       </ListItemAvatar>
       <ListItemText primary={primary} secondary={secondary} />

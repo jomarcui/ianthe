@@ -28,6 +28,7 @@ import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import {
   useAddScheduleMutation,
 } from '../../redux/api/schedulesApi';
+import { Status } from '../../enums';
 
 type FormInputs = {
   date: Date | null;
@@ -61,7 +62,7 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
       sportId,
       date: null,
       home: '',
-      status: 'Soon',
+      status: Status.Soon,
       visitor: '',
     },
   });

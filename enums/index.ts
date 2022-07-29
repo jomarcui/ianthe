@@ -28,3 +28,9 @@ export enum Team {
   Home,
   Visitor,
 }
+
+export enum Status {
+  Ended = 'ENDED',
+  Live = 'LIVE',
+  Soon = 'SOON'
+}

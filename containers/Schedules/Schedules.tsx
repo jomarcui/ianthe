@@ -32,9 +32,12 @@ import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import {
   useDeleteScheduleMutation,
   useSchedulesQuery,
+  useUpdateScheduleStatusMutation,
 } from '../../redux/api/schedulesApi';
 import ScheduleForm from './ScheduleForm';
 import { useSportsQuery } from '../../redux/api/sportsApi';
+import { Status } from '../../enums';
+import { Schedule } from '../../types';
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -77,17 +80,16 @@ const StyledMenu = styled((props: MenuProps) => (
   },
 }));
 
-const getStatusIcon = (dayScheduled: Date) => {
-  const result = compareAsc(dayScheduled, new Date());
+const getStatusIcon = (status : Status) => {
+  console.log(status)
+  switch (status) {
+    case Status.Ended:
+      return <CheckCircleIcon color="disabled" titleAccess="Match has ended" />;
 
-  switch (result) {
-    case -1:
-      return <DoneIcon color="disabled" titleAccess="Event finished" />;
-
-    case 0:
+    case Status.Live:
       return <CellTowerIcon color="success" titleAccess="Live" />;
 
-    case 1:
+    case Status.Soon:
       return <ScheduleIcon color="info" titleAccess="Happening soon" />;
   }
 };
@@ -187,28 +189,37 @@ const Schedules = () => {
 };
 
 const SchedulesList = ({ data: { headers = [], body = [] } }) => {
+  const [scheduleIdSelected, setScheduleIdSelected] = useState(null);
+
   const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+
   const [
     deleteSchedule,
     { isLoading: isScheduleDeleting, isSuccess: isScheduleDeleted },
   ] = useDeleteScheduleMutation();
-  const [idToDelete, setIdToDelete] = useState(null);
 
-  useEffect(() => {
-    if (idToDelete) {
-      handleDelete(idToDelete);
-    }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idToDelete]);
+  const [updateScheduleStatus, { isLoading: isUpdateScheduleStatusLoading }] =
+    useUpdateScheduleStatusMutation();
 
   if (isTeamsLoading) return null;
 
   const handleDelete = async (id: string) => {
+    setScheduleIdSelected(id);
+
     await deleteSchedule(id).unwrap();
 
-    setIdToDelete(null);
+    setScheduleIdSelected(null);
   };
+
+  const handleUpdateScheduleStatus = async (statusInfo: { id: string, status: Status }) => {
+    const { id } = statusInfo;
+    
+    setScheduleIdSelected(id);
+
+    await updateScheduleStatus(statusInfo).unwrap();
+
+    setScheduleIdSelected(null);
+  }
 
   return (
     <List disablePadding>
@@ -216,12 +227,9 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
         ({
           _id,
           date,
+          status,
           teams: { home, visitor },
-        }: {
-          _id: string;
-          date: Date;
-          teams: { home: string; visitor: string };
-        }) => {
+        }: Schedule) => {
           const dayScheduled = new Date(date);
           const { name: homeName } = teams.find(({ _id }) => _id === home);
           const { name: visitorName } = teams.find(
@@ -229,14 +237,15 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
           );
           
           const key = `${homeName}${visitorName}${dayScheduled}`;
-          const statusIcon = getStatusIcon(dayScheduled);
-
+          
           const Primary = ({ home, visitor }) => (
             <Stack>
               <Typography variant="caption">{home}</Typography>
               <Typography variant="caption">{visitor}</Typography>
             </Stack>
           );
+          
+          const StatusIcon = ({ status }) => getStatusIcon(status);
 
           const Secondary = ({ schedule }) => (
             <Typography
@@ -251,18 +260,49 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
             </Typography>
           )
 
-          const SecondaryAction = ({ id, isDisabled }) => {
+          const SecondaryAction = ({
+            handleDelete,
+            handleUpdateScheduleStatus,
+            id,
+            isDisabled,
+          }) => {
             const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
             const open = Boolean(anchorEl);
 
-            const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+            const handleClick = (
+              event: React.MouseEvent<HTMLButtonElement>,
+            ) => {
               setAnchorEl(event.currentTarget);
             };
+
             const handleClose = () => {
               setAnchorEl(null);
             };
-            
+
+            const handleStatusClick = (statusInfo: {
+              id: string;
+              status: Status;
+            }) => {
+              handleUpdateScheduleStatus(statusInfo);
+              handleClose();
+            };
+
+            const menuItems = [
+              {
+                Icon: CheckCircleIcon,
+                status: Status.Ended,
+              },
+              {
+                Icon: CellTowerIcon,
+                status: Status.Live,
+              },
+              {
+                Icon: ScheduleIcon,
+                status: Status.Soon,
+              },
+            ];
+
             return (
               <>
                 <Stack direction="row">
@@ -271,7 +311,7 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
                   </IconButton>
                   <IconButton
                     disabled={isDisabled}
-                    onClick={() => setIdToDelete(id)}
+                    onClick={() => handleDelete(id)}
                   >
                     {isDisabled ? (
                       <CircularProgress size="1rem" />
@@ -289,34 +329,39 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
                   open={open}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleClose}>
-                    <CheckCircleIcon />
-                    Set as Ended
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <CellTowerIcon color="primary" />
-                    Set as Live
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <ScheduleIcon />
-                    Set as Soon
-                  </MenuItem>
+                  {menuItems.map(({ Icon, status }, index) => (
+                    <MenuItem
+                      key={index}
+                      onClick={() => handleStatusClick({ id, status })}
+                    >
+                      <Icon />
+                      Set as {status}
+                    </MenuItem>
+                  ))}
                 </StyledMenu>
               </>
             );
           };
 
           const isDisabled =
-            (isScheduleDeleting || isScheduleDeleted) && _id === idToDelete;
+            (isScheduleDeleting || isScheduleDeleted) &&
+            _id === scheduleIdSelected;
 
           return (
             <ListItem
               key={key}
               secondaryAction={
-                <SecondaryAction id={_id} isDisabled={isDisabled} />
+                <SecondaryAction
+                  handleDelete={handleDelete}
+                  handleUpdateScheduleStatus={handleUpdateScheduleStatus}
+                  id={_id}
+                  isDisabled={isDisabled}
+                />
               }
             >
-              <ListItemAvatar>{statusIcon}</ListItemAvatar>
+              <ListItemAvatar>
+                <StatusIcon status={status} />
+              </ListItemAvatar>
               <ListItemText
                 primary={<Primary home={homeName} visitor={visitorName} />}
                 secondary={<Secondary schedule={dayScheduled} />}
