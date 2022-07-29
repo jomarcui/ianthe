@@ -114,8 +114,6 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
       teams: { home, visitor },
     };
 
-    console.log(newSchedule)
-
     await addSchedule(newSchedule).unwrap();
 
     // ws.addEventListener('open', () => {

@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { LoadingButton } from '@mui/lab';
 import {
+  alpha,
   Backdrop,
   Box,
   CircularProgress,
@@ -15,7 +16,11 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Menu,
+  MenuItem,
+  MenuProps,
   Stack,
+  styled,
   Tab,
   Tabs,
   Typography,
@@ -30,6 +35,47 @@ import {
 } from '../../redux/api/schedulesApi';
 import ScheduleForm from './ScheduleForm';
 import { useSportsQuery } from '../../redux/api/sportsApi';
+
+const StyledMenu = styled((props: MenuProps) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 180,
+    color:
+      theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+    boxShadow:
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+    '& .MuiMenu-list': {
+      padding: '4px 0',
+    },
+    '& .MuiMenuItem-root': {
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+      },
+      '&:active': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity,
+        ),
+      },
+    },
+  },
+}));
 
 const getStatusIcon = (dayScheduled: Date) => {
   const result = compareAsc(dayScheduled, new Date());
@@ -205,29 +251,71 @@ const SchedulesList = ({ data: { headers = [], body = [] } }) => {
             </Typography>
           )
 
-          const SecondaryAction = ({ id }) => (
-            <Stack direction="row">
-              <IconButton>
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                disabled={isDisabled}
-                onClick={() => setIdToDelete(id)}
-              >
-                {isDisabled ? (
-                  <CircularProgress size="1rem" />
-                ) : (
-                  <DeleteIcon fontSize="small" />
-                )}
-              </IconButton>
-            </Stack>
-          );
+          const SecondaryAction = ({ id, isDisabled }) => {
+            const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+            const open = Boolean(anchorEl);
+
+            const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+              setAnchorEl(event.currentTarget);
+            };
+            const handleClose = () => {
+              setAnchorEl(null);
+            };
+            
+            return (
+              <>
+                <Stack direction="row">
+                  <IconButton onClick={handleClick}>
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    disabled={isDisabled}
+                    onClick={() => setIdToDelete(id)}
+                  >
+                    {isDisabled ? (
+                      <CircularProgress size="1rem" />
+                    ) : (
+                      <DeleteIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </Stack>
+                <StyledMenu
+                  id="status-menu"
+                  anchorEl={anchorEl}
+                  MenuListProps={{
+                    'aria-labelledby': 'status-menuItem-button',
+                  }}
+                  open={open}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={handleClose}>
+                    <CheckCircleIcon />
+                    Set as Ended
+                  </MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <CellTowerIcon color="primary" />
+                    Set as Live
+                  </MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <ScheduleIcon />
+                    Set as Soon
+                  </MenuItem>
+                </StyledMenu>
+              </>
+            );
+          };
 
           const isDisabled =
             (isScheduleDeleting || isScheduleDeleted) && _id === idToDelete;
 
           return (
-            <ListItem key={key} secondaryAction={<SecondaryAction id={_id} />}>
+            <ListItem
+              key={key}
+              secondaryAction={
+                <SecondaryAction id={_id} isDisabled={isDisabled} />
+              }
+            >
               <ListItemAvatar>{statusIcon}</ListItemAvatar>
               <ListItemText
                 primary={<Primary home={homeName} visitor={visitorName} />}
