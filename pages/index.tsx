@@ -89,9 +89,10 @@ const Home = () => {
               sx={{
                 bgcolor: '#ecf0f1',
                 borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                p: 2
               }}
             >
-              <strong>{initialism}</strong>
+              <Typography variant="subtitle1">{initialism}</Typography>
             </ListSubheader>
             {schedules.map((schedule, index) => (
               <ScheduleListItem key={index} schedule={schedule} />
@@ -122,26 +123,38 @@ const ScheduleListItem = ({
 
   const primary = (
     <Grid container spacing={0.25}>
-      <Grid item xs={8}>
+      <Grid item xs={10}>
         <Box p={1}>
-        <Typography variant="caption">{homeName}</Typography>
-        </Box>
-        
-      </Grid>
-      <Grid item xs={4}>
-        <Box p={1} sx={{bgcolor: '#EFEFEF', borderColor: '#EFEFEF'}}>
-          <Typography variant="caption">4.15</Typography>
+          <Typography>{homeName}</Typography>
         </Box>
       </Grid>
-      <Grid item xs={8}>
-      <Box p={1}>
-      <Typography variant="caption">{visitorName}</Typography>
-</Box>
-        
+      <Grid item xs={2} style={{textAlign: 'right'}}>
+        <Box
+          sx={{
+            bgcolor: '#EFEFEF',
+            borderColor: '#EFEFEF',
+            display: 'inline-block',
+            p: 1,
+            ml: 'auto',
+          }}
+        >
+          <Typography>4.15</Typography>
+        </Box>
       </Grid>
-      <Grid item xs={4}>
-        <Box p={1} sx={{bgcolor: '#EFEFEF', borderColor: '#EFEFEF'}}>
-          <Typography variant="caption">1.18</Typography>
+      <Grid item xs={10}>
+        <Box p={1}>
+          <Typography>{visitorName}</Typography>
+        </Box>
+      </Grid>
+      <Grid item xs={2} style={{textAlign: 'right'}}>
+        <Box sx={{
+            bgcolor: '#EFEFEF',
+            borderColor: '#EFEFEF',
+            display: 'inline-block',
+            p: 1,
+            ml: 'auto',
+          }}>
+          <Typography>1.18</Typography>
         </Box>
       </Grid>
     </Grid>
@@ -152,7 +165,7 @@ const ScheduleListItem = ({
   );
 
   const secondary = (
-    <Typography p={1} variant="caption">
+    <Typography p={1}>
       {format(new Date(date), 'h:mm a')}
     </Typography>
   );
