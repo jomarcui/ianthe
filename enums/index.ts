@@ -32,5 +32,5 @@ export enum Team {
 export enum Status {
   Ended = 'ENDED',
   Live = 'LIVE',
-  Soon = 'SOON'
+  Soon = 'SOON',
 }

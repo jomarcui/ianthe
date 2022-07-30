@@ -42,6 +42,7 @@ const SchedulesListItem = ({
     _id,
     date,
     sportId,
+    status,
     teams: {
       home: { odds: homeOdds, teamId: homeTeamId },
       visitor: { odds: visitorOdds, teamId: visitorTeamId },
@@ -99,7 +100,7 @@ const SchedulesListItem = ({
   return (
     <StyledListItemButton disableGutters divider>
       <ListItemAvatar>
-        <SportsIcon sportsId={sportId} />
+        <SportsIcon status={status} sportsId={sportId} />
       </ListItemAvatar>
       <StyledListItemText primary={primary} />
     </StyledListItemButton>

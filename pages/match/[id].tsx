@@ -1,12 +1,16 @@
+import Link from 'next/link';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Box, Stack, Typography } from '@mui/material';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { Link as MUILink, Box, Stack, Typography, Grid } from '@mui/material';
 import styled from '@emotion/styled';
 import Layout from '../../components/Layout';
 import { useSchedulesQuery } from '../../redux/api/schedulesApi';
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import Loader from '../../components/Loader/Loader';
 import { Team } from '../../types';
+import { useLeaguesQuery } from '../../redux/api/leaguesApi';
+import { useEffect, useState } from 'react';
 
 const StyledTitleContainer = styled(Box)`
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
@@ -50,7 +54,20 @@ const TeamNames = ({
   );
 };
 
+const LeagueName = ({ leagueId }: { leagueId: string }) => {
+  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
+
+  if (isLeaguesLoading) {
+    return <Loader />;
+  }
+
+  const { name } = leagues.find(({ _id }) => _id === leagueId);
+
+  return <Typography variant="body1">{name}</Typography>;
+};
+
 const Match: NextPage = () => {
+  const [leagueId, setLeagueId] = useState<string>(null);
   const router = useRouter();
 
   const { data: schedules, isLoading: isSchedulesLoading } =
@@ -60,9 +77,133 @@ const Match: NextPage = () => {
 
   const { id } = router.query;
 
+  useEffect(() => {
+    if (!schedules) return;
+
+    setLeagueId(() => {
+      return schedules.find(({ _id }) => _id === id).leagueId;
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schedules]);
+
   return (
     <Layout>
-      <StyledTitleContainer>
+      <Box sx={{ borderBottom: '1px solid #bdc3c7' }}>
+        <Stack direction="row">
+          <Box
+            sx={{
+              borderRight: '1px solid #bdc3c7',
+              p: 2,
+            }}
+          >
+            <Link href="/" passHref>
+              <a
+                style={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  height: '100%',
+                }}
+              >
+                <ArrowBackIosNewIcon fontSize="small" />
+              </a>
+            </Link>
+          </Box>
+
+          <Box sx={{ alignItems: 'center', display: 'flex', p: 2 }}>
+            {leagueId && <LeagueName leagueId={leagueId} />}
+          </Box>
+        </Stack>
+      </Box>
+      <Box sx={{ borderBottom: '1px solid #bdc3c7' }}>
+        <Box
+          sx={{ alignItems: 'center', display: 'flex', minHeight: 100, p: 1 }}
+        >
+          <Grid container>
+            <Grid
+              item
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+              xs={5}
+            >
+              {isSchedulesLoading || isTeamsLoading ? (
+                <Loader />
+              ) : (
+                <Typography align="center" variant="body2">
+                  {
+                    teams.find(
+                      ({ _id }) =>
+                        _id ===
+                        schedules.find(({ _id }) => _id === id).teams.home
+                          .teamId
+                    ).name
+                  }
+                </Typography>
+              )}
+            </Grid>
+            <Grid
+              item
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+              xs={2}
+            >
+              <Typography variant="body1">3 : 6</Typography>
+            </Grid>
+            <Grid
+              item
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+              xs={5}
+            >
+              {isSchedulesLoading || isTeamsLoading ? (
+                <Loader />
+              ) : (
+                <Typography align="center" variant="body2">
+                  {
+                    teams.find(
+                      ({ _id }) =>
+                        _id ===
+                        schedules.find(({ _id }) => _id === id).teams.visitor
+                          .teamId
+                    ).name
+                  }
+                </Typography>
+              )}
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+      <Box sx={{ borderBottom: '1px solid #bdc3c7' }}>
+        <Stack direction="row" justifyContent="space-evenly">
+          {schedules && (
+            <Box sx={{ p: 2 }}>
+              <Typography variant="body2">
+                <>{schedules.find(({ _id }) => _id === id).teams.home.odds}</>
+              </Typography>
+            </Box>
+          )}
+
+          {schedules && (
+            <Box sx={{ p: 2 }}>
+              <Typography variant="body2">
+                <>
+                  {schedules.find(({ _id }) => _id === id).teams.visitor.odds}
+                </>
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+      </Box>
+      {/* <StyledTitleContainer>
         {isSchedulesLoading && <Loader />}
 
         {schedules && (
@@ -81,7 +222,7 @@ const Match: NextPage = () => {
             )}
           </>
         )}
-      </StyledTitleContainer>
+      </StyledTitleContainer> */}
     </Layout>
   );
 };
