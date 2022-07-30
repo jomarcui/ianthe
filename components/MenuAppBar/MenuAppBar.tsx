@@ -234,7 +234,7 @@ const MenuAppBar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar elevation={0} position="static">
         <Toolbar>
           <IconButton
             aria-controls={adminMenuId}
