@@ -1,4 +1,4 @@
-import { Status } from "../enums";
+import { Status } from '../enums';
 
 export type League = {
   _id: string;
@@ -14,8 +14,14 @@ export type Schedule = {
   sportId: string;
   status: Status;
   teams: {
-    home: string;
-    visitor: string;
+    home: {
+      odds: Number;
+      teamId: string;
+    };
+    visitor: {
+      odds: Number;
+      teamId: string;
+    };
   };
 };
 

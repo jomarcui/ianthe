@@ -14,29 +14,28 @@ import {
   Button,
   Slide,
   DialogContentText,
+  Box,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { add } from 'date-fns';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { useTeamsQuery } from '../../redux/api/teamsApi';
 import { LoadingButton } from '@mui/lab';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
-import {
-  useAddScheduleMutation,
-} from '../../redux/api/schedulesApi';
+import { useAddScheduleMutation } from '../../redux/api/schedulesApi';
 import { Status } from '../../enums';
+import { League } from '../../types';
+import Loader from '../../components/Loader/Loader';
 
 type FormInputs = {
   date: Date | null;
   home: string;
-  leagueId: string;
-  sportId: string;
-  status: string;
+  homeOdds: Number;
   visitor: string;
+  visitorOdds: Number;
 };
 
 const Transition = React.forwardRef(function Transition(
@@ -48,35 +47,52 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
+const getLeagueNameById = ({
+  leagues,
+  leagueId,
+}: {
+  leagues: League[];
+  leagueId: string;
+}) => {
+  const { name } = leagues.find(({ _id }) => _id === leagueId);
+
+  return name;
+};
+
+const ScheduleForm = ({
+  league: { _id, sportsId },
+  open,
+  setOpen,
+}: {
+  league: League;
+  open: boolean;
+  setOpen: any;
+}) => {
   const {
     control,
     handleSubmit,
     register,
     reset,
-    formState: { errors },
+    setValue,
     watch,
+    formState: { errors },
   } = useForm<FormInputs>({
     defaultValues: {
-      leagueId,
-      sportId,
       date: null,
       home: '',
-      status: Status.Soon,
+      homeOdds: 0,
       visitor: '',
+      visitorOdds: 0,
     },
   });
+
   const [error, setError] = useState(null);
-  const { data: leagues } = useLeaguesQuery();
-  const { data: teams } = useTeamsQuery();
+
+  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
+
   const [
     addSchedule,
-    {
-      data,
-      error: addScheduleError,
-      isLoading: isAddScheduleLoading,
-      isSuccess: isScheduleSuccess,
-    },
+    { error: addScheduleError, isLoading: isAddScheduleLoading },
   ] = useAddScheduleMutation();
 
   // const ws = new WebSocket(process.env.NEXT_PUBLIC_HOST.replace(/^http/, 'ws')); //'ws://localhost:5000'
@@ -89,13 +105,6 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
     if (addScheduleError) setError(addScheduleError['data']);
   }, [addScheduleError]);
 
-  if (!leagues || !teams) return null;
-
-  const { name } = leagues.find(({ _id }) => _id === leagueId);
-  const teamsFiltered = teams.filter(
-    ({ leagueId: dataLeagueId }) => dataLeagueId === leagueId
-  );
-
   const [home, visitor] = watch(['home', 'visitor']);
 
   const handleClose = () => {
@@ -105,14 +114,17 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
   };
 
   const handleFormSubmit: SubmitHandler<FormInputs> = async (formData) => {
-    const { date, home, status, visitor } = formData;
-    
+    const { date, home, homeOdds, visitor, visitorOdds } = formData;
+
     const newSchedule = {
       date,
-      leagueId,
-      sportId,
-      status,
-      teams: { home, visitor },
+      leagueId: _id,
+      sportId: sportsId,
+      status: Status.Soon,
+      teams: {
+        home: { odds: homeOdds, teamId: home },
+        visitor: { odds: visitorOdds, teamId: visitor },
+      },
     };
 
     await addSchedule(newSchedule).unwrap();
@@ -134,7 +146,14 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
       >
         <DialogTitle>Add Schedule</DialogTitle>
         <DialogContent>
-          <DialogContentText>{name}</DialogContentText>
+          {isLeaguesLoading && <Loader />}
+
+          {leagues && (
+            <DialogContentText variant="body2">
+              {getLeagueNameById({ leagues, leagueId: _id })}
+            </DialogContentText>
+          )}
+
           <Stack
             component="form"
             onSubmit={handleSubmit(handleFormSubmit)}
@@ -147,61 +166,73 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
               </Alert>
             )}
 
-            <input
-              id="hidden-leagueId"
-              type="hidden"
-              {...register('leagueId', { required: true })}
-            />
+            <Stack direction="row" spacing={2}>
+              <FormControl
+                error={errors.home?.type === 'required'}
+                fullWidth
+                required
+              >
+                <InputLabel id="select-home-label">Home</InputLabel>
+                <Controller
+                  control={control}
+                  name="home"
+                  render={({ field }) => (
+                    <TeamsSelect
+                      field={field}
+                      leagueId={_id}
+                      watchField={visitor}
+                    />
+                  )}
+                />
+              </FormControl>
 
-            <input
-              id="hidden-sportId"
-              type="hidden"
-              {...register('sportId', { required: true })}
-            />
-
-            <input
-              id="hidden-status"
-              type="hidden"
-              {...register('status', { required: true })}
-            />
-
-            <FormControl
-              error={errors.home?.type === 'required'}
-              required
-              fullWidth
-            >
-              <InputLabel id="select-home-label">Home</InputLabel>
-              <Controller
-                control={control}
-                name="home"
-                render={({ field }) => (
-                  <TeamsSelect
-                    field={field}
-                    teams={teamsFiltered}
-                    watchField={visitor}
-                  />
-                )}
+              <TextField
+                id="text-home-odds"
+                label="Odds"
+                variant="outlined"
+                required
+                type="number"
+                inputProps={{
+                  maxLength: 13,
+                  step: 'any',
+                }}
+                {...register('homeOdds')}
               />
-            </FormControl>
+            </Stack>
 
-            <FormControl
-              error={errors.visitor?.type === 'required'}
-              required
-              fullWidth
-            >
-              <InputLabel id="select-visitor-label">Visitor</InputLabel>
-              <Controller
-                control={control}
-                name="visitor"
-                render={({ field }) => (
-                  <TeamsSelect
-                    field={field}
-                    teams={teamsFiltered}
-                    watchField={home}
-                  />
-                )}
+            <Stack direction="row" spacing={2}>
+              <FormControl
+                error={errors.visitor?.type === 'required'}
+                fullWidth
+                required
+              >
+                <InputLabel id="select-visitor-label">Visitor</InputLabel>
+                <Controller
+                  control={control}
+                  name="visitor"
+                  render={({ field }) => (
+                    <TeamsSelect
+                      field={field}
+                      leagueId={_id}
+                      watchField={home}
+                    />
+                  )}
+                />
+              </FormControl>
+
+              <TextField
+                id="text-visitor-odds"
+                label="Odds"
+                variant="outlined"
+                required
+                type="number"
+                inputProps={{
+                  maxLength: 13,
+                  step: 'any',
+                }}
+                {...register('visitorOdds')}
               />
-            </FormControl>
+            </Stack>
 
             <Controller
               control={control}
@@ -262,14 +293,29 @@ const ScheduleForm = ({ leagueId, open = false, setOpen, sportId }) => {
   );
 };
 
-const TeamsSelect = ({ field, teams, watchField }) => (
-  <Select {...field}>
-    {teams.map(({ _id, name }) => (
-      <MenuItem disabled={_id === watchField} key={_id} value={_id}>
-        {name}
-      </MenuItem>
-    ))}
-  </Select>
-);
+const TeamsSelect = ({ field, leagueId, watchField }) => {
+  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+
+  return (
+    <Select {...field}>
+      {isTeamsLoading && (
+        <MenuItem>
+          <Box width="100%">
+            <Loader />
+          </Box>
+        </MenuItem>
+      )}
+
+      {teams &&
+        teams
+          .filter(({ leagueId: dataLeagueId }) => dataLeagueId === leagueId)
+          .map(({ _id, name }) => (
+            <MenuItem disabled={_id === watchField} key={_id} value={_id}>
+              {name}
+            </MenuItem>
+          ))}
+    </Select>
+  );
+};
 
 export default ScheduleForm;

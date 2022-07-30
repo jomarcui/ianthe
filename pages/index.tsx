@@ -1,51 +1,67 @@
-import { useEffect, useState } from 'react';
-import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
-import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
-import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
+import React, { useEffect, useState } from 'react';
+import styled from '@emotion/styled';
 import {
-  Avatar,
   Box,
   CircularProgress,
-  Grid,
   List,
   ListItem,
-  ListItemAvatar,
-  ListItemButton,
   ListItemText,
   ListSubheader,
   Stack,
   Typography,
 } from '@mui/material';
-import { compareAsc, format, isToday } from 'date-fns';
+import { isToday } from 'date-fns';
 import { useSchedulesQuery } from '../redux/api/schedulesApi';
-import { Schedule } from '../types';
 import { useTeamsQuery } from '../redux/api/teamsApi';
 import { useLeaguesQuery } from '../redux/api/leaguesApi';
 import Layout from '../components/Layout';
 import leaguesUtils from '../utilities/leaguesUtils';
-import teamsUtils from '../utilities/teamsUtils';
+import SchedulesListItem from '../components/SchedulesListItem';
+import SportsIcon from '../components/SportsIcon';
+import Loader from '../components/Loader/Loader';
+
+const StyledListSubheader = styled(ListSubheader)`
+  background-color: #ecf0f1;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 1rem;
+`;
+
+const StyledTitleContainer = styled(Box)`
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 1rem;
+`;
 
 const Home = () => {
-  const [skipLeagues, setSkipLeagues] = useState(true);
   const [skipSchedules, setSkipSchedules] = useState(true);
+  const [skipTeams, setSkipTeams] = useState(true);
 
-  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery(
-    undefined,
-    { skip: skipLeagues }
-  );
+  const {
+    data: leagues,
+    isLoading: isLeaguesLoading,
+    isUninitialized: isLeaguesUninitialiazed,
+  } = useLeaguesQuery();
 
-  const { data: schedules, isLoading: isSchedulesLoading } = useSchedulesQuery(
-    undefined,
-    { skip: skipSchedules }
-  );
+  const {
+    data: schedules,
+    isLoading: isSchedulesLoading,
+    isUninitialized: isSchedulesUninitialized,
+  } = useSchedulesQuery(undefined, { skip: skipSchedules });
+
+  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery(undefined, {
+    skip: skipTeams,
+  });
 
   useEffect(() => {
-    setSkipLeagues(false);
-  }, []);
+    if (!isLeaguesUninitialiazed) setSkipSchedules(false);
 
-  useEffect(() => {
-    setSkipSchedules(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leagues]);
+
+  useEffect(() => {
+    if (!isSchedulesUninitialized) setSkipTeams(false);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schedules]);
 
   // const ws = new WebSocket('ws://localhost:5000');
 
@@ -60,171 +76,69 @@ const Home = () => {
   return (
     <Layout>
       <Box>
-        <Box sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)', p: 1 }}>
+        <StyledTitleContainer>
           <Typography component="h6" variant="h6">
             Today&apos;s events
           </Typography>
-        </Box>
+        </StyledTitleContainer>
 
         {isLeaguesLoading && (
           <List disablePadding>
-            <ListSubheader
-              sx={{
-                bgcolor: '#ecf0f1',
-                borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-                p: 1,
-              }}
-            >
-              <Loader
-                Text={<Typography variant="body1">Loading leagues</Typography>}
-              />
-            </ListSubheader>
+            <StyledListSubheader>
+              <Loader />
+            </StyledListSubheader>
           </List>
         )}
 
-        {leagues && (
-          <>
-            {leagues.map(({ _id, sportsId }) => {
-              const { initialism } = leaguesUtils(leagues).findById(_id);
+        {leagues &&
+          leagues.map(({ _id, sportsId }) => {
+            const { initialism } = leaguesUtils(leagues).findById(_id);
 
-              return (
-                <List disablePadding key={initialism}>
-                  <ListSubheader
-                    sx={{
-                      bgcolor: '#ecf0f1',
-                      borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-                      p: 1,
-                    }}
-                  >
-                    <Stack direction="row" spacing={1}>
-                      <SportsIcon sportsId={sportsId} />
-                      <Typography variant="body1">{initialism}</Typography>
-                    </Stack>
-                  </ListSubheader>
+            return (
+              <List disablePadding key={initialism}>
+                <StyledListSubheader>
+                  <Stack direction="row" spacing={1}>
+                    <SportsIcon sportsId={sportsId} />
+                    <Typography variant="body1">{initialism}</Typography>
+                  </Stack>
+                </StyledListSubheader>
 
-                  {isSchedulesLoading && (
-                    <>
-                      <ListItem>
-                        <Loader />
-                      </ListItem>
-                    </>
-                  )}
+                {isSchedulesLoading && (
+                  <>
+                    <ListItem>
+                      <ListItemText primary={<Loader />} />
+                    </ListItem>
+                  </>
+                )}
 
-                  {schedules &&
-                    schedules
-                      .filter(
-                        ({ date, leagueId }) =>
-                          _id === leagueId && isToday(new Date(date))
-                      )
-                      .map((schedule, index) => (
-                        <ScheduleListItem key={index} schedule={schedule} />
-                      ))}
-                </List>
-              );
-            })}
-          </>
-        )}
+                {schedules &&
+                  schedules
+                    .filter(
+                      ({ date, leagueId }) =>
+                        _id === leagueId && isToday(new Date(date))
+                    )
+                    .map((schedule, index) => (
+                      <React.Fragment key={schedule._id}>
+                        {isTeamsLoading && <Loader />}
+
+                        {teams && (
+                          <>
+                            <SchedulesListItem
+                              isLoading={isTeamsLoading}
+                              key={index}
+                              schedule={schedule}
+                              teams={teams}
+                            />
+                          </>
+                        )}
+                      </React.Fragment>
+                    ))}
+              </List>
+            );
+          })}
       </Box>
     </Layout>
   );
-};
-
-const ScheduleListItem = ({
-  schedule: {
-    date,
-    sportId,
-    teams: { home, visitor },
-  },
-}: {
-  schedule: Schedule;
-}) => {
-  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
-
-  if (isTeamsLoading) {
-    return (
-      <ListItem>
-        <Loader />
-      </ListItem>
-    );
-  }
-
-  const { name: homeName } = teamsUtils(teams).findById(home);
-  const { name: visitorName } = teamsUtils(teams).findById(visitor);
-
-  const primary = (
-    <Grid container spacing={0.25}>
-      <Grid item xs={10}>
-        <Box p={1}>
-          <Typography>{homeName}</Typography>
-        </Box>
-      </Grid>
-      <Grid item xs={2} style={{ textAlign: 'right' }}>
-        <Box
-          sx={{
-            bgcolor: '#EFEFEF',
-            borderColor: '#EFEFEF',
-            display: 'inline-block',
-            p: 1,
-            ml: 'auto',
-          }}
-        >
-          <Typography>4.15</Typography>
-        </Box>
-      </Grid>
-      <Grid item xs={10}>
-        <Box p={1}>
-          <Typography>{visitorName}</Typography>
-        </Box>
-      </Grid>
-      <Grid item xs={2} style={{ textAlign: 'right' }}>
-        <Box
-          sx={{
-            bgcolor: '#EFEFEF',
-            borderColor: '#EFEFEF',
-            display: 'inline-block',
-            p: 1,
-            ml: 'auto',
-          }}
-        >
-          <Typography>1.18</Typography>
-        </Box>
-      </Grid>
-      <Grid item xs={12}>
-        <Typography p={1}>{format(new Date(date), 'h:mm a')}</Typography>
-      </Grid>
-    </Grid>
-  );
-
-  return (
-    <ListItemButton divider>
-      <ListItemAvatar>
-        <Avatar sx={{ bgcolor: '#ecf0f1' }}>
-          <SportsIcon sportsId={sportId} />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText primary={primary} />
-    </ListItemButton>
-  );
-};
-
-const Loader = ({ Text }: { Text?: React.ReactNode }) => (
-  <Stack direction="row" spacing={1}>
-    <CircularProgress size="1rem" />
-    {Text && Text}
-  </Stack>
-);
-
-const SportsIcon = ({ sportsId }) => {
-  switch (sportsId) {
-    case '62e14b643b17ae7b977921e8':
-      return <SportsBasketballIcon />;
-
-    case '62e14b553b17ae7b977921e7':
-      return <SportsBaseballIcon />;
-
-    default:
-      return <SportsVolleyballIcon />;
-  }
 };
 
 export default Home;
