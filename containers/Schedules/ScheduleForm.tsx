@@ -227,7 +227,7 @@ const ScheduleForm = ({
                 required
                 type="number"
                 inputProps={{
-                  maxLength: 13,
+                  maxLength: 4,
                   step: 'any',
                 }}
                 {...register('visitorOdds')}
