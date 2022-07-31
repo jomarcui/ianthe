@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import leaguesApi from './api/leaguesApi';
+import matchesApi from './api/matchesApi';
 import schedulesApi from './api/schedulesApi';
 import sportsApi from './api/sportsApi';
 import teamsApi from './api/teamsApi';
@@ -12,6 +13,7 @@ const store = configureStore({
     schedules: schedulesSlice,
     users: usersSlice,
     [leaguesApi.reducerPath]: leaguesApi.reducer,
+    [matchesApi.reducerPath]: matchesApi.reducer,
     [schedulesApi.reducerPath]: schedulesApi.reducer,
     [sportsApi.reducerPath]: sportsApi.reducer,
     [teamsApi.reducerPath]: teamsApi.reducer,
@@ -22,6 +24,7 @@ const store = configureStore({
       serializableCheck: false,
     }).concat([
       leaguesApi.middleware,
+      matchesApi.middleware,
       schedulesApi.middleware,
       teamsApi.middleware,
     ]),

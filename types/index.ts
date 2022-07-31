@@ -7,6 +7,32 @@ export type League = {
   sportsId: string;
 };
 
+export type Match = {
+  date: Date;
+  id: string;
+  league: {
+    id: string;
+    name: string;
+  };
+  sport: {
+    id: string;
+    name: string;
+  };
+  status: Status;
+  teams: {
+    home: {
+      id: string;
+      name: string;
+      odds: Number;
+    };
+    visitor: {
+      id: string;
+      name: string;
+      odds: Number;
+    };
+  };
+};
+
 export type Schedule = {
   _id: string;
   date: Date;

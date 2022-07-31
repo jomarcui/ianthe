@@ -12,6 +12,7 @@ import {
   Stack,
   Toolbar,
   Typography,
+  Grid,
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
@@ -20,6 +21,7 @@ import MoneyIcon from '@mui/icons-material/Money';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import store from '../../redux/store';
 import { setUser } from '../../redux/features/usersSlice';
 import { useRouter } from 'next/router';
@@ -80,7 +82,7 @@ const MenuAppBar = () => {
     <Menu
       anchorEl={adminMenuAnchorEl}
       anchorOrigin={{
-        vertical: 'top',
+        vertical: 'bottom',
         horizontal: 'left',
       }}
       id={adminMenuId}
@@ -94,7 +96,16 @@ const MenuAppBar = () => {
     >
       <MenuItem onClick={handleMenuClose}>
         <Link href="/schedules">
-          <a>Schedules</a>
+          <a style={{ alignItems: 'center', display: 'flex' }}>
+            <Grid alignItems="center" container spacing={1}>
+              <Grid item>
+                <ScheduleIcon />
+              </Grid>
+              <Grid item>
+                <Typography variant="body2">Schedules</Typography>
+              </Grid>
+            </Grid>
+          </a>
         </Link>
       </MenuItem>
     </Menu>

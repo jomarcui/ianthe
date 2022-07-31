@@ -1,230 +1,209 @@
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { Link as MUILink, Box, Stack, Typography, Grid } from '@mui/material';
-import styled from '@emotion/styled';
+import MoneyIcon from '@mui/icons-material/Money';
+import { LoadingButton } from '@mui/lab';
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  Paper,
+  Slide,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
 import Layout from '../../components/Layout';
-import { useSchedulesQuery } from '../../redux/api/schedulesApi';
-import { useTeamsQuery } from '../../redux/api/teamsApi';
+import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
 import Loader from '../../components/Loader/Loader';
-import { Team } from '../../types';
-import { useLeaguesQuery } from '../../redux/api/leaguesApi';
-import { useEffect, useState } from 'react';
 
-const StyledTitleContainer = styled(Box)`
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  padding: 1rem;
-`;
+const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
-const getTeamNameById = () => {};
-
-const getTeamsFromMatchId = ({
-  id,
-  schedules = [],
-}): {
-  home: { odds: string; teamId: string };
-  visitor: { odds: string; teamId: string };
-} => schedules.find(({ _id }) => _id === id).teams;
-
-type TeamNamesProps = {
-  homeTeamId: string;
-  matchId: string;
-  teams: Team[];
-  visitorTeamId: string;
-};
-
-const TeamNames = ({
-  homeTeamId,
-  matchId,
-  teams,
-  visitorTeamId,
-}: TeamNamesProps) => {
-  const { name: homeName } = teams.find(({ _id }) => _id === homeTeamId);
-  const { name: visitorName } = teams.find(({ _id }) => _id === visitorTeamId);
-
+const BetForm = ({ handleClose, open }) => {
   return (
-    <Typography align="center" component="h6" variant="h6">
-      <Stack>
-        <span>{homeName}</span>
-        <span>v</span>
-        <span>{visitorName}</span>
-      </Stack>
-    </Typography>
+    <Dialog
+      fullScreen
+      open={open}
+      onClose={handleClose}
+      TransitionComponent={Transition}
+    >
+      <DialogTitle>Bet</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          To subscribe to this website, please enter your email address here. We
+          will send updates occasionally.
+        </DialogContentText>
+        <form>
+          <Stack spacing={2}>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="bet"
+              type="number"
+              fullWidth
+              variant="outlined"
+            />
+          </Stack>
+          <Grid justifyContent="space-between" container>
+            <Grid item>
+              <Button
+                color="secondary"
+                onClick={handleClose}
+                variant="contained"
+              >
+                Cancel
+              </Button>
+            </Grid>
+            <Grid item>
+              <LoadingButton variant="contained">Place bet</LoadingButton>
+            </Grid>
+          </Grid>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-const LeagueName = ({ leagueId }: { leagueId: string }) => {
-  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
+const BottomNavBar = () => {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState();
 
-  if (isLeaguesLoading) {
-    return <Loader />;
-  }
+  const router = useRouter();
 
-  const { name } = leagues.find(({ _id }) => _id === leagueId);
+  const handleChange = (event, newValue) => {
+    if (newValue === 0) {
+      router.push('/');
+      return;
+    }
 
-  return <Typography variant="body1">{name}</Typography>;
+    setOpen(true);
+  };
+
+  const handleClose = () => setOpen(false);
+
+  return (
+    <>
+      <Paper
+        sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
+        elevation={3}
+      >
+        <BottomNavigation showLabels value={value} onChange={handleChange}>
+          <BottomNavigationAction icon={<ArrowBackIosNewIcon />} label="Back" />
+          <BottomNavigationAction label="Place Bet" icon={<MoneyIcon />} />
+        </BottomNavigation>
+      </Paper>
+      <BetForm handleClose={handleClose} open={open} />
+    </>
+  );
 };
 
 const Match: NextPage = () => {
-  const [leagueId, setLeagueId] = useState<string>(null);
+  const [skipMatch, setSkipMatch] = useState(true);
+
   const router = useRouter();
 
-  const { data: schedules, isLoading: isSchedulesLoading } =
-    useSchedulesQuery();
-
-  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
-
-  const { id } = router.query;
+  const {
+    data: match,
+    isLoading: isMatchLoading,
+    isUninitialized: isMatchUninitialized,
+  } = useGetMatchByIdQuery(getQueryId(router.query.id), { skip: skipMatch });
 
   useEffect(() => {
-    if (!schedules) return;
+    if (router.query.id) setSkipMatch(false);
+  }, [router.query.id]);
 
-    setLeagueId(() => {
-      return schedules.find(({ _id }) => _id === id).leagueId;
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schedules]);
+  const getCardHeaderDetails = ({ isTitle }: { isTitle: boolean }) =>
+    isMatchLoading || isMatchUninitialized ? (
+      <Loader />
+    ) : isTitle ? (
+      match.league.name
+    ) : (
+      match.sport.name
+    );
 
   return (
     <Layout>
-      <Box sx={{ borderBottom: '1px solid #bdc3c7' }}>
-        <Stack direction="row">
-          <Box
-            sx={{
-              borderRight: '1px solid #bdc3c7',
-              p: 2,
-            }}
-          >
-            <Link href="/" passHref>
-              <a
-                style={{
-                  alignItems: 'center',
-                  display: 'flex',
-                  height: '100%',
-                }}
-              >
-                <ArrowBackIosNewIcon fontSize="small" />
-              </a>
-            </Link>
-          </Box>
+      <Stack p={2} spacing={2}>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h5">
+            {getCardHeaderDetails({ isTitle: true })}
+          </Typography>
+          <Typography color="rgba(0, 0, 0, 0.6)" variant="body1">
+            {getCardHeaderDetails({ isTitle: false })}
+          </Typography>
+        </Paper>
+        <Paper sx={{ p: 2 }}>
+          {isMatchLoading && <Loader />}
 
-          <Box sx={{ alignItems: 'center', display: 'flex', p: 2 }}>
-            {leagueId && <LeagueName leagueId={leagueId} />}
-          </Box>
-        </Stack>
-      </Box>
-      <Box sx={{ borderBottom: '1px solid #bdc3c7' }}>
-        <Box
-          sx={{ alignItems: 'center', display: 'flex', minHeight: 100, p: 1 }}
-        >
-          <Grid container>
-            <Grid
-              item
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-              xs={5}
-            >
-              {isSchedulesLoading || isTeamsLoading ? (
-                <Loader />
-              ) : (
-                <Typography align="center" variant="body2">
-                  {
-                    teams.find(
-                      ({ _id }) =>
-                        _id ===
-                        schedules.find(({ _id }) => _id === id).teams.home
-                          .teamId
-                    ).name
-                  }
-                </Typography>
-              )}
+          {match && (
+            <Grid container>
+              <Grid item xs={5}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    height: '100%',
+                  }}
+                >
+                  <Typography align="center" variant="body2">
+                    {match.teams.home.name}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={2}>
+                <Box
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    height: '100%',
+                  }}
+                >
+                  <Typography align="center" variant="body1">
+                    <strong>3</strong> : <strong>8</strong>
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={5}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    height: '100%',
+                  }}
+                >
+                  <Typography align="center" variant="body2">
+                    {match.teams.visitor.name}
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid
-              item
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-              xs={2}
-            >
-              <Typography variant="body1">3 : 6</Typography>
-            </Grid>
-            <Grid
-              item
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-              xs={5}
-            >
-              {isSchedulesLoading || isTeamsLoading ? (
-                <Loader />
-              ) : (
-                <Typography align="center" variant="body2">
-                  {
-                    teams.find(
-                      ({ _id }) =>
-                        _id ===
-                        schedules.find(({ _id }) => _id === id).teams.visitor
-                          .teamId
-                    ).name
-                  }
-                </Typography>
-              )}
-            </Grid>
-          </Grid>
-        </Box>
-      </Box>
-      <Box sx={{ borderBottom: '1px solid #bdc3c7' }}>
-        <Stack direction="row" justifyContent="space-evenly">
-          {schedules && (
-            <Box sx={{ p: 2 }}>
-              <Typography variant="body2">
-                <>{schedules.find(({ _id }) => _id === id).teams.home.odds}</>
-              </Typography>
-            </Box>
           )}
-
-          {schedules && (
-            <Box sx={{ p: 2 }}>
-              <Typography variant="body2">
-                <>
-                  {schedules.find(({ _id }) => _id === id).teams.visitor.odds}
-                </>
-              </Typography>
-            </Box>
-          )}
-        </Stack>
-      </Box>
-      {/* <StyledTitleContainer>
-        {isSchedulesLoading && <Loader />}
-
-        {schedules && (
-          <>
-            {isTeamsLoading && <Loader />}
-
-            {teams && (
-              <TeamNames
-                homeTeamId={getTeamsFromMatchId({ id, schedules }).home.teamId}
-                matchId={Array.isArray(id) ? id[0] : id}
-                teams={teams}
-                visitorTeamId={
-                  getTeamsFromMatchId({ id, schedules }).visitor.teamId
-                }
-              />
-            )}
-          </>
-        )}
-      </StyledTitleContainer> */}
+        </Paper>
+      </Stack>
+      <BottomNavBar />
     </Layout>
   );
 };
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default Match;
