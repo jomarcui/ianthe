@@ -1,24 +1,10 @@
-import { Fragment, ReactNode, useCallback, useEffect, useState } from 'react';
-import styled from '@emotion/styled';
-import {
-  Box,
-  CircularProgress,
-  List,
-  ListItem,
-  ListItemText,
-  ListSubheader,
-  Stack,
-  Typography,
-} from '@mui/material';
-import { isToday } from 'date-fns';
-import {
-  useGetLeagueSchedulesByDateQuery,
-  useSchedulesQuery,
-} from '../redux/api/schedulesApi';
+import { Fragment, ReactNode, useEffect, useState } from 'react';
+import { Box, List, Typography } from '@mui/material';
+import { useGetLeagueSchedulesByDateQuery } from '../redux/api/schedulesApi';
 import { useTeamsQuery } from '../redux/api/teamsApi';
 import { useLeaguesQuery } from '../redux/api/leaguesApi';
+import styled from '@emotion/styled';
 import Layout from '../components/Layout';
-import leaguesUtils from '../utilities/leaguesUtils';
 import SchedulesListItem from '../components/SchedulesListItem';
 import SportsIcon from '../components/SportsIcon';
 import Loader from '../components/Loader/Loader';
@@ -34,12 +20,6 @@ type TabPanelProps = {
   index: number;
   value: number;
 };
-
-const StyledListSubheader = styled(ListSubheader)`
-  background-color: #ecf0f1;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  padding: 1rem;
-`;
 
 const StyledTitleContainer = styled(Box)`
   background-color: #1976d2;

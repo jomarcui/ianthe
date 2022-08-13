@@ -26,7 +26,9 @@ type SchedulesListItemProps = {
 };
 
 const BodyText = ({ children }) => (
-  <Typography variant="body2">{children}</Typography>
+  <Typography align="center" variant="body2">
+    {children}
+  </Typography>
 );
 
 const Loader = ({ Text }: { Text?: React.ReactNode }) => (
@@ -87,7 +89,7 @@ const SchedulesListItem = ({
           </Grid>
           <Grid item xs={12}>
             <Box sx={{ p: '0.5rem 0' }}>
-              <Typography align="center" variant="caption">
+              <Typography variant="caption">
                 {format(new Date(date), 'h:mm a')}
               </Typography>
             </Box>
