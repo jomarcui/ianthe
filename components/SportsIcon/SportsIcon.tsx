@@ -4,11 +4,11 @@ import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
 import { Status } from '../../enums';
 
 type SportsIconProps = {
-  sportsId: string;
-  status: Status | undefined;
+  sportId: string;
+  status?: Status | undefined;
 };
 
-const SportsIcon = ({ sportsId, status = undefined }) => {
+const SportsIcon = ({ sportId, status = undefined }: SportsIconProps) => {
   const color = (() => {
     switch (status) {
       case Status.Ended:
@@ -25,7 +25,7 @@ const SportsIcon = ({ sportsId, status = undefined }) => {
     }
   })();
 
-  switch (sportsId) {
+  switch (sportId) {
     case '62e14b643b17ae7b977921e8':
       return <SportsBasketballIcon color={color} />;
 

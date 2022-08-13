@@ -1,10 +1,10 @@
 import { Status } from '../enums';
 
 export type League = {
-  _id: string;
+  id: string;
   name: string;
   initialism: string;
-  sportsId: string;
+  sportId: string;
 };
 
 export type Match = {
@@ -34,7 +34,7 @@ export type Match = {
 };
 
 export type Schedule = {
-  _id: string;
+  id: string;
   date: Date;
   leagueId: string;
   sportId: string;
@@ -52,12 +52,12 @@ export type Schedule = {
 };
 
 export type Sport = {
-  _id: string;
+  id: string;
   name: string;
 };
 
 export type Team = {
-  _id: string;
+  id: string;
   createdAt: Date;
   leagueId: string;
   name: string;

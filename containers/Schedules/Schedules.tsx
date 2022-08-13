@@ -130,11 +130,10 @@ const Schedules = () => {
   }, [leagues]);
 
   const handleChange = (_event: React.SyntheticEvent, leagueId: string) => {
-    setSelectedLeague(leagues.find(({ _id }) => _id === leagueId));
-    console.log(leagues.find(({ _id }) => _id === leagueId));
+    setSelectedLeague(leagues.find(({ id }) => id === leagueId));
 
     // const { sportId } = teams.find(({ leagueId }) => leagueId === newValue);
-    // const { _id: id } = sports.find(({ _id }) => _id === sportId);
+    // const { id: id } = sports.find(({ id }) => id === sportId);
 
     // setSelectedSportId(id);
   };
@@ -156,11 +155,11 @@ const Schedules = () => {
               indicatorColor="secondary"
               onChange={handleChange}
               textColor="secondary"
-              value={selectedLeague._id}
+              value={selectedLeague.id}
               variant="fullWidth"
             >
-              {leagues.map(({ _id, initialism }) => (
-                <Tab key={_id} label={initialism} value={_id} />
+              {leagues.map(({ id, initialism }) => (
+                <Tab key={id} label={initialism} value={id} />
               ))}
             </Tabs>
           )}
@@ -171,7 +170,7 @@ const Schedules = () => {
         {schedules && (
           <SchedulesList
             listItems={schedules.filter(
-              ({ leagueId }) => leagueId === selectedLeague._id
+              ({ leagueId }) => leagueId === selectedLeague.id
             )}
           />
         )}
@@ -235,7 +234,7 @@ const SchedulesList = ({ listItems = [] }) => {
       {teams &&
         listItems.map(
           ({
-            _id,
+            id,
             date,
             status,
             teams: {
@@ -244,11 +243,12 @@ const SchedulesList = ({ listItems = [] }) => {
             },
           }: Schedule) => {
             const dayScheduled = new Date(date);
+            console.log('teams', teams);
             const { name: homeName } = teams.find(
-              ({ _id }) => _id === homeTeamId
+              ({ id }) => id === homeTeamId
             );
             const { name: visitorName } = teams.find(
-              ({ _id }) => _id === visitorTeamId
+              ({ id }) => id === visitorTeamId
             );
 
             const key = `${homeName}${visitorName}${dayScheduled}`;
@@ -273,7 +273,7 @@ const SchedulesList = ({ listItems = [] }) => {
 
             const isDisabled =
               (isScheduleDeleting || isScheduleUpdating) &&
-              _id === scheduleIdSelected;
+              id === scheduleIdSelected;
 
             return (
               <ListItem
@@ -283,7 +283,7 @@ const SchedulesList = ({ listItems = [] }) => {
                   <SecondaryAction
                     handleDelete={handleDelete}
                     handleUpdateScheduleStatus={handleUpdateScheduleStatus}
-                    id={_id}
+                    id={id}
                     isDisabled={isDisabled}
                   />
                 }

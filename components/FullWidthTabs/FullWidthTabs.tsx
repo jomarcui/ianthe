@@ -1,37 +1,46 @@
-import React, { useEffect } from 'react';
+import {
+  Dispatch,
+  JSXElementConstructor,
+  ReactElement,
+  ReactNode,
+  SetStateAction,
+  SyntheticEvent,
+  useEffect,
+  useState,
+} from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
+
+interface FullWidthTabsProps {
+  setValue: Dispatch<SetStateAction<number>>;
+  tabs: Tab[];
+  value: number;
+}
 
 interface Tab {
   header: {
-    key: number;
+    key: string;
     label: string;
   };
-  body: React.ReactNode;
-}
-
-interface FullWidthTabsProps{
-  tabs: Tab[];
+  icon: string | ReactElement<any, string | JSXElementConstructor<any>>;
 }
 
 interface TabPanelProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
 }
 
-const a11yProps = (index: number) => ({
+const a11yProps = (index: string) => ({
   id: `full-width-tab-${index}`,
   'aria-controls': `full-width-tabpanel-${index}`,
 });
 
-const FullWidthTabs = (props: FullWidthTabsProps) => {
-  const [value, setValue] = React.useState(0);
-
+const FullWidthTabs = ({ setValue, tabs, value }: FullWidthTabsProps) => {
   useEffect(() => {
     // Fetch data from API
   }, [value]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -46,15 +55,15 @@ const FullWidthTabs = (props: FullWidthTabsProps) => {
         value={value}
         variant="fullWidth"
       >
-        {props.tabs.map(({ header: { key, label } }) => (
-          <Tab key={key} label={label} {...a11yProps(key)} />
+        {tabs.map(({ header: { key, label }, icon }) => (
+          <Tab icon={icon} key={key} label={label} {...a11yProps(key)} />
         ))}
       </Tabs>
-      {props.tabs.map(({ header: { key }, body }) => (
+      {/* {props.tabs.map(({ header: { key }, body }) => (
         <TabPanel index={key} key={key} value={value}>
           {body}
         </TabPanel>
-      ))}
+      ))} */}
     </Box>
   );
 };

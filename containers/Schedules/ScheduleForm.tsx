@@ -54,13 +54,13 @@ const getLeagueNameById = ({
   leagues: League[];
   leagueId: string;
 }) => {
-  const { name } = leagues.find(({ _id }) => _id === leagueId);
+  const { name } = leagues.find(({ id }) => id === leagueId);
 
   return name;
 };
 
 const ScheduleForm = ({
-  league: { _id, sportsId },
+  league: { id, sportId },
   open,
   setOpen,
 }: {
@@ -118,8 +118,8 @@ const ScheduleForm = ({
 
     const newSchedule = {
       date,
-      leagueId: _id,
-      sportId: sportsId,
+      leagueId: id,
+      sportId: sportId,
       status: Status.Soon,
       teams: {
         home: { odds: homeOdds, teamId: home },
@@ -150,7 +150,7 @@ const ScheduleForm = ({
 
           {leagues && (
             <DialogContentText variant="body2">
-              {getLeagueNameById({ leagues, leagueId: _id })}
+              {getLeagueNameById({ leagues, leagueId: id })}
             </DialogContentText>
           )}
 
@@ -179,7 +179,7 @@ const ScheduleForm = ({
                   render={({ field }) => (
                     <TeamsSelect
                       field={field}
-                      leagueId={_id}
+                      leagueId={id}
                       watchField={visitor}
                     />
                   )}
@@ -213,7 +213,7 @@ const ScheduleForm = ({
                   render={({ field }) => (
                     <TeamsSelect
                       field={field}
-                      leagueId={_id}
+                      leagueId={id}
                       watchField={home}
                     />
                   )}
@@ -309,8 +309,8 @@ const TeamsSelect = ({ field, leagueId, watchField }) => {
       {teams &&
         teams
           .filter(({ leagueId: dataLeagueId }) => dataLeagueId === leagueId)
-          .map(({ _id, name }) => (
-            <MenuItem disabled={_id === watchField} key={_id} value={_id}>
+          .map(({ id, name }) => (
+            <MenuItem disabled={id === watchField} key={id} value={id}>
               {name}
             </MenuItem>
           ))}

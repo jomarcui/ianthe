@@ -15,7 +15,7 @@ const schedulesApi = createApi({
     }),
     addSchedule: build.mutation<Schedule, any>({
       query: (schedule) => ({
-        url: 'schedules/add',
+        url: 'schedules',
         method: 'POST',
         body: schedule,
       }),
@@ -27,6 +27,13 @@ const schedulesApi = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['Schedule'],
+    }),
+    getLeagueSchedulesByDate: build.query<
+      Schedule[],
+      { date: string; leagueId: string }
+    >({
+      query: ({ date, leagueId }) => `/schedules/league/${leagueId}/${date}`,
+      providesTags: ['Schedule'],
     }),
     updateScheduleStatus: build.mutation<Schedule, any>({
       query: ({ id, status }: { id: string; status: Status }) => ({
@@ -42,6 +49,7 @@ const schedulesApi = createApi({
 export const {
   useAddScheduleMutation,
   useDeleteScheduleMutation,
+  useGetLeagueSchedulesByDateQuery,
   useSchedulesQuery,
   useUpdateScheduleStatusMutation,
 } = schedulesApi;

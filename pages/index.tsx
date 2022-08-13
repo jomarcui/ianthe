@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { Fragment, ReactNode, useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Box,
@@ -11,7 +11,10 @@ import {
   Typography,
 } from '@mui/material';
 import { isToday } from 'date-fns';
-import { useSchedulesQuery } from '../redux/api/schedulesApi';
+import {
+  useGetLeagueSchedulesByDateQuery,
+  useSchedulesQuery,
+} from '../redux/api/schedulesApi';
 import { useTeamsQuery } from '../redux/api/teamsApi';
 import { useLeaguesQuery } from '../redux/api/leaguesApi';
 import Layout from '../components/Layout';
@@ -19,6 +22,18 @@ import leaguesUtils from '../utilities/leaguesUtils';
 import SchedulesListItem from '../components/SchedulesListItem';
 import SportsIcon from '../components/SportsIcon';
 import Loader from '../components/Loader/Loader';
+import FullWidthTabs from '../components/FullWidthTabs';
+
+type SchedulesTabPanelProps = {
+  leagueId: string;
+  value: number;
+};
+
+type TabPanelProps = {
+  children?: ReactNode;
+  index: number;
+  value: number;
+};
 
 const StyledListSubheader = styled(ListSubheader)`
   background-color: #ecf0f1;
@@ -27,41 +42,14 @@ const StyledListSubheader = styled(ListSubheader)`
 `;
 
 const StyledTitleContainer = styled(Box)`
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: #1976d2;
   padding: 1rem;
 `;
 
 const Home = () => {
-  const [skipSchedules, setSkipSchedules] = useState(true);
-  const [skipTeams, setSkipTeams] = useState(true);
+  const [value, setValue] = useState(0);
 
-  const {
-    data: leagues,
-    isLoading: isLeaguesLoading,
-    isUninitialized: isLeaguesUninitialiazed,
-  } = useLeaguesQuery();
-
-  const {
-    data: schedules,
-    isLoading: isSchedulesLoading,
-    isUninitialized: isSchedulesUninitialized,
-  } = useSchedulesQuery(undefined, { skip: skipSchedules });
-
-  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery(undefined, {
-    skip: skipTeams,
-  });
-
-  useEffect(() => {
-    if (!isLeaguesUninitialiazed) setSkipSchedules(false);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [leagues]);
-
-  useEffect(() => {
-    if (!isSchedulesUninitialized) setSkipTeams(false);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schedules]);
+  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
 
   // const ws = new WebSocket('ws://localhost:5000');
 
@@ -77,68 +65,90 @@ const Home = () => {
     <Layout>
       <Box>
         <StyledTitleContainer>
-          <Typography component="h6" variant="h6">
+          <Typography
+            align="center"
+            color="common.white"
+            component="h6"
+            variant="h6"
+          >
             Today&apos;s events
           </Typography>
         </StyledTitleContainer>
 
-        {isLeaguesLoading && (
-          <List disablePadding>
-            <StyledListSubheader>
-              <Loader />
-            </StyledListSubheader>
-          </List>
+        {isLeaguesLoading && <Loader />}
+
+        {leagues && (
+          <>
+            <FullWidthTabs
+              setValue={setValue}
+              tabs={leagues.map(({ id, initialism, sportId }) => ({
+                header: { key: id, label: initialism },
+                icon: <SportsIcon sportId={sportId} />,
+              }))}
+              value={value}
+            />
+            <SchedulesTabPanel leagueId={leagues[value].id} value={value} />
+          </>
         )}
-
-        {leagues &&
-          leagues.map(({ _id, sportsId }) => {
-            const { initialism } = leaguesUtils(leagues).findById(_id);
-
-            return (
-              <List disablePadding key={initialism}>
-                <StyledListSubheader>
-                  <Stack direction="row" spacing={1}>
-                    <SportsIcon sportsId={sportsId} />
-                    <Typography variant="body1">{initialism}</Typography>
-                  </Stack>
-                </StyledListSubheader>
-
-                {isSchedulesLoading && (
-                  <>
-                    <ListItem>
-                      <ListItemText primary={<Loader />} />
-                    </ListItem>
-                  </>
-                )}
-
-                {schedules &&
-                  schedules
-                    .filter(
-                      ({ date, leagueId }) =>
-                        _id === leagueId && isToday(new Date(date))
-                    )
-                    .map((schedule, index) => (
-                      <React.Fragment key={schedule._id}>
-                        {isTeamsLoading && <Loader />}
-
-                        {teams && (
-                          <>
-                            <SchedulesListItem
-                              isLoading={isTeamsLoading}
-                              key={index}
-                              schedule={schedule}
-                              teams={teams}
-                            />
-                          </>
-                        )}
-                      </React.Fragment>
-                    ))}
-              </List>
-            );
-          })}
       </Box>
     </Layout>
   );
 };
+
+const SchedulesTabPanel = ({ leagueId, value }: SchedulesTabPanelProps) => {
+  const {
+    data: schedules,
+    isLoading: isSchedulesLoading,
+    refetch: refetchSchedules,
+  } = useGetLeagueSchedulesByDateQuery({
+    leagueId,
+    date: new Date().toDateString(),
+  });
+
+  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+
+  useEffect(() => {
+    refetchSchedules();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leagueId]);
+
+  return (
+    <TabPanel index={value} value={value}>
+      {isSchedulesLoading && <Loader />}
+
+      {schedules && (
+        <List disablePadding>
+          {schedules.map((schedule, index) => (
+            <Fragment key={schedule.id}>
+              {isTeamsLoading && <Loader />}
+
+              {teams && (
+                <SchedulesListItem
+                  isLoading={isTeamsLoading}
+                  key={index}
+                  schedule={schedule}
+                  teams={teams}
+                />
+              )}
+            </Fragment>
+          ))}
+        </List>
+      )}
+    </TabPanel>
+  );
+};
+
+const TabPanel = ({ children, index, value, ...other }: TabPanelProps) => (
+  <div
+    aria-labelledby={`full-width-tab-${index}`}
+    id={`full-width-tabpanel-${index}`}
+    hidden={value !== index}
+    role="tabpanel"
+    {...other}
+  >
+    {value === index && <Box>{children}</Box>}
+  </div>
+);
 
 export default Home;

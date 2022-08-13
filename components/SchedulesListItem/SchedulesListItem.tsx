@@ -39,7 +39,7 @@ const Loader = ({ Text }: { Text?: React.ReactNode }) => (
 const SchedulesListItem = ({
   isLoading,
   schedule: {
-    _id,
+    id,
     date,
     sportId,
     status,
@@ -62,7 +62,7 @@ const SchedulesListItem = ({
   const { name: visitorName } = teamsUtils(teams).findById(visitorTeamId);
 
   const primary = (
-    <Link href={`/match/${_id}`}>
+    <Link href={`/match/${id}`}>
       <a>
         <Grid container rowSpacing="0.125rem">
           <Grid item xs={10}>
@@ -87,7 +87,7 @@ const SchedulesListItem = ({
           </Grid>
           <Grid item xs={12}>
             <Box sx={{ p: '0.5rem 0' }}>
-              <Typography variant="caption">
+              <Typography align="center" variant="caption">
                 {format(new Date(date), 'h:mm a')}
               </Typography>
             </Box>
@@ -100,7 +100,7 @@ const SchedulesListItem = ({
   return (
     <StyledListItemButton disableGutters divider>
       <ListItemAvatar>
-        <SportsIcon status={status} sportsId={sportId} />
+        <SportsIcon status={status} sportId={sportId} />
       </ListItemAvatar>
       <StyledListItemText primary={primary} />
     </StyledListItemButton>
