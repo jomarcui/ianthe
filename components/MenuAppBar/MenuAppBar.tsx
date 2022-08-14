@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useSession, signOut } from 'next-auth/react';
 import {
   AppBar,
   IconButton,
@@ -24,14 +26,18 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import store from '../../redux/store';
 import { setUser } from '../../redux/features/usersSlice';
-import { useRouter } from 'next/router';
 
 const MenuAppBar = () => {
+  const { data: session, status } = useSession();
+  console.log('session', session);
   const [adminMenuAnchorEl, setAdminMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
+
   const router = useRouter();
 
   const isAdminMenuOpen = Boolean(adminMenuAnchorEl);
@@ -190,12 +196,20 @@ const MenuAppBar = () => {
 
   const RegistrationAndLogin = (
     <Stack spacing={2} direction="row">
-      <Button variant="contained" color="success">
-        Register
-      </Button>
-      {/* <Link href="/signin" passHref>
-        <Button variant="contained">Sign-In</Button>
-      </Link> */}
+      {session ? (
+        <Button color="secondary" onClick={() => signOut()} variant="contained">
+          Sign-Out
+        </Button>
+      ) : (
+        <>
+          <Button color="success" variant="contained">
+            Register
+          </Button>
+          <Link href="/signin" passHref>
+            <Button variant="contained">Sign-In</Button>
+          </Link>
+        </>
+      )}
     </Stack>
   );
 

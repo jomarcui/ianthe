@@ -81,7 +81,7 @@ const SignIn = ({ csrfToken }) => {
         setError(null);
       }
 
-      if (res.url) router.push(callbackUrl);
+      if (res.url) router.push(callbackUrl || '/');
     } catch (error) {
       console.error(error);
       setIsLoading(false);
