@@ -243,10 +243,11 @@ const SchedulesList = ({ listItems = [] }) => {
             },
           }: Schedule) => {
             const dayScheduled = new Date(date);
-            console.log('teams', teams);
+
             const { name: homeName } = teams.find(
               ({ id }) => id === homeTeamId
             );
+
             const { name: visitorName } = teams.find(
               ({ id }) => id === visitorTeamId
             );
