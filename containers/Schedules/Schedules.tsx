@@ -211,7 +211,7 @@ const SchedulesList = ({ listItems = [] }) => {
   const handleDelete = async (id: string) => {
     setScheduleIdSelected(id);
 
-    await deleteSchedule(id).unwrap();
+    await deleteSchedule(id);
 
     setScheduleIdSelected(null);
   };

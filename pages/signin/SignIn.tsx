@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { getCsrfToken, signIn } from 'next-auth/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -17,15 +18,21 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import store from '../../redux/store';
-import { useGetUserByEmailAndPasswordMutation } from '../../redux/api/usersApi';
-import { setUser } from '../../redux/features/usersSlice';
 
 type Inputs = {
-  email: string;
+  mobileNumber: string;
   password: string;
   rememberMe: boolean;
 };
+
+// This is the recommended way for Next.js 9.3 or newer
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      csrfToken: await getCsrfToken(context),
+    },
+  };
+}
 
 const Copyright = (props: any) => {
   return (
@@ -40,55 +47,45 @@ const Copyright = (props: any) => {
   );
 };
 
-const Error = ({ error }) => (
-  <Alert severity="error" sx={{ my: 2 }} variant="filled">
-    <AlertTitle>{error.error}</AlertTitle>
-    {error.status}
-  </Alert>
-);
-
-const SignIn = () => {
+const SignIn = ({ csrfToken }) => {
+  const [error, setError] = useState<string>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
   const router = useRouter();
 
-  const [signIn, { data, error, isLoading }] =
-    useGetUserByEmailAndPasswordMutation();
-
-  useEffect(() => {
-    const user = store.getState().users.user;
-
-    if (user) router.push('/');
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (data) {
-      store.dispatch(setUser(data));
-
-      const returnUrl = router.query.returnUrl || '/';
-
-      router.push(Array.isArray(returnUrl) ? returnUrl[0] : returnUrl);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
   const handleFormSubmit: SubmitHandler<Inputs> = async (formData) => {
-    const { email, password } = formData;
+    setIsLoading(true);
 
-    const signinInfo = {
-      email,
+    const { mobileNumber, password } = formData;
+
+    const payload = {
+      mobileNumber,
       password,
     };
 
-    await signIn(signinInfo).unwrap();
+    try {
+      const url: URL = new URL(window.location.href);
+      const params: URLSearchParams = url.searchParams;
+      const callbackUrl: string = params.get('callbackUrl');
+
+      const res = await signIn('credentials', { ...payload, redirect: false });
+
+      if (res?.error) {
+        setError(res.error);
+      } else {
+        setError(null);
+      }
+
+      if (res.url) router.push(callbackUrl);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -113,32 +110,33 @@ const SignIn = () => {
           onSubmit={handleSubmit(handleFormSubmit)}
           sx={{ mt: 1 }}
         >
-          {error && <Error error={error} />}
-
-          {data === null && (
-            <Alert severity="warning" sx={{ my: 2 }} variant="filled">
-              User not found.
+          {error && (
+            <Alert severity="error" sx={{ my: 2 }} variant="filled">
+              <AlertTitle>Error</AlertTitle>
+              {error}
             </Alert>
           )}
 
           <TextField
-            autoComplete="email"
+            // autoComplete="mobile-number"
             autoFocus
             disabled={isLoading}
             fullWidth
-            id="email"
-            label="Email Address"
+            id="mobileNumber"
+            InputLabelProps={{ shrink: true }}
+            label="Mobile Number"
             margin="normal"
-            name="email"
+            name="mobileNumber"
             required
-            {...register('email')}
+            {...register('mobileNumber')}
           />
 
           <TextField
-            autoComplete="current-password"
+            // autoComplete="current-password"
             disabled={isLoading}
             fullWidth
             id="password"
+            InputLabelProps={{ shrink: true }}
             label="Password"
             margin="normal"
             name="password"

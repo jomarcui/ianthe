@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Stack,
   Alert,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  Grid,
-  Button,
-  Slide,
-  DialogContentText,
   Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Slide,
+  Stack,
+  TextField,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -38,6 +38,17 @@ type FormInputs = {
   visitorOdds: Number;
 };
 
+type GetLeagueNameById = {
+  leagueId: string;
+  leagues: League[];
+};
+
+type ScheduleFormProps = {
+  league: League;
+  open: boolean;
+  setOpen: any;
+};
+
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement;
@@ -47,27 +58,14 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const getLeagueNameById = ({
-  leagues,
-  leagueId,
-}: {
-  leagues: League[];
-  leagueId: string;
-}) => {
-  const { name } = leagues.find(({ id }) => id === leagueId);
-
-  return name;
-};
+const getLeagueNameById = ({ leagues, leagueId }: GetLeagueNameById) =>
+  leagues.find(({ id }) => id === leagueId).name;
 
 const ScheduleForm = ({
   league: { id, sportId },
   open,
   setOpen,
-}: {
-  league: League;
-  open: boolean;
-  setOpen: any;
-}) => {
+}: ScheduleFormProps) => {
   const {
     control,
     handleSubmit,
@@ -95,11 +93,11 @@ const ScheduleForm = ({
     { error: addScheduleError, isLoading: isAddScheduleLoading },
   ] = useAddScheduleMutation();
 
-  // const ws = new WebSocket(process.env.NEXT_PUBLIC_HOST.replace(/^http/, 'ws')); //'ws://localhost:5000'
+  const ws = new WebSocket(process.env.NEXT_PUBLIC_HOST.replace(/^http/, 'ws')); //'ws://localhost:5000'
 
-  // ws.addEventListener('message', (event) => {
-  //   console.log('Message from server', event.data);
-  // });
+  ws.addEventListener('message', (event) => {
+    console.log('Message from server', event.data);
+  });
 
   useEffect(() => {
     if (addScheduleError) setError(addScheduleError['data']);
@@ -127,11 +125,7 @@ const ScheduleForm = ({
       },
     };
 
-    await addSchedule(newSchedule).unwrap();
-
-    // ws.addEventListener('open', () => {
-    //   ws.send('Hello, server!');
-    // });
+    await addSchedule(newSchedule);
 
     handleClose();
   };
