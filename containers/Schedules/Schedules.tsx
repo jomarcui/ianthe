@@ -224,7 +224,7 @@ const SchedulesList = ({ listItems = [] }) => {
 
     setScheduleIdSelected(id);
 
-    await updateScheduleStatus(statusInfo).unwrap();
+    await updateScheduleStatus(statusInfo);
 
     setScheduleIdSelected(null);
   };
