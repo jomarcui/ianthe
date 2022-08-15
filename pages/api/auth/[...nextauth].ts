@@ -9,9 +9,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 async function refreshAccessToken(token) {
   try {
     const url = `${process.env.NEXT_PUBLIC_HOST}/refresh`;
-
     const response = await fetch(url);
-
     const refreshedTokens = await response.json();
 
     if (!response.ok) {
