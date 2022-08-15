@@ -1,5 +1,5 @@
-import CredentialsProvider from 'next-auth/providers/credentials';
 import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 /**
  * Takes a token, and returns a new token with updated
@@ -13,7 +13,7 @@ async function refreshAccessToken(token) {
     const response = await fetch(url);
 
     const refreshedTokens = await response.json();
-
+    console.log('refreshedTokens', refreshedTokens);
     if (!response.ok) {
       throw refreshedTokens;
     }
@@ -35,67 +35,17 @@ async function refreshAccessToken(token) {
 }
 
 export default NextAuth({
-  providers: [
-    CredentialsProvider({
-      id: 'credentials',
-      // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: 'Sign in with Alcmene',
-      // The credentials is used to generate a suitable form on the sign in page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
-      credentials: {
-        mobileNumber: {
-          label: 'Mobile Number',
-          type: 'text',
-          placeholder: '0XXX-XXX-XXXX',
-        },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize({ mobileNumber, password }) {
-        const payload = {
-          mobileNumber: mobileNumber,
-          password: password,
-        };
-
-        const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/auth`, {
-          body: JSON.stringify(payload),
-          headers: {
-            'Accept-Language': 'en-US',
-            'Content-Type': 'application/json',
-          },
-          method: 'POST',
-        });
-
-        const user = await res.json();
-        console.log('user is', user);
-        if (!res.ok) {
-          throw new Error(user.exception);
-        }
-
-        // If no error and we have user data, return it
-        if (res.ok && user) {
-          return user;
-        }
-
-        // Return null if user data could not be retrieved
-        return null;
-      },
-    }),
-  ],
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: '/signin',
-  },
   callbacks: {
     async jwt({ token, user, account }) {
-      // console.log({ token, user, account });
+      console.log('jwt is', { token, user, account });
+
       // Initial sign in
       if (account && user) {
         return {
-          accessToken: account.access_token,
-          accessTokenExpires: Date.now() + account.expires_at * 1000,
-          refreshToken: account.refresh_token,
+          accessToken: account.access_token || user.accessToken,
+          accessTokenExpires:
+            Date.now() + (account.expires_at || 24 * 60 * 60 * 1000) * 1000,
+          refreshToken: account.refresh_token || user.refreshToken,
           user,
         };
       }
@@ -108,7 +58,16 @@ export default NextAuth({
       // Access token has expired, try to update it
       return refreshAccessToken(token);
     },
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+
+      return baseUrl;
+    },
     async session({ session, token }) {
+      console.log('session is', { session, token });
       session.accessToken = token.accessToken;
       session.error = token.error;
       session.user = token.user;
@@ -127,6 +86,58 @@ export default NextAuth({
       }
     },
   },
+  pages: {
+    signIn: '/signin',
+  },
+  providers: [
+    CredentialsProvider({
+      async authorize({ mobileNumber, password }) {
+        const payload = {
+          mobileNumber: mobileNumber,
+          password: password,
+        };
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/auth`, {
+          body: JSON.stringify(payload),
+          headers: {
+            'Accept-Language': 'en-US',
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+        });
+
+        const user = await res.json();
+
+        if (!res.ok) {
+          throw new Error(user.exception);
+        }
+
+        // If no error and we have user data, return it
+        if (res.ok && user) {
+          return user;
+        }
+
+        // Return null if user data could not be retrieved
+        return null;
+      },
+      // The credentials is used to generate a suitable form on the sign in page.
+      // You can specify whatever fields you are expecting to be submitted.
+      // e.g. domain, username, password, 2FA token, etc.
+      // You can pass any HTML attribute to the <input> tag through the object.
+      credentials: {
+        mobileNumber: {
+          label: 'Mobile Number',
+          type: 'text',
+          placeholder: '0XXX-XXX-XXXX',
+        },
+        password: { label: 'Password', type: 'password' },
+      },
+      id: 'alcmene-signin',
+      // The name to display on the sign in form (e.g. 'Sign in with...')
+      name: 'Sign in with Alcmene',
+    }),
+  ],
+  secret: process.env.NEXTAUTH_SECRET,
   theme: {
     colorScheme: 'auto', // "auto" | "dark" | "light"
     brandColor: '', // Hex color code #33FF5D

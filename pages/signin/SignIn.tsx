@@ -73,10 +73,14 @@ const SignIn = ({ csrfToken }) => {
       const params: URLSearchParams = url.searchParams;
       const callbackUrl: string = params.get('callbackUrl');
 
-      const res = await signIn('credentials', { ...payload, redirect: false });
+      const res = await signIn('alcmene-signin', {
+        ...payload,
+        redirect: false,
+      });
 
       if (res?.error) {
         setError(res.error);
+        setIsLoading(false);
       } else {
         setError(null);
       }
