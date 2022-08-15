@@ -27,6 +27,7 @@ const store = configureStore({
       matchesApi.middleware,
       schedulesApi.middleware,
       teamsApi.middleware,
+      usersApi.middleware
     ]),
 });
 

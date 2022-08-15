@@ -1,4 +1,4 @@
-import { Status } from '../enums';
+import { Roles, Status } from '../enums';
 
 export type League = {
   id: string;
@@ -62,4 +62,14 @@ export type Team = {
   leagueId: string;
   name: string;
   sportId: string;
+};
+
+export type User = {
+  createdAt: Date;
+  firstName: string;
+  lastName: string;
+  mobileNumber: string;
+  password: string;
+  roles: Roles[];
+  updatedAt: Date;
 };

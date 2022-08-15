@@ -13,7 +13,7 @@ async function refreshAccessToken(token) {
     const response = await fetch(url);
 
     const refreshedTokens = await response.json();
-    console.log('refreshedTokens', refreshedTokens);
+
     if (!response.ok) {
       throw refreshedTokens;
     }
@@ -37,8 +37,6 @@ async function refreshAccessToken(token) {
 export default NextAuth({
   callbacks: {
     async jwt({ token, user, account }) {
-      console.log('jwt is', { token, user, account });
-
       // Initial sign in
       if (account && user) {
         return {
@@ -67,7 +65,6 @@ export default NextAuth({
       return baseUrl;
     },
     async session({ session, token }) {
-      console.log('session is', { session, token });
       session.accessToken = token.accessToken;
       session.error = token.error;
       session.user = token.user;

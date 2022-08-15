@@ -22,6 +22,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MoneyIcon from '@mui/icons-material/Money';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import PeopleIcon from '@mui/icons-material/People';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import store from '../../redux/store';
@@ -29,7 +30,7 @@ import { setUser } from '../../redux/features/usersSlice';
 
 const MenuAppBar = () => {
   const { data: session, status } = useSession();
-  console.log('session', session);
+
   const [adminMenuAnchorEl, setAdminMenuAnchorEl] =
     React.useState<null | HTMLElement>(null);
 
@@ -100,19 +101,42 @@ const MenuAppBar = () => {
       open={isAdminMenuOpen}
       onClose={handleMenuClose}
     >
+      {session && (
+        <div>
+          <MenuItem onClick={handleMenuClose}>
+            <Link href="/schedules">
+              <a style={{ alignItems: 'center', display: 'flex' }}>
+                <Grid alignItems="center" container spacing={1}>
+                  <Grid item>
+                    <ScheduleIcon />
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="body2">Schedules</Typography>
+                  </Grid>
+                </Grid>
+              </a>
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleMenuClose}>
+            <Link href="/users">
+              <a style={{ alignItems: 'center', display: 'flex' }}>
+                <Grid alignItems="center" container spacing={1}>
+                  <Grid item>
+                    <PeopleIcon />
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="body2">Users</Typography>
+                  </Grid>
+                </Grid>
+              </a>
+            </Link>
+          </MenuItem>
+        </div>
+      )}
       <MenuItem onClick={handleMenuClose}>
-        <Link href="/schedules">
-          <a style={{ alignItems: 'center', display: 'flex' }}>
-            <Grid alignItems="center" container spacing={1}>
-              <Grid item>
-                <ScheduleIcon />
-              </Grid>
-              <Grid item>
-                <Typography variant="body2">Schedules</Typography>
-              </Grid>
-            </Grid>
-          </a>
-        </Link>
+        <Typography color="GrayText" variant="body2">
+          Soon
+        </Typography>
       </MenuItem>
     </Menu>
   );
