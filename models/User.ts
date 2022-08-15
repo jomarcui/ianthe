@@ -32,9 +32,7 @@ const UserSchema = new mongoose.Schema<User>(
   },
 );
 
-UserSchema.index(
-  { mobileNumber: 1, password: 1 },
-  { unique: true }
-);
+UserSchema.index({ mobileNumber: 1, password: 1 }, { unique: true });
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+export default (mongoose.models.User as mongoose.Model<User>) ||
+  mongoose.model('User', UserSchema);
