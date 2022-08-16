@@ -34,15 +34,15 @@ import {
   TypographyVariant,
 } from '@mui/material';
 
-import { TransitionProps } from '@mui/material/transitions';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
 import Layout from '../../components/Layout';
-import Loader from '../../components/Loader/Loader';
+import Loader from '../../components/Loader';
 import { CardHeader } from '@mui/material';
 import { Breadcrumbs } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import PleaseSignIn from '../../components/PleaseSignIn';
+import Transition from '../../components/Transition';
 
 enum Operation {
   Add,
@@ -71,7 +71,7 @@ const BetForm = ({ handleClose, open }) => {
   const watchBet = watch('bet');
 
   const generateDialogContent = () => {
-    if (status === 'unauthenticated') return <PleaseSignIn />
+    if (status === 'unauthenticated') return <PleaseSignIn />;
 
     return (
       <form onSubmit={handleSubmit(handleFormSubmit)}>
@@ -121,7 +121,7 @@ const BetForm = ({ handleClose, open }) => {
         </Stack>
       </form>
     );
-  }
+  };
 
   const handleBetChange = ({ operation }: { operation: Operation }) => {
     const result =
@@ -161,7 +161,7 @@ const Match: NextPage = () => {
 
   const { data: match, isLoading: isMatchLoading } = useGetMatchByIdQuery(
     getQueryId(router.query.id),
-    { skip: skipMatch },
+    { skip: skipMatch }
   );
 
   useEffect(() => {
@@ -173,7 +173,7 @@ const Match: NextPage = () => {
 
   useEffect(() => {
     const scoresInterval = setInterval(() => {
-      const teamNumber = Math.floor(Math.random() * 2)
+      const teamNumber = Math.floor(Math.random() * 2);
 
       if (teamNumber) {
         setScores(({ home, visitor }) => ({
@@ -259,9 +259,7 @@ const Match: NextPage = () => {
                     textAlign: 'center',
                   }}
                 >
-                  <Typography align="center" variant="h3">
-                    {scores.visitor}
-                  </Typography>
+                  <span style={{ fontSize: '3rem' }}>{scores.visitor}</span>
                 </Paper>
                 <Typography align="center" variant="body2">
                   {match?.teams.visitor.name}
@@ -277,7 +275,7 @@ const Match: NextPage = () => {
 
         {match &&
           Object.values(match.teams).map(({ id, name, odds }) => (
-            <ListItem divider key={id} sx={{p: 2}}>
+            <ListItem divider key={id} sx={{ p: 2 }}>
               {isMatchLoading && <Loader />}
 
               {match && (
@@ -324,14 +322,5 @@ const Match: NextPage = () => {
     </Layout>
   );
 };
-
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: ReactElement;
-  },
-  ref: Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 export default Match;

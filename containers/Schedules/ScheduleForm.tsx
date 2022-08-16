@@ -28,7 +28,7 @@ import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import { useAddScheduleMutation } from '../../redux/api/schedulesApi';
 import { Status } from '../../enums';
 import { League } from '../../types';
-import Loader from '../../components/Loader/Loader';
+import Loader from '../../components/Loader';
 
 type FormInputs = {
   date: Date | null;
@@ -92,12 +92,6 @@ const ScheduleForm = ({
     addSchedule,
     { error: addScheduleError, isLoading: isAddScheduleLoading },
   ] = useAddScheduleMutation();
-
-  const ws = new WebSocket(process.env.NEXT_PUBLIC_HOST.replace(/^http/, 'ws')); //'ws://localhost:5000'
-
-  ws.addEventListener('message', (event) => {
-    console.log('Message from server', event.data);
-  });
 
   useEffect(() => {
     if (addScheduleError) setError(addScheduleError['data']);

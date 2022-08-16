@@ -37,7 +37,7 @@ import ScheduleForm from './ScheduleForm';
 import { useSportsQuery } from '../../redux/api/sportsApi';
 import { Status } from '../../enums';
 import { League, Schedule } from '../../types';
-import Loader from '../../components/Loader/Loader';
+import Loader from '../../components/Loader';
 import ListItemAvatar from '../../components/ListItemAvatar';
 
 const StyledMenu = styled((props: MenuProps) => (
