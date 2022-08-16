@@ -332,7 +332,7 @@ const Match: NextPage = () => {
 
         {match &&
           Object.values(match.teams).map(({ id, name, odds }) => (
-            <ListItem divider key={id}>
+            <ListItem divider key={id} sx={{p: 2}}>
               {isMatchLoading && <Loader />}
 
               {match && (
