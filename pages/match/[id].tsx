@@ -38,6 +38,7 @@ import Layout from '../../components/Layout';
 import Loader from '../../components/Loader/Loader';
 import { CardHeader } from '@mui/material';
 import { Breadcrumbs } from '@mui/material';
+import { useSession } from 'next-auth/react';
 
 enum Operation {
   Add,
@@ -55,6 +56,8 @@ type FormInput = {
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
 const BetForm = ({ handleClose, open }) => {
+  const { data: session, status } = useSession();
+
   const { handleSubmit, register, setValue, watch } = useForm<FormInput>({
     defaultValues: {
       bet: 20.0,
@@ -203,6 +206,7 @@ const CardHeaderDetails = ({ isTitle }: CardHeaderDetailsProps) => {
 const Match: NextPage = () => {
   const [matchId, setMatchId] = useState<string>(null);
   const [openBetForm, setOpenBetForm] = useState<boolean>(false);
+  const [scores, setScores] = useState({ home: 10, visitor: 12 });
   const [selectedTeamId, setSelectedTeamId] = useState<string>(null);
   const [skipMatch, setSkipMatch] = useState(true);
 
@@ -219,6 +223,27 @@ const Match: NextPage = () => {
       setSkipMatch(false);
     }
   }, [router.query.id]);
+
+  useEffect(() => {
+    const scoresInterval = setInterval(() => {
+      const teamNumber = Math.floor(Math.random() * 2)
+
+      if (teamNumber) {
+        setScores(({ home, visitor }) => ({
+          home,
+          visitor: visitor + Math.floor(Math.random() * 2) + 1,
+        }));
+      } else
+        setScores(({ home, visitor }) => ({
+          visitor,
+          home: home + Math.floor(Math.random() * 2) + 1,
+        }));
+      {
+      }
+    }, 1000);
+
+    return () => clearInterval(scoresInterval);
+  }, []);
 
   const handleBetClick = (teamId: string) => {
     setOpenBetForm(true);
@@ -253,18 +278,30 @@ const Match: NextPage = () => {
         )}
       </Box>
       <Card sx={{ m: 2 }}>
+        {/* <CardHeader
+          disableTypography
+          title={
+            <Typography align="center" variant="body2">
+              Scores
+            </Typography>
+          }
+        /> */}
         <CardContent>
           {isMatchLoading && <Loader />}
 
           {match && (
             <>
-              <Grid container>
+              <Grid container spacing={2}>
                 <Grid item xs={5}>
-                  {/* <Typography align="center" variant="body2">
-                    [logo]
-                  </Typography> */}
-                  <Typography align="center" variant="h3">
-                    14
+                  <Paper
+                    sx={{ bgcolor: '#2980b9', color: '#fff', mb: 2, py: 5 }}
+                  >
+                    <Typography align="center" variant="h3">
+                      {scores.home}
+                    </Typography>
+                  </Paper>
+                  <Typography align="center" variant="body2">
+                    {match?.teams.home.name}
                   </Typography>
                 </Grid>
                 <Grid item xs={2}>
@@ -283,11 +320,15 @@ const Match: NextPage = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={5}>
-                  {/* <Typography align="center" variant="body2">
-                    [logo]
-                  </Typography> */}
-                  <Typography align="center" variant="h3">
-                    18
+                  <Paper
+                    sx={{ bgcolor: '#2980b9', color: '#fff', mb: 2, py: 5 }}
+                  >
+                    <Typography align="center" variant="h3">
+                      {scores.visitor}
+                    </Typography>
+                  </Paper>
+                  <Typography align="center" variant="body2">
+                    {match?.teams.visitor.name}
                   </Typography>
                 </Grid>
               </Grid>
@@ -299,18 +340,24 @@ const Match: NextPage = () => {
         <Grid item xs={6}>
           <Card>
             <CardContent>
-              <CardHeader
-                disableTypography
-                title={
-                  isMatchLoading ? <Loader /> : match && match.teams.home.name
-                }
-              />
+              <Grid container spacing={2}>
+                {isMatchLoading && <Loader />}
 
-              {match && (
-                <Typography align="center">
-                  {match.teams.home.odds.toString()}
-                </Typography>
-              )}
+                {match && (
+                  <>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">
+                        {match.teams.home.name}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography align="right">
+                        {match.teams.home.odds.toString()}
+                      </Typography>
+                    </Grid>
+                  </>
+                )}
+              </Grid>
             </CardContent>
             <CardActions>
               <Button
@@ -326,22 +373,24 @@ const Match: NextPage = () => {
         <Grid item xs={6}>
           <Card>
             <CardContent>
-              <CardHeader
-                disableTypography
-                title={
-                  isMatchLoading ? (
-                    <Loader />
-                  ) : (
-                    match && match.teams.visitor.name
-                  )
-                }
-              />
+              <Grid container spacing={2}>
+                {isMatchLoading && <Loader />}
 
-              {match && (
-                <Typography align="center">
-                  {match.teams.visitor.odds.toString()}
-                </Typography>
-              )}
+                {match && (
+                  <>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">
+                        {match.teams.visitor.name}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography align="right">
+                        {match.teams.visitor.odds.toString()}
+                      </Typography>
+                    </Grid>
+                  </>
+                )}
+              </Grid>
             </CardContent>
             <CardActions>
               <Button
