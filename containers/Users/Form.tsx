@@ -90,11 +90,10 @@ const Form = () => {
           {...register('password')}
         />
         <Button
-          color="secondary"
           fullWidth
           onClick={handleGeneratePassword}
           sx={{ my: 2 }}
-          variant="contained"
+          variant="outlined"
         >
           Generate Password
         </Button>

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { forwardRef, ReactElement, Ref, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import {
   ArrowBackIosNew as ArrowBackIosNewIcon,
@@ -21,6 +22,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  Link as MUILink,
   Paper,
   Slide,
   Stack,
@@ -34,6 +36,8 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
 import Layout from '../../components/Layout';
 import Loader from '../../components/Loader/Loader';
+import { CardHeader } from '@mui/material';
+import { Breadcrumbs } from '@mui/material';
 
 enum Operation {
   Add,
@@ -173,7 +177,7 @@ const CardHeaderDetails = ({ isTitle }: CardHeaderDetailsProps) => {
   const router = useRouter();
 
   const { data: match, isLoading: isMatchLoading } = useGetMatchByIdQuery(
-    getQueryId(router.query.id)
+    getQueryId(router.query.id),
   );
 
   if (isMatchLoading) return <Loader />;
@@ -197,42 +201,73 @@ const CardHeaderDetails = ({ isTitle }: CardHeaderDetailsProps) => {
 };
 
 const Match: NextPage = () => {
+  const [matchId, setMatchId] = useState<string>(null);
+  const [openBetForm, setOpenBetForm] = useState<boolean>(false);
+  const [selectedTeamId, setSelectedTeamId] = useState<string>(null);
   const [skipMatch, setSkipMatch] = useState(true);
 
   const router = useRouter();
 
   const { data: match, isLoading: isMatchLoading } = useGetMatchByIdQuery(
     getQueryId(router.query.id),
-    { skip: skipMatch }
+    { skip: skipMatch },
   );
 
   useEffect(() => {
-    if (router.query.id) setSkipMatch(false);
+    if (router.query.id) {
+      setMatchId(getQueryId(router.query.id));
+      setSkipMatch(false);
+    }
   }, [router.query.id]);
+
+  const handleBetClick = (teamId: string) => {
+    setOpenBetForm(true);
+    setSelectedTeamId(teamId);
+  };
+
+  const handleCloseBetForm = () => setOpenBetForm(false);
 
   return (
     <Layout>
-      <Stack p={2} spacing={2}>
-        <Paper sx={{ p: 2 }}>
-          {isMatchLoading && <Loader />}
+      <Breadcrumbs
+        aria-label="breadcrumb"
+        sx={{ borderBottom: '1px solid #ecf0f1', p: 2 }}
+      >
+        <Link href="/" passHref>
+          <MUILink color="inherit" underline="hover">
+            Today&apos;s Events
+          </MUILink>
+        </Link>
+        <Typography color="text.primary">
+          Match ID: {matchId?.slice(0, 8)}...
+        </Typography>
+      </Breadcrumbs>
+      <Box sx={{ p: 2 }}>
+        {isMatchLoading && <Loader />}
 
-          {match && (
-            <>
-              <CardHeaderDetails isTitle />
-              <CardHeaderDetails isTitle={false} />
-            </>
-          )}
-        </Paper>
-        <Paper sx={{ p: 2 }}>
+        {match && (
+          <>
+            <CardHeaderDetails isTitle />
+            <CardHeaderDetails isTitle={false} />
+          </>
+        )}
+      </Box>
+      <Card sx={{ m: 2 }}>
+        <CardContent>
           {isMatchLoading && <Loader />}
 
           {match && (
             <>
               <Grid container>
-                <Grid item xs={2}>
-                  <Typography variant="body2">[logo]</Typography>
+                <Grid item xs={5}>
+                  {/* <Typography align="center" variant="body2">
+                    [logo]
+                  </Typography> */}
+                  <Typography align="center" variant="h3">
+                    14
+                  </Typography>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={2}>
                   <Box
                     sx={{
                       alignItems: 'center',
@@ -242,85 +277,94 @@ const Match: NextPage = () => {
                       height: '100%',
                     }}
                   >
-                    <Typography align="center" variant="h3">
-                      14
-                    </Typography>
                     <Typography align="center" variant="body1">
                       vs
                     </Typography>
-                    <Typography align="center" variant="h3">
-                      18
-                    </Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={2}>
-                  <Typography variant="body2">[logo]</Typography>
+                <Grid item xs={5}>
+                  {/* <Typography align="center" variant="body2">
+                    [logo]
+                  </Typography> */}
+                  <Typography align="center" variant="h3">
+                    18
+                  </Typography>
                 </Grid>
               </Grid>
             </>
           )}
-        </Paper>
-      </Stack>
+        </CardContent>
+      </Card>
       <Grid container spacing={2} sx={{ px: 2 }}>
         <Grid item xs={6}>
           <Card>
             <CardContent>
-              {isMatchLoading && <Loader />}
+              <CardHeader
+                disableTypography
+                title={
+                  isMatchLoading ? <Loader /> : match && match.teams.home.name
+                }
+              />
 
               {match && (
-                <Stack>
-                  <Typography align="center" variant="caption">
-                    odds
-                  </Typography>
-                  <Typography align="center" variant="h6">
-                    {match.teams.home.odds.toString()}
-                  </Typography>
-                  <Typography align="center" variant="body2">
-                    {match.teams.home.name}
-                  </Typography>
-                </Stack>
+                <Typography align="center">
+                  {match.teams.home.odds.toString()}
+                </Typography>
               )}
             </CardContent>
             <CardActions>
-              <Button>Bet: &#8369;0.00</Button>
+              <Button
+                onClick={() => handleBetClick(match?.teams.home.id)}
+                variant="contained"
+                sx={{ width: '100%' }}
+              >
+                Bet: &#8369;0.00
+              </Button>
             </CardActions>
           </Card>
         </Grid>
         <Grid item xs={6}>
           <Card>
             <CardContent>
-              {isMatchLoading && <Loader />}
+              <CardHeader
+                disableTypography
+                title={
+                  isMatchLoading ? (
+                    <Loader />
+                  ) : (
+                    match && match.teams.visitor.name
+                  )
+                }
+              />
 
               {match && (
-                <Stack>
-                  <Typography align="center" variant="caption">
-                    odds
-                  </Typography>
-                  <Typography align="center" variant="h6">
-                    {match.teams.visitor.odds.toString()}
-                  </Typography>
-                  <Typography align="center" variant="body2">
-                    {match.teams.visitor.name}
-                  </Typography>
-                </Stack>
+                <Typography align="center">
+                  {match.teams.visitor.odds.toString()}
+                </Typography>
               )}
             </CardContent>
             <CardActions>
-              <Button>Bet: &#8369;0.00</Button>
+              <Button
+                onClick={() => handleBetClick(match?.teams.visitor.id)}
+                variant="contained"
+                sx={{ width: '100%' }}
+              >
+                Bet: &#8369;0.00
+              </Button>
             </CardActions>
           </Card>
         </Grid>
       </Grid>
-      <BottomNavBar />
+      <BetForm handleClose={handleCloseBetForm} open={openBetForm} />
     </Layout>
   );
 };
 
-const Transition = React.forwardRef(function Transition(
+const Transition = forwardRef(function Transition(
   props: TransitionProps & {
-    children: React.ReactElement;
+    children: ReactElement;
   },
-  ref: React.Ref<unknown>
+  ref: Ref<unknown>,
 ) {
   return <Slide direction="up" ref={ref} {...props} />;
 });

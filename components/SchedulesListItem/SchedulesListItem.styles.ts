@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { ListItemButton, ListItemText, Box } from '@mui/material';
 
 export const StyledListItemButton = styled(ListItemButton)`
-  padding: 0;
+  padding: 2;
 `;
 
 export const StyledListItemText = styled(ListItemText)`
