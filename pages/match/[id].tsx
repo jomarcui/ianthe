@@ -23,6 +23,8 @@ import {
   DialogTitle,
   Grid,
   Link as MUILink,
+  List,
+  ListItem,
   Paper,
   Slide,
   Stack,
@@ -240,7 +242,7 @@ const Match: NextPage = () => {
         }));
       {
       }
-    }, 1000);
+    }, 5000);
 
     return () => clearInterval(scoresInterval);
   }, []);
@@ -256,7 +258,7 @@ const Match: NextPage = () => {
     <Layout>
       <Breadcrumbs
         aria-label="breadcrumb"
-        sx={{ borderBottom: '1px solid #ecf0f1', p: 2 }}
+        sx={{ bgcolor: '#fff', borderBottom: '1px solid #ecf0f1', p: 2 }}
       >
         <Link href="/" passHref>
           <MUILink color="inherit" underline="hover">
@@ -267,143 +269,112 @@ const Match: NextPage = () => {
           Match ID: {matchId?.slice(0, 8)}...
         </Typography>
       </Breadcrumbs>
-      <Box sx={{ p: 2 }}>
-        {isMatchLoading && <Loader />}
 
-        {match && (
-          <>
-            <CardHeaderDetails isTitle />
-            <CardHeaderDetails isTitle={false} />
-          </>
-        )}
-      </Box>
-      <Card sx={{ m: 2 }}>
-        {/* <CardHeader
-          disableTypography
-          title={
-            <Typography align="center" variant="body2">
-              Scores
-            </Typography>
-          }
-        /> */}
-        <CardContent>
+      <Stack spacing={5} sx={{ bgcolor: '#ecf0f1', p: 2 }}>
+        <Box>
+          {isMatchLoading && <Loader />}
+
+          <div>{match?.league.name}</div>
+          <div>
+            <span style={{ color: 'rgba(0, 0, 0, 0.6)', fontSize: '0.875rem' }}>
+              {match?.sport.name}
+            </span>
+          </div>
+        </Box>
+
+        <Box>
           {isMatchLoading && <Loader />}
 
           {match && (
-            <>
-              <Grid container spacing={2}>
-                <Grid item xs={5}>
-                  <Paper
-                    sx={{ bgcolor: '#2980b9', color: '#fff', mb: 2, py: 5 }}
-                  >
-                    <Typography align="center" variant="h3">
-                      {scores.home}
-                    </Typography>
-                  </Paper>
-                  <Typography align="center" variant="body2">
-                    {match?.teams.home.name}
+            <Stack direction="row" justifyContent="center" spacing={3}>
+              <Box sx={{ maxWidth: 113, minWidth: 100 }}>
+                <Paper
+                  sx={{
+                    bgcolor: '#2980b9',
+                    color: '#fff',
+                    mb: 2,
+                    p: 2,
+                    textAlign: 'center',
+                  }}
+                >
+                  <span style={{ fontSize: '3rem' }}>{scores.home}</span>
+                </Paper>
+                <Typography align="center" variant="body2">
+                  {match?.teams.home.name}
+                </Typography>
+              </Box>
+              <div style={{ paddingTop: '2rem' }}>vs</div>
+              <Box sx={{ maxWidth: 113, minWidth: 100 }}>
+                <Paper
+                  sx={{
+                    bgcolor: '#2980b9',
+                    color: '#fff',
+                    mb: 2,
+                    p: 2,
+                    textAlign: 'center',
+                  }}
+                >
+                  <Typography align="center" variant="h3">
+                    {scores.visitor}
                   </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Box
-                    sx={{
-                      alignItems: 'center',
-                      display: 'flex',
-                      gap: 2,
-                      justifyContent: 'center',
-                      height: '100%',
-                    }}
-                  >
-                    <Typography align="center" variant="body1">
-                      vs
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={5}>
-                  <Paper
-                    sx={{ bgcolor: '#2980b9', color: '#fff', mb: 2, py: 5 }}
-                  >
-                    <Typography align="center" variant="h3">
-                      {scores.visitor}
-                    </Typography>
-                  </Paper>
-                  <Typography align="center" variant="body2">
-                    {match?.teams.visitor.name}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </>
+                </Paper>
+                <Typography align="center" variant="body2">
+                  {match?.teams.visitor.name}
+                </Typography>
+              </Box>
+            </Stack>
           )}
-        </CardContent>
-      </Card>
-      <Grid container spacing={2} sx={{ px: 2 }}>
-        <Grid item xs={6}>
-          <Card>
-            <CardContent>
-              <Grid container spacing={2}>
-                {isMatchLoading && <Loader />}
+        </Box>
+      </Stack>
 
-                {match && (
-                  <>
-                    <Grid item xs={6}>
-                      <Typography variant="body2">
-                        {match.teams.home.name}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography align="right">
-                        {match.teams.home.odds.toString()}
-                      </Typography>
-                    </Grid>
-                  </>
-                )}
-              </Grid>
-            </CardContent>
-            <CardActions>
-              <Button
-                onClick={() => handleBetClick(match?.teams.home.id)}
-                variant="contained"
-                sx={{ width: '100%' }}
-              >
-                Bet: &#8369;0.00
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid item xs={6}>
-          <Card>
-            <CardContent>
-              <Grid container spacing={2}>
-                {isMatchLoading && <Loader />}
+      <List disablePadding sx={{ m: 0 }}>
+        {isMatchLoading && <Loader />}
 
-                {match && (
-                  <>
-                    <Grid item xs={6}>
-                      <Typography variant="body2">
-                        {match.teams.visitor.name}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography align="right">
-                        {match.teams.visitor.odds.toString()}
-                      </Typography>
-                    </Grid>
-                  </>
-                )}
-              </Grid>
-            </CardContent>
-            <CardActions>
-              <Button
-                onClick={() => handleBetClick(match?.teams.visitor.id)}
-                variant="contained"
-                sx={{ width: '100%' }}
-              >
-                Bet: &#8369;0.00
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-      </Grid>
+        {match &&
+          Object.values(match.teams).map(({ id, name, odds }) => (
+            <ListItem divider key={id}>
+              {isMatchLoading && <Loader />}
+
+              {match && (
+                <Grid container>
+                  <Grid item xs={4}>
+                    <div
+                      style={{
+                        alignItems: 'center',
+                        display: 'flex',
+                        height: '100%',
+                      }}
+                    >
+                      <span style={{ fontSize: '0.875rem' }}>{name}</span>
+                    </div>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <div
+                      style={{
+                        alignItems: 'center',
+                        display: 'flex',
+                        height: '100%',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <span>{odds.toString()}</span>
+                    </div>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      onClick={() => handleBetClick(id)}
+                      variant="outlined"
+                      sx={{ width: '100%' }}
+                    >
+                      Bet: &#8369;0.00
+                    </Button>
+                  </Grid>
+                </Grid>
+              )}
+            </ListItem>
+          ))}
+      </List>
+
       <BetForm handleClose={handleCloseBetForm} open={openBetForm} />
     </Layout>
   );
