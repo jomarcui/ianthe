@@ -1,4 +1,5 @@
 import { MouseEvent, useState } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import {
@@ -11,7 +12,7 @@ import {
   Grid,
   IconButton,
   List,
-  ListItem,
+  ListItemButton,
   Menu,
   MenuItem,
   Stack,
@@ -61,6 +62,8 @@ const AccountMenuItems = ({
 );
 
 const MainMenuList = () => {
+  const router = useRouter();
+
   const mainMenuListItems = [
     {
       href: '/schedules',
@@ -79,23 +82,25 @@ const MainMenuList = () => {
     },
   ];
 
+  const handleMenuListItemClick = (href: string) => router.push(href);
+
   return (
     <List disablePadding>
       {mainMenuListItems.map(({ href, Icon, label }) => (
-        <ListItem key={`main-menu-listitem-${label}`} divider>
-          <Link href={href}>
-            <a style={{ alignItems: 'center', display: 'flex' }}>
-              <Grid alignItems="center" container spacing={1}>
-                <Grid item>
-                  <Icon />
-                </Grid>
-                <Grid item>
-                  <Typography>{label}</Typography>
-                </Grid>
-              </Grid>
-            </a>
-          </Link>
-        </ListItem>
+        <ListItemButton
+          onClick={() => handleMenuListItemClick(href)}
+          key={`main-menu-listitem-${label}`}
+          divider
+        >
+          <Grid alignItems="center" container spacing={1}>
+            <Grid item>
+              <Icon />
+            </Grid>
+            <Grid item>
+              <Typography>{label}</Typography>
+            </Grid>
+          </Grid>
+        </ListItemButton>
       ))}
     </List>
   );
