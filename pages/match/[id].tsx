@@ -19,6 +19,7 @@ import {
   CardActions,
   CardContent,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
@@ -41,6 +42,7 @@ import Loader from '../../components/Loader/Loader';
 import { CardHeader } from '@mui/material';
 import { Breadcrumbs } from '@mui/material';
 import { useSession } from 'next-auth/react';
+import PleaseSignIn from '../../components/PleaseSignIn';
 
 enum Operation {
   Add,
@@ -68,6 +70,59 @@ const BetForm = ({ handleClose, open }) => {
 
   const watchBet = watch('bet');
 
+  const generateDialogContent = () => {
+    if (status === 'unauthenticated') return <PleaseSignIn />
+
+    return (
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
+        <Stack spacing={2}>
+          <Stack direction="row">
+            <Button
+              onClick={() => handleBetChange({ operation: Operation.Subtract })}
+              variant="outlined"
+            >
+              -
+            </Button>
+            <TextField
+              autoFocus
+              id="bet"
+              inputProps={{
+                step: 'any',
+              }}
+              required
+              type="number"
+              variant="outlined"
+              sx={{ width: 100 }}
+              {...register('bet')}
+            />
+            <Button
+              onClick={() => handleBetChange({ operation: Operation.Add })}
+              variant="outlined"
+            >
+              +
+            </Button>
+          </Stack>
+          <Grid justifyContent="space-between" container>
+            <Grid item>
+              <Button
+                color="secondary"
+                onClick={handleClose}
+                variant="contained"
+              >
+                Cancel
+              </Button>
+            </Grid>
+            <Grid item>
+              <LoadingButton type="submit" variant="contained">
+                Place bet
+              </LoadingButton>
+            </Grid>
+          </Grid>
+        </Stack>
+      </form>
+    );
+  }
+
   const handleBetChange = ({ operation }: { operation: Operation }) => {
     const result =
       operation === Operation.Subtract ? watchBet - 10 : watchBet + 10;
@@ -87,122 +142,12 @@ const BetForm = ({ handleClose, open }) => {
       TransitionComponent={Transition}
     >
       <DialogTitle>Bet</DialogTitle>
-      <DialogContent>
-        {/* <DialogContentText>
-          To subscribe to this website, please enter your email address here. We
-          will send updates occasionally.
-        </DialogContentText> */}
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
-          <Stack spacing={2}>
-            <Stack direction="row">
-              <Button
-                onClick={() =>
-                  handleBetChange({ operation: Operation.Subtract })
-                }
-                variant="outlined"
-              >
-                -
-              </Button>
-              <TextField
-                autoFocus
-                id="bet"
-                inputProps={{
-                  step: 'any',
-                }}
-                required
-                type="number"
-                variant="outlined"
-                sx={{ width: 100 }}
-                {...register('bet')}
-              />
-              <Button
-                onClick={() => handleBetChange({ operation: Operation.Add })}
-                variant="outlined"
-              >
-                +
-              </Button>
-            </Stack>
-            <Grid justifyContent="space-between" container>
-              <Grid item>
-                <Button
-                  color="secondary"
-                  onClick={handleClose}
-                  variant="contained"
-                >
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item>
-                <LoadingButton type="submit" variant="contained">
-                  Place bet
-                </LoadingButton>
-              </Grid>
-            </Grid>
-          </Stack>
-        </form>
-      </DialogContent>
+      <DialogContent>{generateDialogContent()}</DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Close</Button>
+      </DialogActions>
     </Dialog>
   );
-};
-
-const BottomNavBar = () => {
-  const [open, setOpen] = useState(false);
-  const [value] = useState();
-
-  const router = useRouter();
-
-  const handleChange = (_, newValue: number) => {
-    if (newValue === 0) {
-      router.push('/');
-      return;
-    }
-
-    setOpen(true);
-  };
-
-  const handleClose = () => setOpen(false);
-
-  return (
-    <>
-      <Paper
-        sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
-        elevation={3}
-      >
-        <BottomNavigation showLabels value={value} onChange={handleChange}>
-          <BottomNavigationAction icon={<ArrowBackIosNewIcon />} label="Back" />
-          <BottomNavigationAction label="Place Bet" icon={<MoneyIcon />} />
-        </BottomNavigation>
-      </Paper>
-      <BetForm handleClose={handleClose} open={open} />
-    </>
-  );
-};
-
-const CardHeaderDetails = ({ isTitle }: CardHeaderDetailsProps) => {
-  const router = useRouter();
-
-  const { data: match, isLoading: isMatchLoading } = useGetMatchByIdQuery(
-    getQueryId(router.query.id),
-  );
-
-  if (isMatchLoading) return <Loader />;
-
-  const titleOptions = {
-    color: 'rgba(0, 0, 0, 0.6)',
-    text: match.league.name,
-    variant: 'h5' as TypographyVariant,
-  };
-
-  const subtitleOptions = {
-    text: match.sport.name,
-    variant: 'body1' as TypographyVariant,
-  };
-
-  const options = isTitle ? titleOptions : subtitleOptions;
-
-  const { text, ...other } = options;
-
-  return <Typography {...other}>{text}</Typography>;
 };
 
 const Match: NextPage = () => {
