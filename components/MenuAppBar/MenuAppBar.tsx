@@ -1,89 +1,167 @@
-import React, { useEffect } from 'react';
+import { MouseEvent, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useSession, signOut } from 'next-auth/react';
 import {
   AppBar,
-  IconButton,
   Badge,
   Box,
   Button,
   Divider,
+  Drawer,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
   Menu,
   MenuItem,
   Stack,
   Toolbar,
   Typography,
-  Grid,
 } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
-import MoneyIcon from '@mui/icons-material/Money';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import PeopleIcon from '@mui/icons-material/People';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import store from '../../redux/store';
-import { setUser } from '../../redux/features/usersSlice';
+import {
+  AccountCircle as AccountCircleIcon,
+  Event as EventIcon,
+  Mail as MailIcon,
+  Menu as MenuIcon,
+  Money as MoneyIcon,
+  MoreVert as MoreVertIcon,
+  Notifications as NotificationsIcon,
+  People as PeopleIcon,
+  Receipt as ReceiptIcon,
+  Schedule as ScheduleIcon,
+} from '@mui/icons-material';
+
+const AccountMenuItems = ({
+  accountMenuAnchorEl,
+  accountMenuId,
+  handleAccountMenuClose,
+  handleSignOut,
+  isAccountMenuOpen,
+}) => (
+  <Menu
+    anchorEl={accountMenuAnchorEl}
+    anchorOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    id={accountMenuId}
+    keepMounted
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    open={isAccountMenuOpen}
+    onClose={handleAccountMenuClose}
+  >
+    <MenuItem onClick={handleAccountMenuClose}>Profile</MenuItem>
+    <MenuItem onClick={handleAccountMenuClose}>My account</MenuItem>
+    <Divider />
+    <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+  </Menu>
+);
+
+const MainMenuList = () => {
+  const mainMenuListItems = [
+    {
+      href: '/schedules',
+      Icon: ScheduleIcon,
+      label: 'Schedules',
+    },
+    {
+      href: '/users',
+      Icon: PeopleIcon,
+      label: 'Users',
+    },
+    {
+      href: '/upcomingevents',
+      Icon: EventIcon,
+      label: 'Upcoming Events',
+    },
+  ];
+
+  return (
+    <List disablePadding>
+      {mainMenuListItems.map(({ href, Icon, label }) => (
+        <ListItem key={`main-menu-listitem-${label}`} divider>
+          <Link href={href}>
+            <a style={{ alignItems: 'center', display: 'flex' }}>
+              <Grid alignItems="center" container spacing={1}>
+                <Grid item>
+                  <Icon />
+                </Grid>
+                <Grid item>
+                  <Typography>{label}</Typography>
+                </Grid>
+              </Grid>
+            </a>
+          </Link>
+        </ListItem>
+      ))}
+    </List>
+  );
+};
+
+const registrationAndLogin = (
+  <Stack spacing={2} direction="row">
+    <Button color="success" variant="contained">
+      Register
+    </Button>
+    <Link href="/signin" passHref>
+      <Button variant="contained">Sign-In</Button>
+    </Link>
+  </Stack>
+);
 
 const MenuAppBar = () => {
   const { data: session, status } = useSession();
 
-  const [adminMenuAnchorEl, setAdminMenuAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+  const [accountMenuAnchorEl, setAccountMenuAnchorEl] =
+    useState<null | HTMLElement>(null);
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [adminMenuAnchorEl, setAdminMenuAnchorEl] =
+    useState<null | HTMLElement>(null);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+    useState<null | HTMLElement>(null);
 
-  const router = useRouter();
+  const [isMainMenuOpen, setIsMainMenuOpen] = useState(false);
 
+  const isAccountMenuOpen = Boolean(accountMenuAnchorEl);
   const isAdminMenuOpen = Boolean(adminMenuAnchorEl);
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const adminMenuId = 'admin-menu';
-  const menuId = 'primary-search-account-menu';
+  const accountMenuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
+  const mainMenuId = 'main-menu';
 
-  let user = store.getState().users.user;
+  const handleAccountMenuClick = (event: MouseEvent<HTMLElement>) =>
+    setAccountMenuAnchorEl(event.currentTarget);
 
-  useEffect(() => {
-    return () => unsubscribe();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleAdminMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
-    setAdminMenuAnchorEl(event.currentTarget);
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleAccountMenuClose = () => {
+    setAccountMenuAnchorEl(null);
     handleMobileMenuClose();
     handleMobileAdminMenuClose();
   };
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
-    setAnchorEl(event.currentTarget);
+  const handleMainMenuClick = () => setIsMainMenuOpen(true);
+
+  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) =>
+    setAccountMenuAnchorEl(event.currentTarget);
 
   const handleMobileAdminMenuClose = () => setAdminMenuAnchorEl(null);
 
   const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
 
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
+  const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) =>
     setMobileMoreAnchorEl(event.currentTarget);
 
   const handleSignOut = () => {
-    handleMenuClose();
-    store.dispatch(setUser(null));
-    router.push('/');
+    signOut();
   };
 
-  const updateUser = () => (user = store.getState().users.user);
-
-  const unsubscribe = store.subscribe(updateUser);
+  const toggleDrawer = () => setIsMainMenuOpen(false);
 
   const renderAdminMenuItems = (
     <Menu
@@ -99,11 +177,11 @@ const MenuAppBar = () => {
         horizontal: 'left',
       }}
       open={isAdminMenuOpen}
-      onClose={handleMenuClose}
+      onClose={handleAccountMenuClose}
     >
       {session && (
         <div>
-          <MenuItem onClick={handleMenuClose}>
+          <MenuItem onClick={handleAccountMenuClose}>
             <Link href="/schedules">
               <a style={{ alignItems: 'center', display: 'flex' }}>
                 <Grid alignItems="center" container spacing={1}>
@@ -117,7 +195,7 @@ const MenuAppBar = () => {
               </a>
             </Link>
           </MenuItem>
-          <MenuItem onClick={handleMenuClose}>
+          <MenuItem onClick={handleAccountMenuClose}>
             <Link href="/users">
               <a style={{ alignItems: 'center', display: 'flex' }}>
                 <Grid alignItems="center" container spacing={1}>
@@ -133,34 +211,11 @@ const MenuAppBar = () => {
           </MenuItem>
         </div>
       )}
-      <MenuItem onClick={handleMenuClose}>
+      <MenuItem onClick={handleAccountMenuClose}>
         <Typography color="GrayText" variant="body2">
           Soon
         </Typography>
       </MenuItem>
-    </Menu>
-  );
-
-  const renderMenuItems = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <Divider />
-      <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
     </Menu>
   );
 
@@ -215,29 +270,7 @@ const MenuAppBar = () => {
     </Menu>
   );
 
-  const renderUserMenu = (user: any) =>
-    !user ? RegistrationAndLogin : UserMenu;
-
-  const RegistrationAndLogin = (
-    <Stack spacing={2} direction="row">
-      {session ? (
-        <Button color="secondary" onClick={() => signOut()} variant="contained">
-          Sign-Out
-        </Button>
-      ) : (
-        <>
-          <Button color="success" variant="contained">
-            Register
-          </Button>
-          <Link href="/signin" passHref>
-            <Button variant="contained">Sign-In</Button>
-          </Link>
-        </>
-      )}
-    </Stack>
-  );
-
-  const UserMenu = (
+  const userMenu = (
     <>
       <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
@@ -258,7 +291,7 @@ const MenuAppBar = () => {
           size="large"
           edge="end"
           aria-label="account of current user"
-          aria-controls={menuId}
+          aria-controls={accountMenuId}
           aria-haspopup="true"
           onClick={handleProfileMenuOpen}
           color="inherit"
@@ -286,12 +319,12 @@ const MenuAppBar = () => {
       <AppBar elevation={0} position="static">
         <Toolbar>
           <IconButton
-            aria-controls={adminMenuId}
+            aria-controls={mainMenuId}
             aria-label="open drawer"
             aria-haspopup="true"
             color="inherit"
             edge="start"
-            onClick={handleAdminMenuOpen}
+            onClick={handleMainMenuClick}
             size="large"
             sx={{ mr: 2 }}
           >
@@ -305,12 +338,28 @@ const MenuAppBar = () => {
             </a>
           </Link>
           <Box sx={{ flexGrow: 1 }} />
-          {renderUserMenu(user)}
+          {session?.user ? userMenu : registrationAndLogin}
         </Toolbar>
       </AppBar>
+      <AccountMenuItems
+        accountMenuAnchorEl={accountMenuAnchorEl}
+        accountMenuId={accountMenuId}
+        handleAccountMenuClose={handleAccountMenuClose}
+        handleSignOut={handleSignOut}
+        isAccountMenuOpen={isAccountMenuOpen}
+      />
       {renderAdminMenuItems}
       {renderMobileMenu}
-      {renderMenuItems}
+      <Drawer anchor="left" open={isMainMenuOpen} onClose={toggleDrawer}>
+        <Box
+          sx={{ width: 'auto' }}
+          role="presentation"
+          onClick={toggleDrawer}
+          onKeyDown={toggleDrawer}
+        >
+          <MainMenuList />
+        </Box>
+      </Drawer>
     </Box>
   );
 };
