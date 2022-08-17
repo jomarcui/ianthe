@@ -185,12 +185,14 @@ const Match: NextPage = () => {
           ))}
       </List>
 
-      <ContainersBetForm
-        handleClose={handleCloseBetForm}
-        matchId={matchId}
-        open={openBetForm}
-        selectedTeamId={selectedTeamId}
-      />
+      {matchId && (
+        <ContainersBetForm
+          handleClose={handleCloseBetForm}
+          matchId={matchId}
+          open={openBetForm}
+          selectedTeamId={selectedTeamId}
+        />
+      )}
     </Layout>
   );
 };
