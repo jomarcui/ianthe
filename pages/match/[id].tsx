@@ -116,7 +116,7 @@ const Match: NextPage = () => {
                   <span style={{ fontSize: '3rem' }}>{scores.home}</span>
                 </Paper>
                 <Typography align="center" variant="body2">
-                  {match?.teams.home.name}
+                  {match?.teams.find(({ side }) => side).name}
                 </Typography>
               </Box>
               <div style={{ paddingTop: '2rem' }}>vs</div>
@@ -133,7 +133,7 @@ const Match: NextPage = () => {
                   <span style={{ fontSize: '3rem' }}>{scores.visitor}</span>
                 </Paper>
                 <Typography align="center" variant="body2">
-                  {match?.teams.visitor.name}
+                  {match?.teams.find(({ side }) => !side).name}
                 </Typography>
               </Box>
             </Stack>
@@ -191,6 +191,7 @@ const Match: NextPage = () => {
 
       <ContainersBetForm
         handleClose={handleCloseBetForm}
+        matchId={matchId}
         open={openBetForm}
         selectedTeamId={selectedTeamId}
       />

@@ -19,18 +19,20 @@ export type Match = {
     name: string;
   };
   status: Status;
-  teams: {
-    home: {
+  teams: [
+    {
       id: string;
       name: string;
       odds: Number;
-    };
-    visitor: {
+      side: Number;
+    },
+    {
       id: string;
       name: string;
       odds: Number;
-    };
-  };
+      side: Number;
+    }
+  ];
 };
 
 export type Schedule = {
@@ -57,7 +59,7 @@ export type Sport = {
 };
 
 export type Team = {
-  // id: string;
+  id: string;
   // createdAt: Date;
   leagueId: string;
   name: string;

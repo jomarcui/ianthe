@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import {
   Stack,
@@ -10,38 +11,42 @@ import {
   IconButton,
   Typography,
   DialogContent,
+  Card,
+  CardContent,
+  CardHeader,
+  Avatar,
+  Box,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
+import { Close as CloseIcon, Info as InfoIcon } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
-import { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGetTeamByIdQuery } from '../../redux/api/teamsApi';
 import PleaseSignIn from '../../components/PleaseSignIn';
 import Transition from '../../components/Transition';
+import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
 
 enum Operation {
   Add,
   Subtract,
 }
 
+type BetFormProps = {
+  handleClose: () => void;
+  matchId: string;
+  open: boolean;
+  selectedTeamId: string;
+}
+
 type FormInput = {
   bet: number;
 };
 
-const BetForm = ({ handleClose, open, selectedTeamId }) => {
-  const [skipGetTeamByIdQuery, setSkipGetTeamByIdQuery] = useState(true);
+const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) => {
+  const [totalReturn, setTotalReturn] = useState(0);
   const { data: session, status } = useSession();
+  const { data: match, isLoading: isMatchLoading } = useGetMatchByIdQuery(matchId);
 
-  const { data: teamResponse, isLoading: isTeamLoading } = useGetTeamByIdQuery(
-    selectedTeamId,
-    { skip: skipGetTeamByIdQuery },
-  );
-
-  useEffect(() => {
-    if (!selectedTeamId) return;
-
-    setSkipGetTeamByIdQuery(false);
-  }, [selectedTeamId, setSkipGetTeamByIdQuery]);
+  const selectedTeam = match?.teams.find(({ id }) => id === selectedTeamId);
 
   const { handleSubmit, register, setValue, watch } = useForm<FormInput>({
     defaultValues: {
@@ -51,64 +56,12 @@ const BetForm = ({ handleClose, open, selectedTeamId }) => {
 
   const watchBet = watch('bet');
 
-  const generateDialogContent = () => {
-    if (status === 'unauthenticated') return <PleaseSignIn />;
-
-    return (
-      <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <Stack spacing={2}>
-          <Stack direction="row">
-            <Button
-              onClick={() => handleBetChange({ operation: Operation.Subtract })}
-              variant="outlined"
-            >
-              -
-            </Button>
-            <TextField
-              autoFocus
-              id="bet"
-              inputProps={{
-                step: 'any',
-              }}
-              required
-              type="number"
-              variant="outlined"
-              sx={{ width: 100 }}
-              {...register('bet')}
-            />
-            <Button
-              onClick={() => handleBetChange({ operation: Operation.Add })}
-              variant="outlined"
-            >
-              +
-            </Button>
-          </Stack>
-          <Grid justifyContent="space-between" container>
-            <Grid item>
-              <Button
-                color="secondary"
-                onClick={handleClose}
-                variant="contained"
-              >
-                Cancel
-              </Button>
-            </Grid>
-            <Grid item>
-              <LoadingButton type="submit" variant="contained">
-                Place bet
-              </LoadingButton>
-            </Grid>
-          </Grid>
-        </Stack>
-      </form>
-    );
-  };
-
   const handleBetChange = ({ operation }: { operation: Operation }) => {
-    const result =
+    const bet =
       operation === Operation.Subtract ? watchBet - 10 : watchBet + 10;
 
-    setValue('bet', result);
+    setValue('bet', bet);
+    setTotalReturn((prevTotalReturn) => bet + bet / Number(selectedTeam.odds));
   };
 
   const handleFormSubmit: SubmitHandler<FormInput> = async (formData) => {
@@ -137,7 +90,93 @@ const BetForm = ({ handleClose, open, selectedTeamId }) => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <DialogContent>{generateDialogContent()}</DialogContent>
+      <DialogContent>
+        {status === 'unauthenticated' && (
+          <PleaseSignIn />
+        )}
+
+        {status === 'authenticated' && (
+          <Stack spacing={5}>
+        <Card variant="outlined">
+          <CardHeader
+            avatar={<InfoIcon color="info" />}
+            subheader="Add credits by sending GCash to 09XX-XXX-XXXX"
+          />
+          <CardContent>
+            <Grid container>
+              <Grid item xs={6}>
+                <Typography>My Credits</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="right">Php0.00</Typography>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+        <Stack spacing={2}>
+          <Typography variant="h6">Bet on</Typography>
+          <Typography>
+            {`${selectedTeam?.name} @${selectedTeam?.odds}`}
+          </Typography>
+          <form onSubmit={handleSubmit(handleFormSubmit)}>
+            <Grid container>
+              <Grid item xs={6}>
+                <Stack
+                  direction="row"
+                  sx={{ border: '1px solid rgba(0, 0, 0, 0.12)' }}
+                >
+                  <button
+                  onClick={() => handleBetChange({ operation: Operation.Subtract })}
+                    style={{
+                      border: 'none',
+                      fontSize: '1rem',
+                      width: '6rem',
+                    }}
+                  >
+                    <Typography>-</Typography>
+                  </button>
+                  <input
+                    step="any"
+                    type="number"
+                    style={{
+                      border: 'none',
+                      borderRadius: 0,
+                      fontSize: '1rem',
+                      padding: '0.875rem',
+                      width: '100%',
+                    }}
+                    {...register('bet')}
+                  ></input>
+                  <button
+                  onClick={() => handleBetChange({ operation: Operation.Add })}
+                    style={{
+                      border: 'none',
+                      fontSize: '1rem',
+                      width: '6rem',
+                    }}
+                  >
+                    <Typography>+</Typography>
+                  </button>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Box
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                    height: '100%',
+                    justifyContent: 'end',
+                  }}
+                >
+                  <Typography>{`Php${totalReturn.toFixed(2)}`}</Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </form>
+        </Stack>
+      </Stack>
+        )}
+      </DialogContent>
     </Dialog>
   );
 };
