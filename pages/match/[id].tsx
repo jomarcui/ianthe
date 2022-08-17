@@ -106,8 +106,6 @@ const Match: NextPage = () => {
               <Box sx={{ maxWidth: 113, minWidth: 100 }}>
                 <Paper
                   sx={{
-                    bgcolor: '#2980b9',
-                    color: '#fff',
                     mb: 2,
                     p: 2,
                     textAlign: 'center',
@@ -123,8 +121,6 @@ const Match: NextPage = () => {
               <Box sx={{ maxWidth: 113, minWidth: 100 }}>
                 <Paper
                   sx={{
-                    bgcolor: '#2980b9',
-                    color: '#fff',
                     mb: 2,
                     p: 2,
                     textAlign: 'center',

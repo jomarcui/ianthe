@@ -23,13 +23,13 @@ export type Match = {
     {
       id: string;
       name: string;
-      odds: Number;
+      odds: number;
       side: Number;
     },
     {
       id: string;
       name: string;
-      odds: Number;
+      odds: number;
       side: Number;
     }
   ];
@@ -70,6 +70,7 @@ export type Team = {
 export type User = {
   createdAt: Date;
   firstName: string;
+  id: string;
   lastName: string;
   mobileNumber: string;
   password: string;
