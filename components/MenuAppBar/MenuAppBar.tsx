@@ -1,20 +1,16 @@
-import { MouseEvent, useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
+import { useState } from 'react';
+import { signOut, useSession } from 'next-auth/react';
 import {
   AppBar,
   Badge,
   Box,
   Button,
-  Divider,
   Drawer,
   Grid,
   IconButton,
   List,
+  ListItem,
   ListItemButton,
-  Menu,
-  MenuItem,
   Stack,
   Toolbar,
   Typography,
@@ -22,6 +18,7 @@ import {
 import {
   AccountCircle as AccountCircleIcon,
   Event as EventIcon,
+  Logout as LogoutIcon,
   Mail as MailIcon,
   Menu as MenuIcon,
   Money as MoneyIcon,
@@ -31,78 +28,120 @@ import {
   Receipt as ReceiptIcon,
   Schedule as ScheduleIcon,
 } from '@mui/icons-material';
+import Link from 'next/link';
+import ListItemButtonLink from '../ListItemButtonLink';
 
-const AccountMenuItems = ({
-  accountMenuAnchorEl,
-  accountMenuId,
-  handleAccountMenuClose,
-  handleSignOut,
-  isAccountMenuOpen,
-}) => (
-  <Menu
-    anchorEl={accountMenuAnchorEl}
-    anchorOrigin={{
-      vertical: 'top',
-      horizontal: 'right',
-    }}
-    id={accountMenuId}
-    keepMounted
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'right',
-    }}
-    open={isAccountMenuOpen}
-    onClose={handleAccountMenuClose}
-  >
-    <MenuItem onClick={handleAccountMenuClose}>Profile</MenuItem>
-    <MenuItem onClick={handleAccountMenuClose}>My account</MenuItem>
-    <Divider />
-    <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
-  </Menu>
-);
-
-const MainMenuList = () => {
-  const router = useRouter();
+const MobileMainMenuList = ({
+  isMobileMainMenuListOpen,
+  setIsMobileMainMenuListOpen,
+}) => {
+  const toggleMobileMainMenuListDrawer = () =>
+    setIsMobileMainMenuListOpen(false);
 
   const mainMenuListItems = [
     {
-      href: '/schedules',
+      href: { pathname: '/schedules' },
       Icon: ScheduleIcon,
       label: 'Schedules',
     },
     {
-      href: '/users',
+      href: { pathname: '/users' },
       Icon: PeopleIcon,
       label: 'Users',
     },
     {
-      href: '/upcomingevents',
+      href: { pathname: '/upcomingevents' },
       Icon: EventIcon,
       label: 'Upcoming Events',
     },
   ];
 
-  const handleMenuListItemClick = (href: string) => router.push(href);
+  return (
+    <Drawer
+      anchor="left"
+      open={isMobileMainMenuListOpen}
+      onClose={toggleMobileMainMenuListDrawer}
+    >
+      <Box
+        sx={{ width: 'auto' }}
+        role="presentation"
+        onClick={toggleMobileMainMenuListDrawer}
+        onKeyDown={toggleMobileMainMenuListDrawer}
+      >
+        <List disablePadding>
+          {mainMenuListItems.map((mainMenuListItem) => (
+            <ListItemButtonLink
+              key={`mainmenu-listitem-${mainMenuListItem.label.trim()}`}
+              {...mainMenuListItem}
+            />
+          ))}
+        </List>
+      </Box>
+    </Drawer>
+  );
+};
+
+const MobileAccountMenuList = ({
+  isMobileAccountMenuListOpen,
+  setIsMobileAccountMenuListOpen,
+}) => {
+  const toggleMobileAccountMenuListDrawer = () =>
+    setIsMobileAccountMenuListOpen(false);
+
+  const accountMenuListItems = [
+    {
+      href: { pathname: '/transactions' },
+      Icon: ReceiptIcon,
+      label: 'Transactions',
+      notificationsCount: 4,
+    },
+    {
+      href: { pathname: '/wins' },
+      Icon: MoneyIcon,
+      label: 'Wins',
+      notificationsCount: 2,
+    },
+    {
+      href: { pathname: '/account' },
+      Icon: AccountCircleIcon,
+      label: 'Account',
+    },
+  ];
 
   return (
-    <List disablePadding>
-      {mainMenuListItems.map(({ href, Icon, label }) => (
-        <ListItemButton
-          onClick={() => handleMenuListItemClick(href)}
-          key={`main-menu-listitem-${label}`}
-          divider
-        >
-          <Grid alignItems="center" container spacing={1}>
-            <Grid item>
-              <Icon />
-            </Grid>
-            <Grid item>
-              <Typography>{label}</Typography>
-            </Grid>
-          </Grid>
-        </ListItemButton>
-      ))}
-    </List>
+    <Drawer
+      anchor="right"
+      open={isMobileAccountMenuListOpen}
+      onClose={toggleMobileAccountMenuListDrawer}
+    >
+      <Box
+        sx={{ width: 'auto' }}
+        role="presentation"
+        onClick={toggleMobileAccountMenuListDrawer}
+        onKeyDown={toggleMobileAccountMenuListDrawer}
+      >
+        <List disablePadding>
+          {accountMenuListItems.map((accountMenuListItem) => (
+            <ListItemButtonLink
+              key={`accountmenu-listitem-${accountMenuListItem.label.trim()}`}
+              {...accountMenuListItem}
+            />
+          ))}
+          <ListItem>
+            <ListItemButton onClick={() => signOut()}>
+              <Grid alignItems="center" container spacing={1}>
+                <Grid item>
+                  <LogoutIcon />
+                </Grid>
+                <Grid item>
+                  <Typography>Sign out</Typography>
+                </Grid>
+              </Grid>
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Box>
+    </Drawer>
   );
 };
 
@@ -120,160 +159,15 @@ const registrationAndLogin = (
 const MenuAppBar = () => {
   const { data: session, status } = useSession();
 
-  const [accountMenuAnchorEl, setAccountMenuAnchorEl] =
-    useState<null | HTMLElement>(null);
+  const [isMobileAccountMenuListOpen, setIsMobileAccountMenuListOpen] =
+    useState(false);
+  const [isMobileMainMenuListOpen, setIsMobileMainMenuListOpen] =
+    useState(false);
 
-  const [adminMenuAnchorEl, setAdminMenuAnchorEl] =
-    useState<null | HTMLElement>(null);
+  const handleMainMenuClick = () => setIsMobileMainMenuListOpen(true);
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    useState<null | HTMLElement>(null);
-
-  const [isMainMenuOpen, setIsMainMenuOpen] = useState(false);
-
-  const isAccountMenuOpen = Boolean(accountMenuAnchorEl);
-  const isAdminMenuOpen = Boolean(adminMenuAnchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const adminMenuId = 'admin-menu';
-  const accountMenuId = 'primary-search-account-menu';
-  const mobileMenuId = 'primary-search-account-menu-mobile';
-  const mainMenuId = 'main-menu';
-
-  const handleAccountMenuClick = (event: MouseEvent<HTMLElement>) =>
-    setAccountMenuAnchorEl(event.currentTarget);
-
-  const handleAccountMenuClose = () => {
-    setAccountMenuAnchorEl(null);
-    handleMobileMenuClose();
-    handleMobileAdminMenuClose();
-  };
-
-  const handleMainMenuClick = () => setIsMainMenuOpen(true);
-
-  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) =>
-    setAccountMenuAnchorEl(event.currentTarget);
-
-  const handleMobileAdminMenuClose = () => setAdminMenuAnchorEl(null);
-
-  const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
-
-  const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) =>
-    setMobileMoreAnchorEl(event.currentTarget);
-
-  const handleSignOut = () => {
-    signOut();
-  };
-
-  const toggleDrawer = () => setIsMainMenuOpen(false);
-
-  const renderAdminMenuItems = (
-    <Menu
-      anchorEl={adminMenuAnchorEl}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-      id={adminMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
-      }}
-      open={isAdminMenuOpen}
-      onClose={handleAccountMenuClose}
-    >
-      {session && (
-        <div>
-          <MenuItem onClick={handleAccountMenuClose}>
-            <Link href="/schedules">
-              <a style={{ alignItems: 'center', display: 'flex' }}>
-                <Grid alignItems="center" container spacing={1}>
-                  <Grid item>
-                    <ScheduleIcon />
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="body2">Schedules</Typography>
-                  </Grid>
-                </Grid>
-              </a>
-            </Link>
-          </MenuItem>
-          <MenuItem onClick={handleAccountMenuClose}>
-            <Link href="/users">
-              <a style={{ alignItems: 'center', display: 'flex' }}>
-                <Grid alignItems="center" container spacing={1}>
-                  <Grid item>
-                    <PeopleIcon />
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="body2">Users</Typography>
-                  </Grid>
-                </Grid>
-              </a>
-            </Link>
-          </MenuItem>
-        </div>
-      )}
-      <MenuItem onClick={handleAccountMenuClose}>
-        <Typography color="GrayText" variant="body2">
-          Soon
-        </Typography>
-      </MenuItem>
-    </Menu>
-  );
-
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <ReceiptIcon />
-          </Badge>
-        </IconButton>
-        <p>Transactions</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <MoneyIcon />
-          </Badge>
-        </IconButton>
-        <p>Wins</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircleIcon />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
+  const handleMobileAccountMenuOpen = () =>
+    setIsMobileAccountMenuListOpen(true);
 
   const userMenu = (
     <>
@@ -296,9 +190,8 @@ const MenuAppBar = () => {
           size="large"
           edge="end"
           aria-label="account of current user"
-          aria-controls={accountMenuId}
           aria-haspopup="true"
-          onClick={handleProfileMenuOpen}
+          // onClick={handleProfileMenuOpen}
           color="inherit"
         >
           <AccountCircleIcon />
@@ -308,9 +201,8 @@ const MenuAppBar = () => {
         <IconButton
           size="large"
           aria-label="show more"
-          aria-controls={mobileMenuId}
           aria-haspopup="true"
-          onClick={handleMobileMenuOpen}
+          onClick={handleMobileAccountMenuOpen}
           color="inherit"
         >
           <MoreVertIcon />
@@ -324,8 +216,7 @@ const MenuAppBar = () => {
       <AppBar elevation={0} position="static">
         <Toolbar>
           <IconButton
-            aria-controls={mainMenuId}
-            aria-label="open drawer"
+            aria-label="open main menu drawer"
             aria-haspopup="true"
             color="inherit"
             edge="start"
@@ -337,34 +228,21 @@ const MenuAppBar = () => {
           </IconButton>
           <Link href="/">
             <a>
-              <Typography variant="h6" noWrap component="div">
-                Ianthe
-              </Typography>
+              <Typography>Ianthe</Typography>
             </a>
           </Link>
           <Box sx={{ flexGrow: 1 }} />
           {session?.user ? userMenu : registrationAndLogin}
         </Toolbar>
       </AppBar>
-      <AccountMenuItems
-        accountMenuAnchorEl={accountMenuAnchorEl}
-        accountMenuId={accountMenuId}
-        handleAccountMenuClose={handleAccountMenuClose}
-        handleSignOut={handleSignOut}
-        isAccountMenuOpen={isAccountMenuOpen}
+      <MobileAccountMenuList
+        isMobileAccountMenuListOpen={isMobileAccountMenuListOpen}
+        setIsMobileAccountMenuListOpen={setIsMobileAccountMenuListOpen}
       />
-      {renderAdminMenuItems}
-      {renderMobileMenu}
-      <Drawer anchor="left" open={isMainMenuOpen} onClose={toggleDrawer}>
-        <Box
-          sx={{ width: 'auto' }}
-          role="presentation"
-          onClick={toggleDrawer}
-          onKeyDown={toggleDrawer}
-        >
-          <MainMenuList />
-        </Box>
-      </Drawer>
+      <MobileMainMenuList
+        isMobileMainMenuListOpen={isMobileMainMenuListOpen}
+        setIsMobileMainMenuListOpen={setIsMobileMainMenuListOpen}
+      />
     </Box>
   );
 };
