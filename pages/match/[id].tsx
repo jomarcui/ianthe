@@ -27,6 +27,7 @@ import Link from 'next/link';
 import Loader from '../../components/Loader';
 import PleaseSignIn from '../../components/PleaseSignIn';
 import Transition from '../../components/Transition';
+import { useGetTeamByIdQuery } from '../../redux/api/teamsApi';
 
 enum Operation {
   Add,
@@ -44,7 +45,19 @@ type FormInput = {
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
 const BetForm = ({ handleClose, open, selectedTeamId }) => {
+  const [skipGetTeamByIdQuery, setSkipGetTeamByIdQuery] = useState(true);
   const { data: session, status } = useSession();
+
+  const { data: teamResponse, isLoading: isTeamLoading } = useGetTeamByIdQuery(
+    selectedTeamId,
+    { skip: skipGetTeamByIdQuery },
+  );
+
+  useEffect(() => {
+    if (!selectedTeamId) return;
+
+    setSkipGetTeamByIdQuery(false);
+  }, [selectedTeamId, setSkipGetTeamByIdQuery]);
 
   const { handleSubmit, register, setValue, watch } = useForm<FormInput>({
     defaultValues: {
@@ -125,7 +138,7 @@ const BetForm = ({ handleClose, open, selectedTeamId }) => {
       onClose={handleClose}
       TransitionComponent={Transition}
     >
-      <DialogTitle>Bet</DialogTitle>
+      <DialogTitle>Bet {teamResponse?.data.name}</DialogTitle>
       <DialogContent>{generateDialogContent()}</DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>

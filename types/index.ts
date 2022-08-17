@@ -57,12 +57,12 @@ export type Sport = {
 };
 
 export type Team = {
-  id: string;
-  createdAt: Date;
+  // id: string;
+  // createdAt: Date;
   leagueId: string;
   name: string;
   sportId: string;
-  updatedAt: Date;
+  // updatedAt: Date;
 };
 
 export type User = {

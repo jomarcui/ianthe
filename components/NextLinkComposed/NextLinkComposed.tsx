@@ -1,7 +1,6 @@
 import { AnchorHTMLAttributes, forwardRef } from 'react';
 import { useRouter } from 'next/router';
 import { styled } from '@mui/material/styles';
-
 import clsx from 'clsx';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import MuiLink, { LinkProps as MuiLinkProps } from '@mui/material/Link';

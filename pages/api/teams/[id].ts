@@ -13,13 +13,17 @@ const handler = async (req, res) => {
     case 'GET':
       try {
         const team = await Team.findById(id);
+
         if (!team) {
           return res.status(400).json({ success: false });
         }
+
         res.status(200).json({ success: true, data: team });
+
       } catch (error) {
         res.status(400).json({ success: false });
       }
+
       break;
   }
 };
