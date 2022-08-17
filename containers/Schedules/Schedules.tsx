@@ -11,6 +11,7 @@ import {
   Backdrop,
   Box,
   CircularProgress,
+  Grid,
   IconButton,
   List,
   ListItem,
@@ -144,41 +145,12 @@ const Schedules = () => {
   const handleScheduleFormOpen = () => setScheduleFormOpen(true);
 
   return (
-    <>
-      <Box>
-        <Typography my={2} component="h6" align="center" variant="h6">
-          Schedules
-        </Typography>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          {isLeaguesLoading && <Loader />}
-
-          {leagues && selectedLeague && (
-            <Tabs
-              aria-label="secondary tabs example"
-              indicatorColor="secondary"
-              onChange={handleChange}
-              textColor="secondary"
-              value={selectedLeague.id}
-              variant="fullWidth"
-            >
-              {leagues.map(({ id, initialism }) => (
-                <Tab key={id} label={initialism} value={id} />
-              ))}
-            </Tabs>
-          )}
-        </Box>
-
-        {isSchedulesLoading && <Loader />}
-
-        {schedules && (
-          <SchedulesList
-            listItems={schedules.filter(
-              ({ leagueId }) => leagueId === selectedLeague.id
-            )}
-          />
-        )}
-
-        <Box m={2} textAlign="end">
+    <Box>
+      <Grid container sx={{ p: 2 }}>
+        <Grid item sx={{ alignItems: 'center', display: 'flex' }} xs>
+          <Typography variant="h6">Schedules List</Typography>
+        </Grid>
+        <Grid item sx={{ display: 'flex', justifyContent: 'end' }} xs>
           <LoadingButton
             onClick={handleScheduleFormOpen}
             loading={false}
@@ -186,17 +158,45 @@ const Schedules = () => {
           >
             Add Schedule
           </LoadingButton>
-        </Box>
+        </Grid>
+      </Grid>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        {isLeaguesLoading && <Loader />}
 
-        {schedules && (
-          <ScheduleForm
-            league={selectedLeague}
-            open={scheduleFormOpen}
-            setOpen={setScheduleFormOpen}
-          />
+        {leagues && selectedLeague && (
+          <Tabs
+            aria-label="secondary tabs example"
+            indicatorColor="secondary"
+            onChange={handleChange}
+            textColor="secondary"
+            value={selectedLeague.id}
+            variant="fullWidth"
+          >
+            {leagues.map(({ id, initialism }) => (
+              <Tab key={id} label={initialism} value={id} />
+            ))}
+          </Tabs>
         )}
       </Box>
-    </>
+
+      {isSchedulesLoading && <Loader />}
+
+      {schedules && (
+        <SchedulesList
+          listItems={schedules.filter(
+            ({ leagueId }) => leagueId === selectedLeague.id
+          )}
+        />
+      )}
+
+      {schedules && (
+        <ScheduleForm
+          league={selectedLeague}
+          open={scheduleFormOpen}
+          setOpen={setScheduleFormOpen}
+        />
+      )}
+    </Box>
   );
 };
 
