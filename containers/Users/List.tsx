@@ -1,7 +1,7 @@
-import Loader from "../../components/Loader";
+import Loader from '../../components/Loader';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useGetUsersQuery } from "../../redux/api/usersApi";
-import { Box } from "@mui/material";
+import { useGetUsersQuery } from '../../redux/api/usersApi';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 
 const List = () => {
   const { data: usersResponse, isLoading: isUsersLoading } = useGetUsersQuery();
@@ -31,14 +31,30 @@ const List = () => {
   }));
 
   return (
-    <Box sx={{ height: '100vh', width: '100%' }}>
-      {isUsersLoading && <Loader />}
-
-      {usersResponse && (
-        <DataGrid columns={columns} disableSelectionOnClick rows={rows} />
-      )}
+    <Box sx={{ p: 2 }}>
+      <Stack spacing={2}>
+        <Grid container>
+          <Grid item sx={{ alignItems: 'center', display: 'flex' }} xs>
+            <Typography variant="h6">Users List</Typography>
+          </Grid>
+          <Grid item sx={{ display: 'flex', justifyContent: 'end' }} xs>
+            <Button onClick={() => alert('Soon!')} variant="contained">
+              Create User
+            </Button>
+          </Grid>
+        </Grid>
+        {isUsersLoading && <Loader />}
+        {usersResponse && (
+          <DataGrid
+            autoHeight
+            columns={columns}
+            disableSelectionOnClick
+            rows={rows}
+          />
+        )}
+      </Stack>
     </Box>
   );
-}
+};
 
 export default List;

@@ -90,12 +90,18 @@ const Match: NextPage = () => {
         <Box>
           {isMatchLoading && <Loader />}
 
-          <div>{match?.league.name}</div>
-          <div>
-            <span style={{ color: 'rgba(0, 0, 0, 0.6)', fontSize: '0.875rem' }}>
-              {match?.sport.name}
-            </span>
-          </div>
+          {match && (
+            <>
+              <div>{match.league.name}</div>
+              <div>
+                <span
+                  style={{ color: 'rgba(0, 0, 0, 0.6)', fontSize: '0.875rem' }}
+                >
+                  {match.sport.name}
+                </span>
+              </div>
+            </>
+          )}
         </Box>
 
         <Box>
@@ -114,7 +120,7 @@ const Match: NextPage = () => {
                   <span style={{ fontSize: '3rem' }}>{scores.home}</span>
                 </Paper>
                 <Typography align="center" variant="body2">
-                  {match?.teams.find(({ side }) => side).name}
+                  {match.teams.find(({ side }) => side).name}
                 </Typography>
               </Box>
               <div style={{ paddingTop: '2rem' }}>vs</div>
@@ -129,7 +135,7 @@ const Match: NextPage = () => {
                   <span style={{ fontSize: '3rem' }}>{scores.visitor}</span>
                 </Paper>
                 <Typography align="center" variant="body2">
-                  {match?.teams.find(({ side }) => !side).name}
+                  {match.teams.find(({ side }) => !side).name}
                 </Typography>
               </Box>
             </Stack>
@@ -141,11 +147,10 @@ const Match: NextPage = () => {
         {isMatchLoading && <Loader />}
 
         {match &&
-          Object.values(match.teams).map(({ id, name, odds }) => (
-            <ListItem divider key={id} sx={{ p: 2 }}>
-              {isMatchLoading && <Loader />}
-
-              {match && (
+          Object.values(match.teams)
+            .sort((a, b) => b.side - a.side)
+            .map(({ id, name, odds }) => (
+              <ListItem divider key={id} sx={{ p: 2 }}>
                 <Grid container>
                   <Grid item xs={4}>
                     <div
@@ -180,9 +185,8 @@ const Match: NextPage = () => {
                     </Button>
                   </Grid>
                 </Grid>
-              )}
-            </ListItem>
-          ))}
+              </ListItem>
+            ))}
       </List>
 
       {matchId && (

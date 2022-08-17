@@ -11,7 +11,7 @@ type LayoutProps = {
 const Layout = ({ children }: LayoutProps) => (
   <ThemeProvider theme={theme}>
     <MenuAppBar />
-    <div>{children}</div>
+    {children}
   </ThemeProvider>
 );
 

@@ -24,13 +24,13 @@ export type Match = {
       id: string;
       name: string;
       odds: number;
-      side: Number;
+      side: number;
     },
     {
       id: string;
       name: string;
       odds: number;
-      side: Number;
+      side: number;
     }
   ];
 };
