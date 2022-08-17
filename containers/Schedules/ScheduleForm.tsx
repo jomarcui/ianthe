@@ -22,7 +22,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { useTeamsQuery } from '../../redux/api/teamsApi';
+import { useGetTeamsQuery } from '../../redux/api/teamsApi';
 import { LoadingButton } from '@mui/lab';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import { useAddScheduleMutation } from '../../redux/api/schedulesApi';
@@ -282,7 +282,7 @@ const ScheduleForm = ({
 };
 
 const TeamsSelect = ({ field, leagueId, watchField }) => {
-  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+  const { data: teamsResponse, isLoading: isTeamsLoading } = useGetTeamsQuery();
 
   return (
     <Select {...field}>
@@ -294,8 +294,8 @@ const TeamsSelect = ({ field, leagueId, watchField }) => {
         </MenuItem>
       )}
 
-      {teams &&
-        teams
+      {teamsResponse &&
+        teamsResponse.data
           .filter(({ leagueId: dataLeagueId }) => dataLeagueId === leagueId)
           .map(({ id, name }) => (
             <MenuItem disabled={id === watchField} key={id} value={id}>

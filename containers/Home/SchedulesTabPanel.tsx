@@ -1,7 +1,7 @@
 import { List } from '@mui/material';
 import { Fragment, useEffect } from 'react';
 import { useGetLeagueSchedulesByDateQuery } from '../../redux/api/schedulesApi';
-import { useTeamsQuery } from '../../redux/api/teamsApi';
+import { useGetTeamsQuery } from '../../redux/api/teamsApi';
 
 import Loader from '../../components/Loader';
 import SchedulesListItem from '../../components/SchedulesListItem';
@@ -22,7 +22,7 @@ const SchedulesTabPanel = ({ leagueId, value }: SchedulesTabPanelProps) => {
     date: new Date().toDateString(),
   });
 
-  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery();
+  const { data: teamsResponse, isLoading: isTeamsLoading } = useGetTeamsQuery();
 
   useEffect(() => {
     refetchSchedules();
@@ -38,12 +38,12 @@ const SchedulesTabPanel = ({ leagueId, value }: SchedulesTabPanelProps) => {
             <Fragment key={schedule.id}>
               {isTeamsLoading && <Loader />}
 
-              {teams && (
+              {teamsResponse && (
                 <SchedulesListItem
                   isLoading={isTeamsLoading}
                   key={index}
                   schedule={schedule}
-                  teams={teams}
+                  teams={teamsResponse.data}
                 />
               )}
             </Fragment>

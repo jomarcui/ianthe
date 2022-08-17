@@ -1,18 +1,21 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Team } from '../../types';
 
-const HOST = process.env.NEXT_PUBLIC_HOST;
+type TeamsApiResponse = {
+  success: boolean;
+  data: Team[];
+};
 
 const teamsApi = createApi({
   reducerPath: 'teamsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: HOST }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'api' }),
   endpoints: (build) => ({
-    teams: build.query<Team[], void>({
+    getTeams: build.query<TeamsApiResponse, void>({
       query: () => '/teams',
     }),
   }),
 });
 
-export const { useTeamsQuery } = teamsApi;
+export const { useGetTeamsQuery } = teamsApi;
 
 export default teamsApi;

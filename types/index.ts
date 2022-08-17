@@ -62,6 +62,7 @@ export type Team = {
   leagueId: string;
   name: string;
   sportId: string;
+  updatedAt: Date;
 };
 
 export type User = {

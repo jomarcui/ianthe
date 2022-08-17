@@ -18,6 +18,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { NextPage } from 'next';
 
 type Inputs = {
   mobileNumber: string;
@@ -47,7 +48,7 @@ const Copyright = (props: any) => {
   );
 };
 
-const SignIn = ({ csrfToken }) => {
+const SignIn: NextPage = () => {
   const [error, setError] = useState<string>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const {

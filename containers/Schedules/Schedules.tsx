@@ -26,7 +26,7 @@ import {
 } from '@mui/material';
 import { compareAsc, format, isToday } from 'date-fns';
 
-import { useTeamsQuery } from '../../redux/api/teamsApi';
+import { useGetTeamsQuery } from '../../redux/api/teamsApi';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import {
   useDeleteScheduleMutation,
@@ -111,9 +111,12 @@ const Schedules = () => {
     undefined,
     { skip: skipSports }
   );
-  const { data: teams, isLoading: isTeamsLoading } = useTeamsQuery(undefined, {
-    skip: skipTeams,
-  });
+  const { data: teamsResponse, isLoading: isTeamsLoading } = useGetTeamsQuery(
+    undefined,
+    {
+      skip: skipTeams,
+    }
+  );
 
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<League>();
@@ -200,7 +203,7 @@ const Schedules = () => {
 const SchedulesList = ({ listItems = [] }) => {
   const [scheduleIdSelected, setScheduleIdSelected] = useState(null);
 
-  const { data: teams } = useTeamsQuery();
+  const { data: teams } = useGetTeamsQuery();
 
   const [deleteSchedule, { isLoading: isScheduleDeleting }] =
     useDeleteScheduleMutation();
@@ -244,11 +247,11 @@ const SchedulesList = ({ listItems = [] }) => {
           }: Schedule) => {
             const dayScheduled = new Date(date);
 
-            const { name: homeName } = teams.find(
+            const { name: homeName } = teams.data.find(
               ({ id }) => id === homeTeamId
             );
 
-            const { name: visitorName } = teams.find(
+            const { name: visitorName } = teams.data.find(
               ({ id }) => id === visitorTeamId
             );
 

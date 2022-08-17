@@ -1,23 +1,10 @@
-import { forwardRef, ReactElement, Ref, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
-
-import {
-  ArrowBackIosNew as ArrowBackIosNewIcon,
-  Money as MoneyIcon,
-} from '@mui/icons-material';
-
 import { LoadingButton } from '@mui/lab';
-
 import {
-  BottomNavigation,
-  BottomNavigationAction,
   Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
   Dialog,
   DialogActions,
   DialogContent,
@@ -27,20 +14,17 @@ import {
   List,
   ListItem,
   Paper,
-  Slide,
   Stack,
   TextField,
   Typography,
-  TypographyVariant,
 } from '@mui/material';
-
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
-import Layout from '../../components/Layout';
-import Loader from '../../components/Loader';
-import { CardHeader } from '@mui/material';
 import { Breadcrumbs } from '@mui/material';
 import { useSession } from 'next-auth/react';
+import Layout from '../../components/Layout';
+import Link from 'next/link';
+import Loader from '../../components/Loader';
 import PleaseSignIn from '../../components/PleaseSignIn';
 import Transition from '../../components/Transition';
 
@@ -59,7 +43,7 @@ type FormInput = {
 
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
-const BetForm = ({ handleClose, open }) => {
+const BetForm = ({ handleClose, open, selectedTeamId }) => {
   const { data: session, status } = useSession();
 
   const { handleSubmit, register, setValue, watch } = useForm<FormInput>({
@@ -318,7 +302,11 @@ const Match: NextPage = () => {
           ))}
       </List>
 
-      <BetForm handleClose={handleCloseBetForm} open={openBetForm} />
+      <BetForm
+        handleClose={handleCloseBetForm}
+        open={openBetForm}
+        selectedTeamId={selectedTeamId}
+      />
     </Layout>
   );
 };

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { User as User } from '../types';
+import { User } from '../types';
 
 const UserSchema = new mongoose.Schema<User>(
   {
@@ -29,10 +29,18 @@ const UserSchema = new mongoose.Schema<User>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 UserSchema.index({ mobileNumber: 1, password: 1 }, { unique: true });
+
+UserSchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+UserSchema.set('toJSON', {
+  virtuals: true,
+});
 
 export default (mongoose.models.User as mongoose.Model<User>) ||
   mongoose.model('User', UserSchema);
