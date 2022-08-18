@@ -37,8 +37,6 @@ const Credits: NextPage = () => {
   const { data: getTransactionsResponse, isLoading: isGetTransactionsLoading } =
     useGetTransactionsQuery();
 
-  console.log(getTransactionsResponse);
-
   return (
     <ComponentsLayout>
       {isGetTransactionsLoading && <Loader />}

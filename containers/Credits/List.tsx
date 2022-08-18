@@ -17,10 +17,10 @@ type CreditsProps = {
 };
 
 const Credits = ({ transactions }: CreditsProps) => {
-  const credits = transactions.reduce((prevValue, { amount }) => {
-    console.log({ prevValue, amount });
-    return prevValue + amount;
-  }, 0);
+  const credits = transactions.reduce(
+    (prevValue, { amount }) => prevValue + amount,
+    0
+  );
 
   return <Typography>Credits: &#8369;{credits.toFixed(2)}</Typography>;
 };

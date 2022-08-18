@@ -36,7 +36,7 @@ const AddForm = ({ userId }: AddFormProps) => {
     },
   });
 
-  const [createTransaction, { data }] = useCreateTransactionMutation();
+  const [createTransaction] = useCreateTransactionMutation();
 
   const handleFormSubmit: SubmitHandler<FormInputs> = async (formData) => {
     const amount =
