@@ -1,9 +1,8 @@
 import { NextPage } from 'next';
-import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
-import { Provider as ReduxProvider } from 'react-redux';
+import { wrapper } from '../redux/store';
 import Head from 'next/head';
-import store from '../redux/store';
+import type { AppProps } from 'next/app';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -21,11 +20,9 @@ const MyApp: NextPage = ({
       <title>Ianthe</title>
     </Head>
     <SessionProvider session={session}>
-      <ReduxProvider store={store}>
-        <Component {...pageProps} />
-      </ReduxProvider>
+      <Component {...pageProps} />
     </SessionProvider>
   </>
 );
 
-export default MyApp;
+export default wrapper.withRedux(MyApp);

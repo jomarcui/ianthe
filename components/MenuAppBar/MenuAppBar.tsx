@@ -50,9 +50,9 @@ const MobileMainMenuList = ({
       label: 'Users',
     },
     {
-      href: { pathname: '/userscreditmanagement' },
+      href: { pathname: '/credits' },
       Icon: MoneyIcon,
-      label: 'Users (Credit Management)',
+      label: 'Credits)',
     },
     {
       href: { pathname: '/upcomingevents' },

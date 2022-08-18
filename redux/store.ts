@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { createWrapper } from 'next-redux-wrapper';
 import leaguesApi from './api/leaguesApi';
 import matchesApi from './api/matchesApi';
 import schedulesApi from './api/schedulesApi';
@@ -8,27 +9,32 @@ import usersApi from './api/usersApi';
 import schedulesSlice from './features/schedulesSlice';
 import usersSlice from './features/usersSlice';
 
-const store = configureStore({
-  reducer: {
-    schedules: schedulesSlice,
-    users: usersSlice,
-    [leaguesApi.reducerPath]: leaguesApi.reducer,
-    [matchesApi.reducerPath]: matchesApi.reducer,
-    [schedulesApi.reducerPath]: schedulesApi.reducer,
-    [sportsApi.reducerPath]: sportsApi.reducer,
-    [teamsApi.reducerPath]: teamsApi.reducer,
-    [usersApi.reducerPath]: usersApi.reducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }).concat([
-      leaguesApi.middleware,
-      matchesApi.middleware,
-      schedulesApi.middleware,
-      teamsApi.middleware,
-      usersApi.middleware
-    ]),
-});
+export const makeStore = () =>
+  configureStore({
+    reducer: {
+      schedules: schedulesSlice,
+      users: usersSlice,
+      [leaguesApi.reducerPath]: leaguesApi.reducer,
+      [matchesApi.reducerPath]: matchesApi.reducer,
+      [schedulesApi.reducerPath]: schedulesApi.reducer,
+      [sportsApi.reducerPath]: sportsApi.reducer,
+      [teamsApi.reducerPath]: teamsApi.reducer,
+      [usersApi.reducerPath]: usersApi.reducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }).concat([
+        leaguesApi.middleware,
+        matchesApi.middleware,
+        schedulesApi.middleware,
+        teamsApi.middleware,
+        usersApi.middleware,
+      ]),
+  });
 
-export default store;
+export type AppStore = ReturnType<typeof makeStore>;
+export type RootState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch'];
+
+export const wrapper = createWrapper<AppStore>(makeStore, { debug: true });
