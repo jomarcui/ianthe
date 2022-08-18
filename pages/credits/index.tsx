@@ -1,11 +1,14 @@
 import { NextPage } from 'next';
-import { Box } from '@mui/material';
 import { wrapper } from '../../redux/store';
-import { User } from '../../types';
 import ComponentsLayout from '../../components/Layout';
 import ContainersCredits from '../../containers/Credits';
-import usersApi, { useGetUsersQuery } from '../../redux/api/usersApi';
 import Loader from '../../components/Loader';
+import usersApi, { useGetUsersQuery } from '../../redux/api/usersApi';
+import transactionsApi, {
+  useCreateTransactionMutation,
+  useGetTransactionsQuery,
+} from '../../redux/api/transactionsApi';
+import { useEffect } from 'react';
 
 // export const getServerSideProps = wrapper.getServerSideProps(
 //   (store) => async (context) => {
@@ -20,9 +23,9 @@ import Loader from '../../components/Loader';
 
 export const getStaticProps = wrapper.getStaticProps(
   (store) => async (context) => {
-    store.dispatch(usersApi.endpoints.getUsers.initiate());
+    store.dispatch(transactionsApi.endpoints.getTransactions.initiate());
 
-    await Promise.all(usersApi.util.getRunningOperationPromises());
+    await Promise.all(transactionsApi.util.getRunningOperationPromises());
 
     return {
       props: {},
@@ -30,21 +33,19 @@ export const getStaticProps = wrapper.getStaticProps(
   }
 );
 
-type CreditsProps = {
-  users: User[];
-};
-
 const Credits: NextPage = () => {
-  const { data: getUsersResponse, isLoading: isGetUsersLoading } =
-    useGetUsersQuery();
+  const { data: getTransactionsResponse, isLoading: isGetTransactionsLoading } =
+    useGetTransactionsQuery();
 
-  console.log('getUsersResponse', getUsersResponse);
+  console.log(getTransactionsResponse);
 
   return (
     <ComponentsLayout>
-      {isGetUsersLoading && <Loader />}
+      {isGetTransactionsLoading && <Loader />}
 
-      {getUsersResponse && <ContainersCredits users={getUsersResponse.data} />}
+      {getTransactionsResponse && (
+        <ContainersCredits users={getTransactionsResponse.data} />
+      )}
     </ComponentsLayout>
   );
 };

@@ -1,8 +1,8 @@
-import bcrypt from 'bcrypt';
 import dbConnect from '../../../lib/dbConnect';
+import Transaction from '../../../models/Transaction';
 import User from '../../../models/User';
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   const { method } = req;
 
   await dbConnect();
@@ -21,22 +21,20 @@ export default async function handler(req, res) {
 
     case 'POST':
       try {
-        const newUser = new User({
-          ...req.body,
-          password: await bcrypt.hash(req.body.password, 10),
-        });
+        const newTransaction = new Transaction({ ...req.body });
 
-        newUser.save().then((user) => res.status(201).json(user));
+        newTransaction.save().then(async (transaction) => {
+          const user = await User.findById(transaction.user);
+          user.transactions.push(transaction.id);
+          user.save();
+
+          res.status(200).json({ success: true, data: transaction });
+        });
       } catch (error) {
         console.error(error);
         res.status(400).json({ success: false });
       }
-
-      break;
-
-    default:
-      res.status(400).json({ success: false });
-
-      break;
   }
-}
+};
+
+export default handler;

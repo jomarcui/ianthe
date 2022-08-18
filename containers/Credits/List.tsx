@@ -12,6 +12,19 @@ import {
 import { Payment as PaymentIcon } from '@mui/icons-material';
 import { User } from '../../types';
 
+type CreditsProps = {
+  transactions: [];
+};
+
+const Credits = ({ transactions }: CreditsProps) => {
+  const credits = transactions.reduce((prevValue, { amount }) => {
+    console.log({ prevValue, amount });
+    return prevValue + amount;
+  }, 0);
+
+  return <Typography>Credits: &#8369;{credits.toFixed(2)}</Typography>;
+};
+
 type ListProps = {
   mobileNumber: string;
   setSelectedUserId: Dispatch<SetStateAction<string>>;
@@ -42,7 +55,7 @@ const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
   return (
     <MuiList disablePadding>
       {usersFilteredByMobileNumber.map(
-        ({ firstName, id, lastName, mobileNumber }) => (
+        ({ firstName, id, lastName, mobileNumber, transactions }) => (
           <ListItem key={mobileNumber} sx={{ display: 'inline-block' }}>
             <Card>
               <CardHeader
@@ -63,7 +76,9 @@ const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
                 title={`${firstName} ${lastName}`}
                 subheader={mobileNumber}
               />
-              <CardContent>Credits: Php0.00</CardContent>
+              <CardContent>
+                <Credits transactions={transactions} />
+              </CardContent>
             </Card>
           </ListItem>
         )

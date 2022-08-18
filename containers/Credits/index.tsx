@@ -4,13 +4,14 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Grid,
   TextField,
 } from '@mui/material';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useCreateTransactionMutation } from '../../redux/api/transactionsApi';
 import { User } from '../../types';
+import ContainersCreditsForm from './Form';
 import ContainersCreditsList from './List';
 
 type CreditsProps = {
@@ -20,6 +21,10 @@ type CreditsProps = {
 const Credits = ({ users }: CreditsProps) => {
   const [mobileNumber, setMobileNumber] = useState<string>(null);
   const [selectedUserId, setSelectedUserId] = useState<string>(null);
+
+  useEffect(() => {
+    setSelectedUserId(null);
+  }, [users]);
 
   const handleDialogClose = () => setSelectedUserId(null);
 
@@ -50,7 +55,7 @@ const Credits = ({ users }: CreditsProps) => {
       <Dialog open={Boolean(selectedUserId)} onClose={handleDialogClose}>
         <DialogTitle>Update User Credits</DialogTitle>
         <DialogContent>
-          <DialogContentText>Some text.</DialogContentText>
+          <ContainersCreditsForm userId={selectedUserId} />
         </DialogContent>
         <DialogActions>
           <Grid justifyContent="space-between" container>
@@ -60,7 +65,9 @@ const Credits = ({ users }: CreditsProps) => {
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="contained">Confirm</Button>
+              <Button form="credits-form" type="submit" variant="contained">
+                Confirm
+              </Button>
             </Grid>
           </Grid>
         </DialogActions>

@@ -19,13 +19,13 @@ const usersApi = createApi({
   endpoints: (build) => ({
     createUser: build.mutation<User, User>({
       query: (payload) => ({
-        url: 'api/users',
-        method: 'POST',
         body: payload,
+        method: 'POST',
+        url: 'api/users',
       }),
       invalidatesTags: ['Users'],
     }),
-    getUsers: build.query<GetUsersResponse, void>({
+    getUsers: build.query<any, void>({
       query: () => 'api/users',
       providesTags: ['Users'],
     }),
@@ -35,8 +35,6 @@ const usersApi = createApi({
 });
 
 export const { useCreateUserMutation, useGetUsersQuery } = usersApi;
-
-// export endpoints for use in SSR
 export const { getUsers } = usersApi.endpoints;
 
 export default usersApi;

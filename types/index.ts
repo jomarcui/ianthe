@@ -67,6 +67,12 @@ export type Team = {
   // updatedAt: Date;
 };
 
+export type Transaction = {
+  amount: number;
+  type: string;
+  userId: string;
+};
+
 export type User = {
   createdAt: Date;
   firstName: string;
@@ -75,5 +81,6 @@ export type User = {
   mobileNumber: string;
   password: string;
   roles: Roles[];
+  transactions: [];
   updatedAt: Date;
 };

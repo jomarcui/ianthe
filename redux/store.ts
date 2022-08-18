@@ -5,6 +5,7 @@ import matchesApi from './api/matchesApi';
 import schedulesApi from './api/schedulesApi';
 import sportsApi from './api/sportsApi';
 import teamsApi from './api/teamsApi';
+import transactionsApi from './api/transactionsApi';
 import usersApi from './api/usersApi';
 import schedulesSlice from './features/schedulesSlice';
 import usersSlice from './features/usersSlice';
@@ -19,6 +20,7 @@ export const makeStore = () =>
       [schedulesApi.reducerPath]: schedulesApi.reducer,
       [sportsApi.reducerPath]: sportsApi.reducer,
       [teamsApi.reducerPath]: teamsApi.reducer,
+      [transactionsApi.reducerPath]: transactionsApi.reducer,
       [usersApi.reducerPath]: usersApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -29,6 +31,7 @@ export const makeStore = () =>
         matchesApi.middleware,
         schedulesApi.middleware,
         teamsApi.middleware,
+        transactionsApi.middleware,
         usersApi.middleware,
       ]),
   });

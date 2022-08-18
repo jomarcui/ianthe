@@ -1,7 +1,16 @@
-import mongoose from 'mongoose';
-import { User } from '../types';
+import { model, Model, models, Schema, Types } from 'mongoose';
+import Transaction from './Transaction';
 
-const UserSchema = new mongoose.Schema<User>(
+type User = {
+  firstName: string;
+  lastName: string;
+  mobileNumber: string;
+  password: string;
+  roles: [];
+  transactions?: Types.ObjectId[];
+};
+
+const UserSchema = new Schema<User>(
   {
     firstName: {
       maxlength: [60, 'First Name cannot be more than 60 characters'],
@@ -24,15 +33,21 @@ const UserSchema = new mongoose.Schema<User>(
     },
     roles: {
       required: true,
-      type: [Number],
+      type: [],
     },
+    transactions: [
+      {
+        ref: Transaction,
+        type: Schema.Types.ObjectId,
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-UserSchema.index({ mobileNumber: 1, password: 1 }, { unique: true });
+// UserSchema.index({ mobileNumber: 1, password: 1 }, { unique: true });
 
 UserSchema.virtual('id').get(function () {
   return this._id.toHexString();
@@ -42,5 +57,4 @@ UserSchema.set('toJSON', {
   virtuals: true,
 });
 
-export default (mongoose.models.User as mongoose.Model<User>) ||
-  mongoose.model('User', UserSchema);
+export default (models.User as Model<User>) || model('User', UserSchema);
