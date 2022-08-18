@@ -1,18 +1,27 @@
 import { NextPage } from 'next';
 import { Box } from '@mui/material';
 import { wrapper } from '../../redux/store';
+import { User } from '../../types';
 import ComponentsLayout from '../../components/Layout';
 import ContainersCredits from '../../containers/Credits';
 import usersApi, { useGetUsersQuery } from '../../redux/api/usersApi';
+import Loader from '../../components/Loader';
 
-export const getServerSideProps = wrapper.getServerSideProps(
+// export const getServerSideProps = wrapper.getServerSideProps(
+//   (store) => async (context) => {
+//     store.dispatch(usersApi.endpoints.getUsers.initiate());
+//     await Promise.all(usersApi.util.getRunningOperationPromises());
+
+//     return {
+//       props: {},
+//     };
+//   }
+// );
+
+export const getStaticProps = wrapper.getStaticProps(
   (store) => async (context) => {
-    context.res.setHeader(
-      'Cache-Control',
-      'public, s-maxage=1800, stale-while-revalidate=86400'
-    );
-
     store.dispatch(usersApi.endpoints.getUsers.initiate());
+
     await Promise.all(usersApi.util.getRunningOperationPromises());
 
     return {
@@ -21,13 +30,21 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
+type CreditsProps = {
+  users: User[];
+};
+
 const Credits: NextPage = () => {
-  const { data: getUsersResponse } = useGetUsersQuery();
-  const { data: users } = getUsersResponse;
+  const { data: getUsersResponse, isLoading: isGetUsersLoading } =
+    useGetUsersQuery();
+
+  console.log('getUsersResponse', getUsersResponse);
 
   return (
     <ComponentsLayout>
-      <ContainersCredits users={users} />
+      {isGetUsersLoading && <Loader />}
+
+      {getUsersResponse && <ContainersCredits users={getUsersResponse.data} />}
     </ComponentsLayout>
   );
 };
