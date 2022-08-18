@@ -7,6 +7,11 @@ import usersApi, { useGetUsersQuery } from '../../redux/api/usersApi';
 
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (context) => {
+    context.res.setHeader(
+      'Cache-Control',
+      'public, s-maxage=1800, stale-while-revalidate=86400'
+    );
+
     store.dispatch(usersApi.endpoints.getUsers.initiate());
     await Promise.all(usersApi.util.getRunningOperationPromises());
 

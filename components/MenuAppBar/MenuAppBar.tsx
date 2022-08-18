@@ -52,7 +52,7 @@ const MobileMainMenuList = ({
     {
       href: { pathname: '/credits' },
       Icon: MoneyIcon,
-      label: 'Credits)',
+      label: 'Credits',
     },
     {
       href: { pathname: '/upcomingevents' },
