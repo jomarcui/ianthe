@@ -22,21 +22,7 @@ import { TransactionType } from '../../enums';
 import { User } from '../../types';
 
 type AddFormProps = {
-  createTransaction: MutationTrigger<
-    MutationDefinition<
-      any,
-      BaseQueryFn<
-        string | FetchArgs,
-        unknown,
-        FetchBaseQueryError,
-        {},
-        FetchBaseQueryMeta
-      >,
-      'Transactions' | 'Transaction',
-      any,
-      'transactionsApi'
-    >
-  >;
+  handleCreateTransaction: (payload: any) => Promise<void>;
   user: User;
 };
 
@@ -47,7 +33,7 @@ type FormInputs = {
 };
 
 const AddForm = ({
-  createTransaction,
+  handleCreateTransaction,
   user: { firstName, lastName, id },
 }: AddFormProps) => {
   const { control, handleSubmit, register } = useForm<FormInputs>({
@@ -71,7 +57,7 @@ const AddForm = ({
       amount,
     };
 
-    await createTransaction(payload);
+    handleCreateTransaction(payload);
   };
 
   return (

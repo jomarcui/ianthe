@@ -32,9 +32,14 @@ const Credits = ({ users }: CreditsProps) => {
     [users, selectedUserId]
   );
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   setSelectedUserId(null);
+  // }, [users]);
+
+  const handleCreateTransaction = async (payload: any) => {
+    await createTransaction(payload);
     setSelectedUserId(null);
-  }, [users]);
+  };
 
   const handleDialogClose = () => setSelectedUserId(null);
 
@@ -70,7 +75,7 @@ const Credits = ({ users }: CreditsProps) => {
         <DialogContent>
           {selectedUser && (
             <ContainersCreditsForm
-              createTransaction={createTransaction}
+              handleCreateTransaction={handleCreateTransaction}
               user={selectedUser}
             />
           )}
