@@ -152,9 +152,7 @@ const MobileAccountMenuList = ({
 
 const registrationAndLogin = (
   <Stack spacing={2} direction="row">
-    <Button color="success" variant="contained">
-      Register
-    </Button>
+    <Button variant="outlined">Register</Button>
     <Link href="/signin" passHref>
       <Button variant="contained">Sign-In</Button>
     </Link>
@@ -218,12 +216,12 @@ const MenuAppBar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar elevation={0} position="static">
+      <AppBar position="static" sx={{ bgcolor: 'common.white' }}>
         <Toolbar>
           <IconButton
             aria-label="open main menu drawer"
             aria-haspopup="true"
-            color="inherit"
+            // color="inherit"
             edge="start"
             onClick={handleMainMenuClick}
             size="large"
@@ -233,7 +231,7 @@ const MenuAppBar = () => {
           </IconButton>
           <Link href="/">
             <a>
-              <Typography>Ianthe</Typography>
+              <Typography color="text.primary">Ianthe</Typography>
             </a>
           </Link>
           <Box sx={{ flexGrow: 1 }} />

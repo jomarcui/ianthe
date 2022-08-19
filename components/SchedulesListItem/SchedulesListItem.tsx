@@ -1,26 +1,25 @@
 import { SyntheticEvent, useState } from 'react';
 import { format } from 'date-fns';
-import Link from 'next/link';
-
 import {
   Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Chip,
   CircularProgress,
   Grid,
-  ListItem,
   Stack,
   Typography,
 } from '@mui/material';
-
-import teamsUtils from '../../utilities/teamsUtils';
-import ListItemAvatar from '../ListItemAvatar';
-import SportsIcon from '../SportsIcon';
+import { Schedule as ScheduleIcon } from '@mui/icons-material';
 import { Schedule, Team } from '../../types';
+import Link from 'next/link';
+import teamsUtils from '../../utilities/teamsUtils';
 
 import {
   StyledTeamNameContainer,
   StyledOdds,
-  StyledListItemButton,
-  StyledListItemText,
 } from './SchedulesListItem.styles';
 
 type SchedulesListItemProps = {
@@ -56,84 +55,48 @@ const SchedulesListItem = ({
   },
   teams,
 }: SchedulesListItemProps) => {
-  const [selectedMatch, setSelectedMatch] = useState<string>(null);
-
-  if (isLoading) {
-    return (
-      <ListItem>
-        <Loader />
-      </ListItem>
-    );
-  }
+  if (isLoading) return <Loader />;
 
   const { name: homeName } = teamsUtils(teams).findById(homeTeamId);
   const { name: visitorName } = teamsUtils(teams).findById(visitorTeamId);
 
-  const handleLinkClick = (event: SyntheticEvent, matchId: string) => {
-    setSelectedMatch(matchId);
-  }
-
-  const primary = (
-    <Link href={`/match/${id}`}>
-      <a onClick={(event) => handleLinkClick(event, id)} style={{ position: 'relative' }}>
-        <Grid container rowSpacing="0.125rem">
-          <Grid item xs={10}>
-            <StyledTeamNameContainer>
-              <BodyText>{homeName}</BodyText>
-            </StyledTeamNameContainer>
-          </Grid>
-          <Grid item xs={2}>
-            <StyledOdds>
-              <BodyText>{homeOdds}</BodyText>
-            </StyledOdds>
-          </Grid>
-          <Grid item xs={10}>
-            <StyledTeamNameContainer>
-              <BodyText>{visitorName}</BodyText>
-            </StyledTeamNameContainer>
-          </Grid>
-          <Grid item xs={2}>
-            <StyledOdds>
-              <BodyText>{visitorOdds}</BodyText>
-            </StyledOdds>
-          </Grid>
-          <Grid item xs={12}>
-            <Box sx={{ p: '0.5rem 0' }}>
-              <Typography variant="caption">
-                {format(new Date(date), 'h:mm a')}
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-
-        {selectedMatch === id && (
-          <Box
-            sx={{
-              alignItems: 'center',
-              background: 'rgba(255, 255, 255, 0.7)',
-              display: 'flex',
-              height: '100%',
-              justifyContent: 'center',
-              left: 0,
-              position: 'absolute',
-              top: 0,
-              width: '100%',
-            }}
-          >
-            <Loader />
-          </Box>
-        )}
-      </a>
-    </Link>
-  );
-
   return (
-    <StyledListItemButton divider>
-      {/* <ListItemAvatar>
-        <SportsIcon status={status} sportId={sportId} />
-      </ListItemAvatar> */}
-      <StyledListItemText primary={primary} />
-    </StyledListItemButton>
+    <Box>
+      <Card>
+        <CardHeader
+          action={
+            <Link href={`/match/${id}`}>
+              <Button>Bet</Button>
+            </Link>
+          }
+          avatar={<ScheduleIcon color="info" />}
+          subheader={format(new Date(date), 'h:mm a')}
+        />
+        <CardContent>
+          <Grid container>
+            <Grid item xs={6}>
+              <Typography align="center">{homeName}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography align="center">{visitorName}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Box display="flex" justifyContent="center">
+                <Chip label={homeOdds.toString()} />
+              </Box>
+            </Grid>
+            <Grid item xs={6}>
+              <Box display="flex" justifyContent="center">
+                <Chip label={visitorOdds.toString()} />
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    </Box>
+    // <StyledListItemButton divider>
+    //   <StyledListItemText primary={primary} />
+    // </StyledListItemButton>
   );
 };
 

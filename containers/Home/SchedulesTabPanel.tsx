@@ -8,10 +8,9 @@ import TabPanel from '../../components/TabPanel';
 
 type SchedulesTabPanelProps = {
   leagueId: string;
-  value: number;
 };
 
-const SchedulesTabPanel = ({ leagueId, value }: SchedulesTabPanelProps) => {
+const SchedulesTabPanel = ({ leagueId }: SchedulesTabPanelProps) => {
   const {
     data: schedules,
     isLoading: isSchedulesLoading,
@@ -28,28 +27,25 @@ const SchedulesTabPanel = ({ leagueId, value }: SchedulesTabPanelProps) => {
   }, [leagueId, refetchSchedules]);
 
   return (
-    <TabPanel index={value} value={value}>
+    <>
       {isSchedulesLoading && <Loader />}
 
-      {schedules && (
-        <List disablePadding>
-          {schedules.map((schedule, index) => (
-            <Fragment key={schedule.id}>
-              {isTeamsLoading && <Loader />}
+      {schedules &&
+        schedules.map((schedule, index) => (
+          <Fragment key={schedule.id}>
+            {isTeamsLoading && <Loader />}
 
-              {teamsResponse && (
-                <SchedulesListItem
-                  isLoading={isTeamsLoading}
-                  key={index}
-                  schedule={schedule}
-                  teams={teamsResponse.data}
-                />
-              )}
-            </Fragment>
-          ))}
-        </List>
-      )}
-    </TabPanel>
+            {teamsResponse && (
+              <SchedulesListItem
+                isLoading={isTeamsLoading}
+                key={index}
+                schedule={schedule}
+                teams={teamsResponse.data}
+              />
+            )}
+          </Fragment>
+        ))}
+    </>
   );
 };
 

@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tabs, Tab, Paper, Card } from '@mui/material';
 
 interface FullWidthTabsProps {
   setValue: Dispatch<SetStateAction<number>>;
@@ -45,20 +45,22 @@ const FullWidthTabs = ({ setValue, tabs, value }: FullWidthTabsProps) => {
   };
 
   return (
-    <Box>
-      <Tabs
-        aria-label="full width tabs"
-        indicatorColor="secondary"
-        onChange={handleChange}
-        sx={{ bgcolor: '#1976d2', color: '#fff' }}
-        textColor="inherit"
-        value={value}
-        variant="fullWidth"
-      >
-        {tabs.map(({ header: { key, label }, icon }) => (
-          <Tab icon={icon} key={key} label={label} {...a11yProps(key)} />
-        ))}
-      </Tabs>
+    <Box borderBottom={1} borderColor="divider" m={2}>
+      <Card>
+        <Tabs
+          aria-label="full width tabs"
+          // indicatorColor="secondary"
+          onChange={handleChange}
+          // sx={{ bgcolor: '#1976d2', color: '#fff' }}
+          // textColor="inherit"
+          value={value}
+          variant="fullWidth"
+        >
+          {tabs.map(({ header: { key, label }, icon }) => (
+            <Tab icon={icon} key={key} label={label} {...a11yProps(key)} />
+          ))}
+        </Tabs>
+      </Card>
       {/* {props.tabs.map(({ header: { key }, body }) => (
         <TabPanel index={key} key={key} value={value}>
           {body}
