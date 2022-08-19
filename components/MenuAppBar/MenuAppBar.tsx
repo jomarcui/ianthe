@@ -175,7 +175,7 @@ const MenuAppBar = () => {
   const userMenu = (
     <>
       <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+        <IconButton size="large" aria-label="show 4 new mails" color="primary">
           <Badge badgeContent={4} color="error">
             <MailIcon />
           </Badge>
@@ -206,7 +206,7 @@ const MenuAppBar = () => {
           aria-label="show more"
           aria-haspopup="true"
           onClick={handleMobileAccountMenuOpen}
-          color="inherit"
+          // color="primary"
         >
           <MoreVertIcon />
         </IconButton>
@@ -216,12 +216,12 @@ const MenuAppBar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ bgcolor: 'common.white' }}>
+      <AppBar elevation={0} position="static" sx={{ bgcolor: 'common.white' }}>
         <Toolbar>
           <IconButton
             aria-label="open main menu drawer"
             aria-haspopup="true"
-            // color="inherit"
+            // color="primary"
             edge="start"
             onClick={handleMainMenuClick}
             size="large"
@@ -229,12 +229,14 @@ const MenuAppBar = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Link href="/">
-            <a>
-              <Typography color="text.primary">Ianthe</Typography>
-            </a>
-          </Link>
-          <Box sx={{ flexGrow: 1 }} />
+          <Box display="flex" flexGrow={1} justifyContent="center">
+            <Link href="/">
+              <a>
+                <Typography color="text.primary">Ianthe</Typography>
+              </a>
+            </Link>
+          </Box>
+          {/* <Box sx={{ flexGrow: 1 }} /> */}
           {session?.user ? userMenu : registrationAndLogin}
         </Toolbar>
       </AppBar>

@@ -6,17 +6,6 @@ import ContainersSchedules from '../../containers/Schedules';
 
 const Schedules: NextPage = () => (
   <ComponentsLayout>
-    <Breadcrumbs
-      aria-label="breadcrumb"
-      sx={{ bgcolor: '#fff', borderBottom: '1px solid #ecf0f1', p: 2 }}
-    >
-      <Link href="/" passHref>
-        <MUILink color="inherit" underline="hover">
-          Home
-        </MUILink>
-      </Link>
-      <Typography color="text.primary">Schedules</Typography>
-    </Breadcrumbs>
     <ContainersSchedules />
   </ComponentsLayout>
 );

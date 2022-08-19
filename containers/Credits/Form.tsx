@@ -59,7 +59,6 @@ const AddForm = ({ user: { firstName, lastName, id } }: AddFormProps) => {
     >
       <Stack spacing={2}>
         <Typography>
-          Add new transaction for{' '}
           <strong>
             {firstName} {lastName}
           </strong>

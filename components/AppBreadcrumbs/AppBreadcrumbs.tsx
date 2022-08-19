@@ -42,7 +42,7 @@ const AppBreadcrumbs = ({
   return (
     <Breadcrumbs
       aria-label="breadcrumb"
-      sx={{ bgcolor: '#ecf0f1', borderBottom: '1px solid #ecf0f1', p: 2 }}
+      sx={{ bgcolor: 'common.white', borderBottom: '1px solid #ecf0f1', p: 2 }}
     >
       {breadcrumbs.map((crumb, index) => (
         <Crumb key={index} last={index === breadcrumbs.length - 1} {...crumb} />

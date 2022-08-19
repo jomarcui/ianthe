@@ -11,10 +11,10 @@ import {
   Typography,
 } from '@mui/material';
 import { User } from '../../types';
-import titleize from 'titleize';
+// import titleize from 'titleize';
 import ContainersCreditsForm from './Form';
 import ContainersCreditsList from './List';
-import AppBreadcrumbs from '../../components/AppBreadcrumbs';
+// import AppBreadcrumbs from '../../components/AppBreadcrumbs';
 
 type CreditsProps = {
   users: User[];
@@ -29,10 +29,10 @@ const Credits = ({ users }: CreditsProps) => {
     [users, selectedUserId]
   );
 
-  const getDefaultTextGenerator = useCallback(
-    (subpath: string) => titleize(subpath),
-    []
-  );
+  // const getDefaultTextGenerator = useCallback(
+  //   (subpath: string) => titleize(subpath),
+  //   []
+  // );
 
   // Assuming `fetchAPI` loads data from the API and this will use the
   // parameter name to determine how to resolve the text. In the example,
@@ -55,11 +55,11 @@ const Credits = ({ users }: CreditsProps) => {
 
   return (
     <>
-      <AppBreadcrumbs getDefaultTextGenerator={getDefaultTextGenerator} />
-      <Box p={2}>
+      {/* <AppBreadcrumbs getDefaultTextGenerator={getDefaultTextGenerator} /> */}
+      <Box my={3}>
         <Typography variant="h6">Users List</Typography>
       </Box>
-      <Box p={2}>
+      <Box>
         <TextField
           fullWidth
           inputProps={{

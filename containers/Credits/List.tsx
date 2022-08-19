@@ -1,12 +1,14 @@
 import { Dispatch, SetStateAction, useDeferredValue, useMemo } from 'react';
 import {
   Avatar,
+  Box,
   Card,
   CardContent,
   CardHeader,
   IconButton,
   List as MuiList,
   ListItem,
+  Stack,
   Typography,
 } from '@mui/material';
 import {
@@ -83,35 +85,31 @@ const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
   const handleActionClicked = (id: string) => setSelectedUserId(id);
 
   return (
-    <MuiList disablePadding>
+    <Stack my={2} spacing={2}>
       {usersFilteredByMobileNumber.map(
         ({ firstName, id, lastName, mobileNumber, transactions }) => (
-          <ListItem key={mobileNumber} sx={{ display: 'inline-block' }}>
-            <Card>
-              <CardHeader
-                action={
-                  <IconButton
-                    aria-label="credit action"
-                    color="primary"
-                    onClick={() => handleActionClicked(id)}
-                  >
-                    <AddCircleIcon />
-                  </IconButton>
-                }
-                avatar={
-                  <Avatar {...stringAvatar(`${firstName} ${lastName}`)} />
-                }
-                title={`${firstName} ${lastName}`}
-                subheader={mobileNumber}
-              />
-              <CardContent>
-                <Credits transactions={transactions} />
-              </CardContent>
-            </Card>
-          </ListItem>
+          <Card key={id}>
+            <CardHeader
+              action={
+                <IconButton
+                  aria-label="credit action"
+                  color="primary"
+                  onClick={() => handleActionClicked(id)}
+                >
+                  <AddCircleIcon />
+                </IconButton>
+              }
+              avatar={<Avatar {...stringAvatar(`${firstName} ${lastName}`)} />}
+              title={`${firstName} ${lastName}`}
+              subheader={mobileNumber}
+            />
+            <CardContent>
+              <Credits transactions={transactions} />
+            </CardContent>
+          </Card>
         )
       )}
-    </MuiList>
+    </Stack>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
+import { Today as TodayIcon } from '@mui/icons-material';
 import Loader from '../../components/Loader';
 import SchedulesTabPanel from './SchedulesTabPanel';
 
@@ -27,37 +28,47 @@ const Home = () => {
 
   return (
     <>
-      <Box>
+      <Stack
+        alignItems="center"
+        direction="row"
+        display="flex"
+        my={3}
+        spacing={1}
+      >
+        <TodayIcon />
         <Typography variant="h6">Today&apos;s events</Typography>
-      </Box>
+      </Stack>
 
       {isLeaguesLoading && <Loader />}
 
       {leagues && (
-        <Stack spacing={2}>
-          <Typography>Select League</Typography>
-          <Stack direction="row" spacing={1}>
-            {leagues.map(({ id, initialism }, index) => {
-              const bgcolor = selectedLeagueId !== id && 'white';
-              const color = selectedLeagueId !== id && 'text.primary';
+        <>
+          <Stack my={3} spacing={1}>
+            <Typography>Select League</Typography>
+            <Stack direction="row" spacing={1}>
+              {leagues.map(({ id, initialism }, index) => {
+                const bgcolor = selectedLeagueId !== id && 'white';
+                const color = selectedLeagueId !== id && 'text.primary';
 
-              return (
-                <Button
-                  key={index}
-                  onClick={() => setSelectedLeagueId(id)}
-                  sx={{ bgcolor, color }}
-                  variant="contained"
-                >
-                  {initialism}
-                </Button>
-              );
-            })}
+                return (
+                  <Button
+                    key={index}
+                    onClick={() => setSelectedLeagueId(id)}
+                    sx={{ bgcolor, color }}
+                    variant="contained"
+                  >
+                    {initialism}
+                  </Button>
+                );
+              })}
+            </Stack>
           </Stack>
-
-          {selectedLeagueId && (
-            <SchedulesTabPanel leagueId={selectedLeagueId} />
-          )}
-        </Stack>
+          <Stack my={3} spacing={2}>
+            {selectedLeagueId && (
+              <SchedulesTabPanel leagueId={selectedLeagueId} />
+            )}
+          </Stack>
+        </>
       )}
     </>
   );

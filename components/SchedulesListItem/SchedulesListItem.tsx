@@ -61,7 +61,7 @@ const SchedulesListItem = ({
           subheader={format(new Date(date), 'h:mm a')}
         />
         <CardContent>
-          <Grid container>
+          <Grid container spacing={1}>
             <Grid item xs={6}>
               <Typography align="center">{homeName}</Typography>
             </Grid>

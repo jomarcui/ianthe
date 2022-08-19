@@ -31,8 +31,8 @@ const List = () => {
   }));
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Stack spacing={2}>
+    <>
+      <Stack my={3}>
         <Grid container>
           <Grid item sx={{ alignItems: 'center', display: 'flex' }} xs>
             <Typography variant="h6">Users List</Typography>
@@ -43,17 +43,18 @@ const List = () => {
             </Button>
           </Grid>
         </Grid>
-        {isUsersLoading && <Loader />}
-        {usersResponse && (
-          <DataGrid
-            autoHeight
-            columns={columns}
-            disableSelectionOnClick
-            rows={rows}
-          />
-        )}
       </Stack>
-    </Box>
+      {isUsersLoading && <Loader />}
+      {usersResponse && (
+        <DataGrid
+          autoHeight
+          columns={columns}
+          disableSelectionOnClick
+          rows={rows}
+          sx={{ bgcolor: 'common.white' }}
+        />
+      )}
+    </>
   );
 };
 

@@ -2,20 +2,20 @@ import { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import {
+  Avatar,
   Box,
   Button,
+  Card,
+  CardHeader,
   Grid,
-  Link as MUILink,
   List,
   ListItem,
   Paper,
   Stack,
   Typography,
 } from '@mui/material';
-import { Breadcrumbs } from '@mui/material';
 import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
 import Layout from '../../components/Layout';
-import Link from 'next/link';
 import Loader from '../../components/Loader';
 import ContainersMatchBetForm from '../../containers/Match/BetForm';
 
@@ -72,21 +72,7 @@ const Match: NextPage = () => {
 
   return (
     <Layout>
-      <Breadcrumbs
-        aria-label="breadcrumb"
-        sx={{ bgcolor: '#fff', borderBottom: '1px solid #ecf0f1', p: 2 }}
-      >
-        <Link href="/" passHref>
-          <MUILink color="inherit" underline="hover">
-            Today&apos;s Events
-          </MUILink>
-        </Link>
-        <Typography color="text.primary">
-          Match ID: {matchId?.slice(0, 8)}...
-        </Typography>
-      </Breadcrumbs>
-
-      <Stack spacing={5} sx={{ bgcolor: '#ecf0f1', p: 2 }}>
+      <Stack spacing={5} sx={{ bgcolor: '#ecf0f1', my: 3 }}>
         <Box>
           {isMatchLoading && <Loader />}
 
@@ -143,15 +129,25 @@ const Match: NextPage = () => {
         </Box>
       </Stack>
 
-      <List disablePadding sx={{ m: 0 }}>
+      <Stack spacing={2}>
         {isMatchLoading && <Loader />}
 
         {match &&
           Object.values(match.teams)
             .sort((a, b) => b.side - a.side)
             .map(({ id, name, odds }) => (
-              <ListItem divider key={id} sx={{ p: 2 }}>
-                <Grid container>
+              <Card key={id}>
+                <CardHeader
+                  action={
+                    <Button onClick={() => handleBetClick(id)}>
+                      Bet &#8369;0.00
+                    </Button>
+                  }
+                  avatar={<Avatar>{name.charAt(0)}</Avatar>}
+                  title={name}
+                  subheader={odds.toString()}
+                />
+                {/* <Grid container>
                   <Grid item xs={4}>
                     <div
                       style={{
@@ -184,10 +180,10 @@ const Match: NextPage = () => {
                       Bet: &#8369;0.00
                     </Button>
                   </Grid>
-                </Grid>
-              </ListItem>
+                </Grid> */}
+              </Card>
             ))}
-      </List>
+      </Stack>
 
       {matchId && (
         <ContainersMatchBetForm
