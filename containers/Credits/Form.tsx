@@ -9,12 +9,34 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import {
+  MutationDefinition,
+  BaseQueryFn,
+  FetchArgs,
+  FetchBaseQueryError,
+  FetchBaseQueryMeta,
+} from '@reduxjs/toolkit/dist/query';
+import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { TransactionType } from '../../enums';
-import { useCreateTransactionMutation } from '../../redux/api/transactionsApi';
 import { User } from '../../types';
 
 type AddFormProps = {
+  createTransaction: MutationTrigger<
+    MutationDefinition<
+      any,
+      BaseQueryFn<
+        string | FetchArgs,
+        unknown,
+        FetchBaseQueryError,
+        {},
+        FetchBaseQueryMeta
+      >,
+      'Transactions' | 'Transaction',
+      any,
+      'transactionsApi'
+    >
+  >;
   user: User;
 };
 
@@ -24,7 +46,10 @@ type FormInputs = {
   user: string;
 };
 
-const AddForm = ({ user: { firstName, lastName, id } }: AddFormProps) => {
+const AddForm = ({
+  createTransaction,
+  user: { firstName, lastName, id },
+}: AddFormProps) => {
   const { control, handleSubmit, register } = useForm<FormInputs>({
     defaultValues: {
       amount: 0,
@@ -32,8 +57,6 @@ const AddForm = ({ user: { firstName, lastName, id } }: AddFormProps) => {
       user: id,
     },
   });
-
-  const [createTransaction] = useCreateTransactionMutation();
 
   const handleFormSubmit: SubmitHandler<FormInputs> = async (formData) => {
     const { amount: amountFormData, type } = formData;
