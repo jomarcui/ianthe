@@ -70,7 +70,10 @@ const BetForm = ({
       if (!session) return null;
 
       return session.user['id'];
-    })()
+    })(),
+    {
+      skip: !session,
+    }
   );
 
   const {
