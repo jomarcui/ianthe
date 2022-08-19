@@ -1,6 +1,6 @@
 export enum Roles {
   ADMIN = 0,
-  USER = 1
+  USER = 1,
 }
 
 export enum Status {
@@ -12,4 +12,9 @@ export enum Status {
 export enum Team {
   Home,
   Visitor,
+}
+
+export enum TransactionType {
+  CREDIT = 'CREDIT',
+  DEBIT = 'DEBIT',
 }

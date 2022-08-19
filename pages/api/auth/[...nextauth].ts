@@ -23,7 +23,7 @@ async function refreshAccessToken(token) {
       refreshToken: refreshedTokens.refreshToken ?? token.refreshToken, // Fall back to old refresh token
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     return {
       ...token,

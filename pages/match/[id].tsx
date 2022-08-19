@@ -17,7 +17,7 @@ import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
 import Layout from '../../components/Layout';
 import Link from 'next/link';
 import Loader from '../../components/Loader';
-import ContainersBetForm from '../../containers/Match/BetForm';
+import ContainersMatchBetForm from '../../containers/Match/BetForm';
 
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
@@ -190,7 +190,7 @@ const Match: NextPage = () => {
       </List>
 
       {matchId && (
-        <ContainersBetForm
+        <ContainersMatchBetForm
           handleClose={handleCloseBetForm}
           matchId={matchId}
           open={openBetForm}

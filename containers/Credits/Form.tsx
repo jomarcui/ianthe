@@ -10,13 +10,9 @@ import {
   Typography,
 } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { TransactionType } from '../../enums';
 import { useCreateTransactionMutation } from '../../redux/api/transactionsApi';
 import { User } from '../../types';
-
-enum TransactionType {
-  CREDIT = 'CREDIT',
-  DEBIT = 'DEBIT',
-}
 
 type AddFormProps = {
   user: User;

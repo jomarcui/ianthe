@@ -12,7 +12,11 @@ const transactionsApi = createApi({
         method: 'POST',
         url: 'api/transactions',
       }),
-      invalidatesTags: ['Transactions'],
+      invalidatesTags: ['Transaction', 'Transactions'],
+    }),
+    getTransactionById: build.query<any, string>({
+      query: (id) => `api/transactions/${id}`,
+      providesTags: ['Transaction'],
     }),
     getTransactions: build.query<any, void>({
       query: () => 'api/transactions',
@@ -25,11 +29,14 @@ const transactionsApi = createApi({
     }
   },
   reducerPath: 'transactionsApi',
-  tagTypes: ['Transactions'],
+  tagTypes: ['Transaction', 'Transactions'],
 });
 
-export const { useCreateTransactionMutation, useGetTransactionsQuery } =
-  transactionsApi;
+export const {
+  useCreateTransactionMutation,
+  useGetTransactionByIdQuery,
+  useGetTransactionsQuery,
+} = transactionsApi;
 export const { getTransactions } = transactionsApi.endpoints;
 
 export default transactionsApi;

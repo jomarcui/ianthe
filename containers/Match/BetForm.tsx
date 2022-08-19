@@ -3,7 +3,6 @@ import { LoadingButton } from '@mui/lab';
 import {
   Stack,
   Button,
-  TextField,
   Grid,
   Dialog,
   AppBar,
@@ -14,16 +13,19 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Avatar,
-  Box,
+  Alert,
 } from '@mui/material';
 import { Close as CloseIcon, Info as InfoIcon } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useGetTeamByIdQuery } from '../../redux/api/teamsApi';
+import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
+import {
+  useCreateTransactionMutation,
+  useGetTransactionByIdQuery,
+} from '../../redux/api/transactionsApi';
 import PleaseSignIn from '../../components/PleaseSignIn';
 import Transition from '../../components/Transition';
-import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
+import { TransactionType } from '../../enums';
 
 enum Operation {
   Add,
@@ -35,52 +37,100 @@ type BetFormProps = {
   matchId: string;
   open: boolean;
   selectedTeamId: string;
-}
+};
 
 type FormInput = {
-  bet: string;
+  amount: number;
+  type: string;
+  user: string;
 };
 
 const computeTotalReturn = ({
-  bet,
+  amount,
   odds,
 }: {
-  bet: number;
+  amount: number;
   odds: number;
-}): number => bet + bet / odds;
+}): number => amount + amount / odds;
 
-const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) => {
+const BetForm = ({
+  handleClose,
+  matchId,
+  open,
+  selectedTeamId,
+}: BetFormProps) => {
   const [totalReturn, setTotalReturn] = useState(0);
-  const { data: session, status } = useSession();
-  const { data: match, isLoading: isMatchLoading } = useGetMatchByIdQuery(matchId);
+  const { data: session, status: sessionStatus } = useSession();
+  const { data: match } = useGetMatchByIdQuery(matchId);
 
-  const selectedTeam = match?.teams.find(({ id }) => id === selectedTeamId);
+  const [createTransaction] = useCreateTransactionMutation();
 
-  const { handleSubmit, register, setValue, watch } = useForm<FormInput>({
+  const { data: getTransactionByIdResponse } = useGetTransactionByIdQuery(
+    (() => {
+      if (!session) return null;
+
+      return session.user['id'];
+    })()
+  );
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+    setValue,
+    watch,
+  } = useForm<FormInput>({
     defaultValues: {
-      bet: '20.00',
+      amount: 20,
+      type: TransactionType.DEBIT,
+      user: session?.user['id'],
     },
   });
 
   useEffect(() => {
-    if (!selectedTeam) return;
+    if (!selectedTeamId) return;
 
-    setTotalReturn(computeTotalReturn({ bet: 20, odds: selectedTeam.odds }));
-  }, [selectedTeam]);
+    const teamFound = match?.teams.find(({ id }) => id === selectedTeamId);
 
-  const watchBet = Number(watch('bet'));
+    setTotalReturn(
+      computeTotalReturn({ amount: 20, odds: teamFound.odds || 0 })
+    );
+  }, [match?.teams, selectedTeamId]);
+
+  const watchAmount = Number(watch('amount'));
 
   const handleBetChange = ({ operation }: { operation: Operation }) => {
-    const bet =
-      operation === Operation.Subtract ? watchBet - 10 : watchBet + 10;
+    const amount =
+      operation === Operation.Subtract ? watchAmount - 10 : watchAmount + 10;
 
-    setValue('bet', bet.toFixed(2).toString());
-    setTotalReturn(computeTotalReturn({ bet, odds: selectedTeam.odds }));
+    setValue('amount', amount);
+    setTotalReturn(computeTotalReturn({ amount, odds: selectedTeam.odds }));
   };
 
   const handleFormSubmit: SubmitHandler<FormInput> = async (formData) => {
-    console.log(formData);
+    const { amount: amountFormData, type } = formData;
+
+    const amount =
+      type === TransactionType.CREDIT
+        ? Math.abs(amountFormData)
+        : -Math.abs(amountFormData);
+
+    const payload = {
+      ...formData,
+      amount,
+    };
+
+    await createTransaction(payload);
+
+    handleClose();
   };
+
+  const selectedTeam = match?.teams.find(({ id }) => id === selectedTeamId);
+
+  const credits = getTransactionByIdResponse?.data.transactions.reduce(
+    (prevValue: number, { amount }) => prevValue + amount,
+    0
+  );
 
   return (
     <Dialog
@@ -105,9 +155,9 @@ const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) =
         </Toolbar>
       </AppBar>
       <DialogContent>
-        {status === 'unauthenticated' && <PleaseSignIn />}
+        {sessionStatus === 'unauthenticated' && <PleaseSignIn />}
 
-        {status === 'authenticated' && (
+        {sessionStatus === 'authenticated' && (
           <Stack spacing={5}>
             <Card variant="outlined">
               <CardHeader
@@ -120,7 +170,7 @@ const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) =
                     <Typography>My Credits</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography align="right">Php0.00</Typography>
+                    <Typography align="right">&#8369;{credits}</Typography>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -130,7 +180,9 @@ const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) =
               <Typography>
                 {`${selectedTeam?.name} @${selectedTeam?.odds}`}
               </Typography>
-              <form onSubmit={handleSubmit(handleFormSubmit)}>
+              <form id="bet-form" onSubmit={handleSubmit(handleFormSubmit)}>
+                <input type="hidden" {...register('type')} />
+                <input type="hidden" {...register('user')} />
                 <Stack spacing={2}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -147,12 +199,14 @@ const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) =
                             fontSize: '1rem',
                             width: '6rem',
                           }}
+                          type="button"
                         >
                           <Typography>-</Typography>
                         </button>
                         <input
+                          onFocus={(event) => event.target.select()}
+                          required
                           step="any"
-                          type="number"
                           style={{
                             border: 'none',
                             borderRadius: 0,
@@ -160,8 +214,16 @@ const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) =
                             padding: '0.875rem',
                             width: '100%',
                           }}
-                          {...register('bet')}
-                        ></input>
+                          type="number"
+                          {...register('amount', {
+                            validate: {
+                              lessThanCredits: (value) =>
+                                value < credits || 'insufficient credits',
+                              greaterThanZero: (value) =>
+                                value > 0 || 'must be greater than 0',
+                            },
+                          })}
+                        />
                         <button
                           onClick={() =>
                             handleBetChange({ operation: Operation.Add })
@@ -171,6 +233,7 @@ const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) =
                             fontSize: '1rem',
                             width: '6rem',
                           }}
+                          type="button"
                         >
                           <Typography>+</Typography>
                         </button>
@@ -185,7 +248,12 @@ const BetForm = ({ handleClose, matchId, open, selectedTeamId }: BetFormProps) =
                       </Stack>
                     </Grid>
                   </Grid>
-                  <LoadingButton fullWidth onClick={() => alert('Soon!')} variant="contained">
+                  {errors.amount && (
+                    <Alert severity="warning">
+                      <Typography>{errors.amount.message}</Typography>
+                    </Alert>
+                  )}
+                  <LoadingButton fullWidth type="submit" variant="contained">
                     Place bet
                   </LoadingButton>
                   <Button fullWidth onClick={handleClose} variant="outlined">
