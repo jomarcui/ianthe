@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useLeaguesQuery } from '../../redux/api/leaguesApi';
 import Loader from '../../components/Loader';
-import SportsIcon from '../../components/SportsIcon';
-import ComponentsFullWidthTabs from '../../components/FullWidthTabs';
 import SchedulesTabPanel from './SchedulesTabPanel';
 
 const Home = () => {
-  // const [value, setValue] = useState(0);
   const [selectedLeagueId, setSelectedLeagueId] = useState<string>(null);
 
   const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
@@ -57,15 +54,9 @@ const Home = () => {
             })}
           </Stack>
 
-          {/* <ComponentsFullWidthTabs
-            setValue={setValue}
-            tabs={leagues.map(({ id, initialism, sportId }) => ({
-              header: { key: id, label: initialism },
-              icon: <SportsIcon sportId={sportId} />,
-            }))}
-            value={value}
-          /> */}
-          <SchedulesTabPanel leagueId={selectedLeagueId} />
+          {selectedLeagueId && (
+            <SchedulesTabPanel leagueId={selectedLeagueId} />
+          )}
         </Stack>
       )}
     </>

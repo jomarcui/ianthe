@@ -1,4 +1,3 @@
-import { SyntheticEvent, useState } from 'react';
 import { format } from 'date-fns';
 import {
   Box,
@@ -17,22 +16,11 @@ import { Schedule, Team } from '../../types';
 import Link from 'next/link';
 import teamsUtils from '../../utilities/teamsUtils';
 
-import {
-  StyledTeamNameContainer,
-  StyledOdds,
-} from './SchedulesListItem.styles';
-
 type SchedulesListItemProps = {
   isLoading: boolean;
   schedule: Schedule;
   teams: Team[];
 };
-
-const BodyText = ({ children }) => (
-  <Typography align="center" variant="body2">
-    {children}
-  </Typography>
-);
 
 const Loader = ({ Text }: { Text?: React.ReactNode }) => (
   <Stack direction="row" spacing={1}>
@@ -94,9 +82,6 @@ const SchedulesListItem = ({
         </CardContent>
       </Card>
     </Box>
-    // <StyledListItemButton divider>
-    //   <StyledListItemText primary={primary} />
-    // </StyledListItemButton>
   );
 };
 

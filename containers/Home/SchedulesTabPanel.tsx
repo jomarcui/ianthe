@@ -1,10 +1,8 @@
-import { List } from '@mui/material';
 import { Fragment, useEffect } from 'react';
 import { useGetLeagueSchedulesByDateQuery } from '../../redux/api/schedulesApi';
 import { useGetTeamsQuery } from '../../redux/api/teamsApi';
 import Loader from '../../components/Loader';
 import SchedulesListItem from '../../components/SchedulesListItem';
-import TabPanel from '../../components/TabPanel';
 
 type SchedulesTabPanelProps = {
   leagueId: string;
