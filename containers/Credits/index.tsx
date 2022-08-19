@@ -21,7 +21,7 @@ type CreditsProps = {
 };
 
 const Credits = ({ users }: CreditsProps) => {
-  const [mobileNumber, setMobileNumber] = useState<string>(null);
+  const [mobileNumber, setMobileNumber] = useState<string>('');
   const [selectedUserId, setSelectedUserId] = useState<string>(null);
 
   const selectedUser = useMemo(
