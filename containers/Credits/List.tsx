@@ -9,12 +9,54 @@ import {
   ListItem,
   Typography,
 } from '@mui/material';
-import { Payment as PaymentIcon } from '@mui/icons-material';
+import {
+  AddCircle as AddCircleIcon,
+  Payment as PaymentIcon,
+} from '@mui/icons-material';
 import { User } from '../../types';
 
 type CreditsProps = {
   transactions: [];
 };
+
+type ListProps = {
+  mobileNumber: string;
+  setSelectedUserId: Dispatch<SetStateAction<string>>;
+  users: User[];
+};
+
+function stringAvatar(name: string) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: (
+      <Typography>{`${name.split(' ')[0][0]}${
+        name.split(' ')[1][0]
+      }`}</Typography>
+    ),
+  };
+}
+
+function stringToColor(string: string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = '#';
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  /* eslint-enable no-bitwise */
+
+  return color;
+}
 
 const Credits = ({ transactions }: CreditsProps) => {
   const credits = transactions.reduce(
@@ -23,12 +65,6 @@ const Credits = ({ transactions }: CreditsProps) => {
   );
 
   return <Typography>Credits: &#8369;{credits.toFixed(2)}</Typography>;
-};
-
-type ListProps = {
-  mobileNumber: string;
-  setSelectedUserId: Dispatch<SetStateAction<string>>;
-  users: User[];
 };
 
 const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
@@ -46,12 +82,6 @@ const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
 
   const handleActionClicked = (id: string) => setSelectedUserId(id);
 
-  const CardHeaderAvatar = ({ firstNameInitial, lastNameInitial }) => (
-    <Avatar>
-      <Typography>{`${firstNameInitial} ${lastNameInitial}`}</Typography>
-    </Avatar>
-  );
-
   return (
     <MuiList disablePadding>
       {usersFilteredByMobileNumber.map(
@@ -62,16 +92,14 @@ const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
                 action={
                   <IconButton
                     aria-label="credit action"
+                    color="primary"
                     onClick={() => handleActionClicked(id)}
                   >
-                    <PaymentIcon />
+                    <AddCircleIcon />
                   </IconButton>
                 }
                 avatar={
-                  <CardHeaderAvatar
-                    firstNameInitial={firstName.charAt(0)}
-                    lastNameInitial={lastName.charAt(0)}
-                  />
+                  <Avatar {...stringAvatar(`${firstName} ${lastName}`)} />
                 }
                 title={`${firstName} ${lastName}`}
                 subheader={mobileNumber}

@@ -3,12 +3,9 @@ import { wrapper } from '../../redux/store';
 import ComponentsLayout from '../../components/Layout';
 import ContainersCredits from '../../containers/Credits';
 import Loader from '../../components/Loader';
-import usersApi, { useGetUsersQuery } from '../../redux/api/usersApi';
 import transactionsApi, {
-  useCreateTransactionMutation,
   useGetTransactionsQuery,
 } from '../../redux/api/transactionsApi';
-import { useEffect } from 'react';
 
 // export const getServerSideProps = wrapper.getServerSideProps(
 //   (store) => async (context) => {

@@ -1,3 +1,4 @@
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -7,12 +8,13 @@ import {
   DialogTitle,
   Grid,
   TextField,
+  Typography,
 } from '@mui/material';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { useCreateTransactionMutation } from '../../redux/api/transactionsApi';
 import { User } from '../../types';
+import titleize from 'titleize';
 import ContainersCreditsForm from './Form';
 import ContainersCreditsList from './List';
+import AppBreadcrumbs from '../../components/AppBreadcrumbs';
 
 type CreditsProps = {
   users: User[];
@@ -21,6 +23,25 @@ type CreditsProps = {
 const Credits = ({ users }: CreditsProps) => {
   const [mobileNumber, setMobileNumber] = useState<string>(null);
   const [selectedUserId, setSelectedUserId] = useState<string>(null);
+
+  const selectedUser = useMemo(
+    () => users.find(({ id }) => id === selectedUserId),
+    [users, selectedUserId]
+  );
+
+  const getDefaultTextGenerator = useCallback(
+    (subpath: string) => titleize(subpath),
+    []
+  );
+
+  // Assuming `fetchAPI` loads data from the API and this will use the
+  // parameter name to determine how to resolve the text. In the example,
+  // we fetch the post from the API and return it's `title` property
+  // const getTextGenerator = useCallback((param, query) => {
+  //   return {
+  //     "post_id": () => await fetchAPI(`/posts/${query.post_id}/`).title,
+  //   }[param];
+  // }, []);
 
   useEffect(() => {
     setSelectedUserId(null);
@@ -33,8 +54,12 @@ const Credits = ({ users }: CreditsProps) => {
   };
 
   return (
-    <div>
-      <Box sx={{ p: 2 }}>
+    <>
+      <AppBreadcrumbs getDefaultTextGenerator={getDefaultTextGenerator} />
+      <Box p={2}>
+        <Typography variant="h6">Users List</Typography>
+      </Box>
+      <Box p={2}>
         <TextField
           fullWidth
           inputProps={{
@@ -53,9 +78,9 @@ const Credits = ({ users }: CreditsProps) => {
         users={users}
       />
       <Dialog open={Boolean(selectedUserId)} onClose={handleDialogClose}>
-        <DialogTitle>Update User Credits</DialogTitle>
+        <DialogTitle>Create Transaction</DialogTitle>
         <DialogContent>
-          <ContainersCreditsForm userId={selectedUserId} />
+          {selectedUser && <ContainersCreditsForm user={selectedUser} />}
         </DialogContent>
         <DialogActions>
           <Grid justifyContent="space-between" container>
@@ -72,7 +97,7 @@ const Credits = ({ users }: CreditsProps) => {
           </Grid>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   );
 };
 
