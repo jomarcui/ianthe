@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Breadcrumbs, Link as MUILink, Typography } from '@mui/material';
+import {
+  AppBar,
+  Breadcrumbs,
+  Link as MUILink,
+  Typography,
+} from '@mui/material';
 import Link from 'next/link';
 
 const defaultGetDefaultTextGenerator = (path) => path;
@@ -42,7 +47,12 @@ const AppBreadcrumbs = ({
   return (
     <Breadcrumbs
       aria-label="breadcrumb"
-      sx={{ bgcolor: 'common.white', borderBottom: '1px solid #ecf0f1', p: 2 }}
+      sx={{
+        bgcolor: 'common.white',
+        borderBottom: '1px solid #ecf0f1',
+        boxShadow: 1,
+        p: 2,
+      }}
     >
       {breadcrumbs.map((crumb, index) => (
         <Crumb key={index} last={index === breadcrumbs.length - 1} {...crumb} />
