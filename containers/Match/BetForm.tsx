@@ -91,6 +91,8 @@ const BetForm = ({
       ({ team: { id } }) => id === selectedTeamId
     );
 
+    if (!teamFound) return;
+
     setValue('amount', 20);
 
     setTotalReturn(
