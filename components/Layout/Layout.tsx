@@ -5,7 +5,11 @@ import ComponentsAppBreadcrumbs from '../AppBreadcrumbs';
 import ComponentsMenuAppBar from '../MenuAppBar';
 import titleize from 'titleize';
 
-const theme = createTheme();
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Rubik',
+  },
+});
 
 type LayoutProps = {
   children: ReactNode;

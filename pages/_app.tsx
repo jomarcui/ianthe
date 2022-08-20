@@ -17,6 +17,7 @@ const MyApp: NextPage = ({
 }: AppProps) => (
   <>
     <Head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Ianthe</title>
     </Head>
     <SessionProvider session={session}>

@@ -35,7 +35,7 @@ import { useGetTransactionsQuery } from '../../redux/api/transactionsApi';
 const Credits: NextPage = () => {
   const { data: getTransactionsResponse, isLoading: isGetTransactionsLoading } =
     useGetTransactionsQuery();
-  console.log(isGetTransactionsLoading);
+
   return (
     <ComponentsLayout>
       {isGetTransactionsLoading && <Loader />}
