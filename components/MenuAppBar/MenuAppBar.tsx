@@ -68,7 +68,7 @@ const MobileMainMenuList = ({
       onClose={toggleMobileMainMenuListDrawer}
     >
       <Box
-        sx={{ width: 'auto' }}
+        // sx={{ width: 'auto' }}
         role="presentation"
         onClick={toggleMobileMainMenuListDrawer}
         onKeyDown={toggleMobileMainMenuListDrawer}

@@ -29,7 +29,7 @@ const ListItemButtonLink = ({
   return (
     <ListItem divider>
       <ListItemButton component={NextLinkComposed} to={href}>
-        <Grid alignItems="center" container spacing={1}>
+        <Grid alignItems="center" container spacing={2}>
           <Grid item>
             {notificationsCount ? (
               <Badge badgeContent={notificationsCount} color="error">
