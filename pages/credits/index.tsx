@@ -1,11 +1,13 @@
 import { NextPage } from 'next';
-import { wrapper } from '../../redux/store';
+// import { wrapper } from '../../redux/store';
 import ComponentsLayout from '../../components/Layout';
 import ContainersCredits from '../../containers/Credits';
 import Loader from '../../components/Loader';
-import transactionsApi, {
-  useGetTransactionsQuery,
-} from '../../redux/api/transactionsApi';
+import { useGetTransactionsQuery } from '../../redux/api/transactionsApi';
+
+// import transactionsApi, {
+//   useGetTransactionsQuery,
+// } from '../../redux/api/transactionsApi';
 
 // export const getServerSideProps = wrapper.getServerSideProps(
 //   (store) => async (context) => {
@@ -18,22 +20,22 @@ import transactionsApi, {
 //   }
 // );
 
-export const getStaticProps = wrapper.getStaticProps(
-  (store) => async (context) => {
-    store.dispatch(transactionsApi.endpoints.getTransactions.initiate());
+// export const getStaticProps = wrapper.getStaticProps(
+//   (store) => async (context) => {
+//     store.dispatch(transactionsApi.endpoints.getTransactions.initiate());
 
-    await Promise.all(transactionsApi.util.getRunningOperationPromises());
+//     await Promise.all(transactionsApi.util.getRunningOperationPromises());
 
-    return {
-      props: {},
-    };
-  }
-);
+//     return {
+//       props: {},
+//     };
+//   }
+// );
 
 const Credits: NextPage = () => {
   const { data: getTransactionsResponse, isLoading: isGetTransactionsLoading } =
     useGetTransactionsQuery();
-
+  console.log(isGetTransactionsLoading);
   return (
     <ComponentsLayout>
       {isGetTransactionsLoading && <Loader />}
