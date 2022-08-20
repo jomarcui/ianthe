@@ -63,7 +63,8 @@ const BetForm = ({
   const { data: session, status: sessionStatus } = useSession();
   const { data: getMatchByIdResponse } = useGetMatchByIdQuery(matchId);
 
-  const [createTransaction] = useCreateTransactionMutation();
+  const [createTransaction, { isLoading: isCreateTransactionLoading }] =
+    useCreateTransactionMutation();
 
   const { data: getTransactionByIdResponse } = useGetTransactionByIdQuery(
     session?.user['id'],
@@ -258,7 +259,12 @@ const BetForm = ({
                       <Typography>{errors.amount.message}</Typography>
                     </Alert>
                   )}
-                  <LoadingButton fullWidth type="submit" variant="contained">
+                  <LoadingButton
+                    loading={isCreateTransactionLoading}
+                    fullWidth
+                    type="submit"
+                    variant="contained"
+                  >
                     Place bet
                   </LoadingButton>
                   <Button fullWidth onClick={handleClose} variant="outlined">
