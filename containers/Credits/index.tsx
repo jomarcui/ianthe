@@ -86,11 +86,13 @@ const Credits = ({ users }: CreditsProps) => {
           {selectedUser && (
             <ContainersCreditsForm
               handleCreateTransaction={handleCreateTransaction}
+              handleDialogClose={handleDialogClose}
+              isCreateTransactionLoading={isCreateTransactionLoading}
               user={selectedUser}
             />
           )}
         </DialogContent>
-        <DialogActions>
+        {/* <DialogActions>
           <Grid justifyContent="space-between" container>
             <Grid item>
               <Button onClick={handleDialogClose} variant="outlined">
@@ -108,7 +110,7 @@ const Credits = ({ users }: CreditsProps) => {
               </LoadingButton>
             </Grid>
           </Grid>
-        </DialogActions>
+        </DialogActions> */}
       </Dialog>
     </>
   );

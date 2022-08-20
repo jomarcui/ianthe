@@ -1,8 +1,11 @@
+import { LoadingButton } from '@mui/lab';
 import {
   Box,
+  Button,
   FormControl,
   FormControlLabel,
   FormLabel,
+  Grid,
   Radio,
   RadioGroup,
   Stack,
@@ -23,6 +26,8 @@ import { User } from '../../types';
 
 type AddFormProps = {
   handleCreateTransaction: (payload: any) => Promise<void>;
+  handleDialogClose: any;
+  isCreateTransactionLoading: boolean;
   user: User;
 };
 
@@ -34,6 +39,8 @@ type FormInputs = {
 
 const AddForm = ({
   handleCreateTransaction,
+  handleDialogClose,
+  isCreateTransactionLoading,
   user: { firstName, lastName, id },
 }: AddFormProps) => {
   const {
@@ -121,6 +128,23 @@ const AddForm = ({
             },
           })}
         />
+        <Grid justifyContent="space-between" container>
+          <Grid item>
+            <Button onClick={handleDialogClose} variant="outlined">
+              Cancel
+            </Button>
+          </Grid>
+          <Grid item>
+            <LoadingButton
+              loading={isCreateTransactionLoading}
+              form="credits-form"
+              type="submit"
+              variant="contained"
+            >
+              Create
+            </LoadingButton>
+          </Grid>
+        </Grid>
       </Stack>
     </Box>
   );
