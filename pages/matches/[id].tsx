@@ -144,7 +144,6 @@ const Match: NextPage = () => {
 
   const handleCloseBetForm = () => setOpenBetForm(false);
 
-  console.log(getMatchByIdResponse);
   return (
     <Layout>
       <Stack spacing={5} sx={{ bgcolor: '#ecf0f1', my: 3 }}>

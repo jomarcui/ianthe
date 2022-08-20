@@ -109,7 +109,6 @@ const BetForm = ({
   };
 
   const handleFormSubmit: SubmitHandler<FormInput> = async (formData) => {
-    console.log(formData);
     const { amount: amountFormData, type } = formData;
 
     const amount =

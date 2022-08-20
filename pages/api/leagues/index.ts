@@ -21,7 +21,7 @@ const handler = async (req, res) => {
     case 'POST':
       try {
         const { date, league, status, teams } = query;
-        console.log({ date, league, status, teams });
+
         res.status(200).json({ success: true });
       } catch (error) {
         console.error(error);

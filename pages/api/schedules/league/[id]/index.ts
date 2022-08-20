@@ -50,8 +50,6 @@ const handler = async (req, res) => {
           schedule[key] = value;
         }
 
-        console.log(schedule);
-
         await schedule.save();
 
         res.status(200).json({ success: true, data: schedule });
