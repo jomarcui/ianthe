@@ -14,6 +14,7 @@ import {
   CardContent,
   CardHeader,
   Alert,
+  DialogTitle,
 } from '@mui/material';
 import { Close as CloseIcon, Info as InfoIcon } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
@@ -145,21 +146,7 @@ const BetForm = ({
       onClose={handleClose}
       TransitionComponent={Transition}
     >
-      <AppBar sx={{ position: 'relative' }}>
-        <Toolbar>
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            edge="start"
-            onClick={handleClose}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Bet
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <DialogTitle>Bet Slip</DialogTitle>
       <DialogContent>
         {sessionStatus === 'unauthenticated' && <PleaseSignIn />}
 
@@ -203,7 +190,7 @@ const BetForm = ({
                           style={{
                             border: 'none',
                             fontSize: '1rem',
-                            width: '6rem',
+                            width: '3rem',
                           }}
                           type="button"
                         >
@@ -237,7 +224,7 @@ const BetForm = ({
                           style={{
                             border: 'none',
                             fontSize: '1rem',
-                            width: '6rem',
+                            width: '3rem',
                           }}
                           type="button"
                         >
