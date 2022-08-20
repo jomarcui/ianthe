@@ -30,6 +30,7 @@ export const makeStore = () =>
         leaguesApi.middleware,
         matchesApi.middleware,
         schedulesApi.middleware,
+        sportsApi.middleware,
         teamsApi.middleware,
         transactionsApi.middleware,
         usersApi.middleware,

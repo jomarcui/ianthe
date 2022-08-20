@@ -15,6 +15,7 @@ import ContainersCreditsForm from './Form';
 import ContainersCreditsList from './List';
 import { useCreateTransactionMutation } from '../../redux/api/transactionsApi';
 import { LoadingButton } from '@mui/lab';
+import Transition from '../../components/Transition';
 
 type CreditsProps = {
   users: User[];
@@ -54,13 +55,17 @@ const Credits = ({ users }: CreditsProps) => {
       </Box>
       <Box>
         <TextField
+          autoComplete="off"
           fullWidth
+          id="mobile-number-text"
           inputProps={{
+            autoComplete: 'none',
             maxLength: 11,
             placeholder: '0XXXXXXXXXX',
           }}
-          InputLabelProps={{ shrink: true }}
           label="Mobile Number"
+          name="mobileNumber"
+          onFocus={(e) => e.target.select()}
           onChange={handleMobileNumberChanged}
           value={mobileNumber}
         />
@@ -70,7 +75,12 @@ const Credits = ({ users }: CreditsProps) => {
         setSelectedUserId={setSelectedUserId}
         users={users}
       />
-      <Dialog open={Boolean(selectedUserId)} onClose={handleDialogClose}>
+      <Dialog
+        fullScreen
+        open={Boolean(selectedUserId)}
+        onClose={handleDialogClose}
+        TransitionComponent={Transition}
+      >
         <DialogTitle>Create Transaction</DialogTitle>
         <DialogContent>
           {selectedUser && (

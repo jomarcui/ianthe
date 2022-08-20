@@ -1,15 +1,18 @@
-import mongoose from 'mongoose';
-import { Team } from '../types';
+import { Model, model, models, Schema, Types } from 'mongoose';
+import League from './League';
 
-const TeamSchema = new mongoose.Schema<Team>(
+type Team = {
+  league: Types.ObjectId;
+  name: string;
+};
+
+const TeamSchema = new Schema<Team>(
   {
-    leagueId: {
-      type: String,
+    league: {
+      ref: League,
+      type: Schema.Types.ObjectId,
     },
     name: {
-      type: String,
-    },
-    sportId: {
       type: String,
     },
   },
@@ -26,5 +29,4 @@ TeamSchema.set('toJSON', {
   virtuals: true,
 });
 
-export default (mongoose.models.Team as mongoose.Model<Team>) ||
-  mongoose.model('Team', TeamSchema);
+export default (models.Team as Model<Team>) || model('Team', TeamSchema);

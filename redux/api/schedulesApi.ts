@@ -2,56 +2,63 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Status } from '../../enums';
 import { Schedule } from '../../types';
 
-const HOST = process.env.NEXT_PUBLIC_HOST;
+const HOST = process.env.NEXT_PUBLIC_HOST_V2;
+
+type getSchedulesByLeagueIdAndDate = {
+  date: string;
+  id: string;
+};
 
 const schedulesApi = createApi({
-  reducerPath: 'schedulesApi',
   baseQuery: fetchBaseQuery({ baseUrl: HOST }),
-  tagTypes: ['Schedule'],
   endpoints: (build) => ({
-    schedules: build.query<Schedule[], void>({
-      query: () => '/schedules',
-      providesTags: ['Schedule'],
-    }),
-    addSchedule: build.mutation<Schedule, any>({
+    createSchedule: build.mutation({
       query: (schedule) => ({
-        url: 'schedules',
+        url: `api/schedules/league/${schedule.league}`,
         method: 'POST',
         body: schedule,
       }),
-      invalidatesTags: ['Schedule'],
+      invalidatesTags: ['Schedules'],
     }),
-    deleteSchedule: build.mutation<Schedule, any>({
+    schedules: build.query({
+      query: () => '/schedules',
+      providesTags: ['Schedules'],
+    }),
+    deleteScheduleByLeagueId: build.mutation({
       query: (id) => ({
-        url: `schedules/${id}`,
+        url: `api/schedules/league/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Schedule'],
+      invalidatesTags: ['Schedules'],
     }),
-    getLeagueSchedulesByDate: build.query<
-      Schedule[],
-      { date: string; leagueId: string }
-    >({
-      query: ({ date, leagueId }) => `/schedules/league/${leagueId}/${date}`,
-      providesTags: ['Schedule'],
+    getSchedulesByLeagueId: build.query({
+      query: (id) => `api/schedules/league/${id}`,
+      providesTags: ['Schedules'],
     }),
-    updateScheduleStatus: build.mutation<Schedule, any>({
-      query: ({ id, status }: { id: string; status: Status }) => ({
-        url: `schedules/update/status/${id}`,
+    getSchedulesByLeagueIdAndDate: build.query({
+      query: ({ date, id }) => `api/schedules/league/${id}/${date}`,
+      providesTags: ['Schedules'],
+    }),
+    updateScheduleStatusByLeagueId: build.mutation({
+      query: ({ id, payload }) => ({
+        url: `api/schedules/league/${id}`,
         method: 'PATCH',
-        body: { status },
+        body: payload,
       }),
-      invalidatesTags: ['Schedule'],
+      invalidatesTags: ['Schedules'],
     }),
   }),
+  reducerPath: 'schedulesApi',
+  tagTypes: ['Schedule', 'Schedules'],
 });
 
 export const {
-  useAddScheduleMutation,
-  useDeleteScheduleMutation,
-  useGetLeagueSchedulesByDateQuery,
+  useCreateScheduleMutation,
+  useDeleteScheduleByLeagueIdMutation,
+  useGetSchedulesByLeagueIdQuery,
+  useGetSchedulesByLeagueIdAndDateQuery,
   useSchedulesQuery,
-  useUpdateScheduleStatusMutation,
+  useUpdateScheduleStatusByLeagueIdMutation,
 } = schedulesApi;
 
 export default schedulesApi;

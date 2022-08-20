@@ -49,8 +49,6 @@ const AppBreadcrumbs = ({
       aria-label="breadcrumb"
       sx={{
         bgcolor: 'common.white',
-        borderBottom: '1px solid #ecf0f1',
-        boxShadow: 1,
         p: 2,
       }}
     >
@@ -62,7 +60,7 @@ const AppBreadcrumbs = ({
 };
 
 const Crumb = ({ text: defaultText, textGenerator, href, last = false }) => {
-  const [text, setText] = useState(defaultText);
+  const [text, setText] = useState<string>(defaultText);
 
   useEffect(() => {
     (async () => {
@@ -75,7 +73,12 @@ const Crumb = ({ text: defaultText, textGenerator, href, last = false }) => {
     })();
   }, [textGenerator]);
 
-  if (last) return <Typography color="text.primary">{text}</Typography>;
+  if (last)
+    return (
+      <Typography color="text.primary">
+        {text.length > 12 ? `${text.substring(0, 12)}...` : text}
+      </Typography>
+    );
 
   return (
     <Link href={href} passHref>

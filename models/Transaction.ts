@@ -1,12 +1,12 @@
-import mongoose from 'mongoose';
+import { Model, model, models, Schema, Types } from 'mongoose';
 
 type Transaction = {
   amount: number;
   type: string;
-  user: mongoose.Schema.Types.ObjectId;
+  user: Types.ObjectId;
 };
 
-const TransactionSchema = new mongoose.Schema<Transaction>(
+const TransactionSchema = new Schema<Transaction>(
   {
     amount: {
       required: true,
@@ -19,7 +19,7 @@ const TransactionSchema = new mongoose.Schema<Transaction>(
     user: {
       required: true,
       ref: 'users',
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
     },
   },
   { timestamps: true }
@@ -33,5 +33,5 @@ TransactionSchema.set('toJSON', {
   virtuals: true,
 });
 
-export default (mongoose.models.Transaction as mongoose.Model<Transaction>) ||
-  mongoose.model('Transaction', TransactionSchema);
+export default (models.Transaction as Model<Transaction>) ||
+  model('Transaction', TransactionSchema);

@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
-import { useLeaguesQuery } from '../../redux/api/leaguesApi';
+import { Button, Stack, Typography } from '@mui/material';
+import { useGetLeaguesQuery } from '../../redux/api/leaguesApi';
 import { Today as TodayIcon } from '@mui/icons-material';
 import Loader from '../../components/Loader';
-import SchedulesTabPanel from './SchedulesTabPanel';
+import SchedulesList from './SchedulesList';
 
 const Home = () => {
   const [selectedLeagueId, setSelectedLeagueId] = useState<string>(null);
 
-  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
+  const { data: getLeaguesResponse, isLoading: isGetLeaguesLoading } =
+    useGetLeaguesQuery();
 
   useEffect(() => {
-    if (!leagues) return;
+    if (!getLeaguesResponse) return;
 
-    setSelectedLeagueId(leagues[0].id);
-  }, [leagues]);
+    setSelectedLeagueId(getLeaguesResponse.data[0].id);
+  }, [getLeaguesResponse]);
 
   // const ws = new WebSocket(process.env.NEXT_PUBLIC_HOST.replace(/^http/, 'ws'));
 
@@ -25,6 +26,8 @@ const Home = () => {
   // ws.addEventListener('message', (event) => {
   //   console.log('Message from server', event.data);
   // });
+
+  const leagues = getLeaguesResponse?.data;
 
   return (
     <>
@@ -39,22 +42,25 @@ const Home = () => {
         <Typography variant="h6">Today&apos;s events</Typography>
       </Stack>
 
-      {isLeaguesLoading && <Loader />}
-
-      {leagues && (
+      {isGetLeaguesLoading ? (
+        <Loader />
+      ) : (
         <>
           <Stack my={3} spacing={1}>
             <Typography>Select League</Typography>
             <Stack direction="row" spacing={1}>
               {leagues.map(({ id, initialism }, index) => {
-                const bgcolor = selectedLeagueId !== id && 'white';
-                const color = selectedLeagueId !== id && 'text.primary';
+                const isActive = id === selectedLeagueId;
+                const sx = {
+                  bgcolor: !isActive && 'white',
+                  color: !isActive && 'text.primary',
+                };
 
                 return (
                   <Button
                     key={index}
                     onClick={() => setSelectedLeagueId(id)}
-                    sx={{ bgcolor, color }}
+                    sx={sx}
                     variant="contained"
                   >
                     {initialism}
@@ -64,9 +70,7 @@ const Home = () => {
             </Stack>
           </Stack>
           <Stack my={3} spacing={2}>
-            {selectedLeagueId && (
-              <SchedulesTabPanel leagueId={selectedLeagueId} />
-            )}
+            {selectedLeagueId && <SchedulesList leagueId={selectedLeagueId} />}
           </Stack>
         </>
       )}

@@ -1,7 +1,7 @@
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
-  Box,
   Button,
   Dialog,
   DialogContent,
@@ -10,25 +10,20 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  MenuItem,
-  Select,
-  Slide,
   Stack,
   TextField,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { useGetTeamsQuery } from '../../redux/api/teamsApi';
 import { LoadingButton } from '@mui/lab';
-import { useLeaguesQuery } from '../../redux/api/leaguesApi';
-import { useAddScheduleMutation } from '../../redux/api/schedulesApi';
+import { useCreateScheduleMutation } from '../../redux/api/schedulesApi';
 import { Status } from '../../enums';
 import { League } from '../../types';
 import Loader from '../../components/Loader';
+import Transition from '../../components/Transition';
+import TeamSelect from './TeamSelect';
 
 type FormInputs = {
   date: Date | null;
@@ -38,31 +33,14 @@ type FormInputs = {
   visitorOdds: Number;
 };
 
-type GetLeagueNameById = {
-  leagueId: string;
-  leagues: League[];
-};
-
 type ScheduleFormProps = {
   league: League;
   open: boolean;
   setOpen: any;
 };
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-const getLeagueNameById = ({ leagues, leagueId }: GetLeagueNameById) =>
-  leagues.find(({ id }) => id === leagueId).name;
-
 const ScheduleForm = ({
-  league: { id, sportId },
+  league: { id, name },
   open,
   setOpen,
 }: ScheduleFormProps) => {
@@ -71,7 +49,6 @@ const ScheduleForm = ({
     handleSubmit,
     register,
     reset,
-    setValue,
     watch,
     formState: { errors },
   } = useForm<FormInputs>({
@@ -86,12 +63,10 @@ const ScheduleForm = ({
 
   const [error, setError] = useState(null);
 
-  const { data: leagues, isLoading: isLeaguesLoading } = useLeaguesQuery();
-
   const [
-    addSchedule,
+    createSchedule,
     { error: addScheduleError, isLoading: isAddScheduleLoading },
-  ] = useAddScheduleMutation();
+  ] = useCreateScheduleMutation();
 
   useEffect(() => {
     if (addScheduleError) setError(addScheduleError['data']);
@@ -110,16 +85,19 @@ const ScheduleForm = ({
 
     const newSchedule = {
       date,
-      leagueId: id,
-      sportId: sportId,
+      league: id,
       status: Status.Soon,
-      teams: {
-        home: { odds: homeOdds, teamId: home },
-        visitor: { odds: visitorOdds, teamId: visitor },
-      },
+      teams: [
+        {
+          odds: homeOdds,
+          isHome: true,
+          team: home,
+        },
+        { odds: visitorOdds, isHome: false, team: visitor },
+      ],
     };
 
-    await addSchedule(newSchedule);
+    await createSchedule(newSchedule);
 
     handleClose();
   };
@@ -134,14 +112,7 @@ const ScheduleForm = ({
       >
         <DialogTitle>Add Schedule</DialogTitle>
         <DialogContent>
-          {isLeaguesLoading && <Loader />}
-
-          {leagues && (
-            <DialogContentText variant="body2">
-              {getLeagueNameById({ leagues, leagueId: id })}
-            </DialogContentText>
-          )}
-
+          <DialogContentText>{name}</DialogContentText>
           <Stack
             component="form"
             onSubmit={handleSubmit(handleFormSubmit)}
@@ -165,7 +136,7 @@ const ScheduleForm = ({
                   control={control}
                   name="home"
                   render={({ field }) => (
-                    <TeamsSelect
+                    <TeamSelect
                       field={field}
                       leagueId={id}
                       watchField={visitor}
@@ -177,13 +148,14 @@ const ScheduleForm = ({
               <TextField
                 id="text-home-odds"
                 label="Odds"
-                variant="outlined"
-                required
-                type="number"
                 inputProps={{
                   maxLength: 13,
                   step: 'any',
                 }}
+                onFocus={(e) => e.target.select()}
+                required
+                type="number"
+                variant="outlined"
                 {...register('homeOdds')}
               />
             </Stack>
@@ -199,11 +171,7 @@ const ScheduleForm = ({
                   control={control}
                   name="visitor"
                   render={({ field }) => (
-                    <TeamsSelect
-                      field={field}
-                      leagueId={id}
-                      watchField={home}
-                    />
+                    <TeamSelect field={field} leagueId={id} watchField={home} />
                   )}
                 />
               </FormControl>
@@ -211,13 +179,14 @@ const ScheduleForm = ({
               <TextField
                 id="text-visitor-odds"
                 label="Odds"
-                variant="outlined"
-                required
-                type="number"
                 inputProps={{
                   maxLength: 4,
                   step: 'any',
                 }}
+                onFocus={(e) => e.target.select()}
+                required
+                type="number"
+                variant="outlined"
                 {...register('visitorOdds')}
               />
             </Stack>
@@ -278,31 +247,6 @@ const ScheduleForm = ({
         </DialogContent>
       </Dialog>
     </LocalizationProvider>
-  );
-};
-
-const TeamsSelect = ({ field, leagueId, watchField }) => {
-  const { data: teamsResponse, isLoading: isTeamsLoading } = useGetTeamsQuery();
-
-  return (
-    <Select {...field}>
-      {isTeamsLoading && (
-        <MenuItem>
-          <Box width="100%">
-            <Loader />
-          </Box>
-        </MenuItem>
-      )}
-
-      {teamsResponse &&
-        teamsResponse.data
-          .filter(({ leagueId: dataLeagueId }) => dataLeagueId === leagueId)
-          .map(({ id, name }) => (
-            <MenuItem disabled={id === watchField} key={id} value={id}>
-              {name}
-            </MenuItem>
-          ))}
-    </Select>
   );
 };
 

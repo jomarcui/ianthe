@@ -61,16 +61,12 @@ const BetForm = ({
 }: BetFormProps) => {
   const [totalReturn, setTotalReturn] = useState(0);
   const { data: session, status: sessionStatus } = useSession();
-  const { data: match } = useGetMatchByIdQuery(matchId);
+  const { data: getMatchByIdResponse } = useGetMatchByIdQuery(matchId);
 
   const [createTransaction] = useCreateTransactionMutation();
 
   const { data: getTransactionByIdResponse } = useGetTransactionByIdQuery(
-    (() => {
-      if (!session) return null;
-
-      return session.user['id'];
-    })(),
+    session?.user['id'],
     {
       skip: !session,
     }
@@ -91,14 +87,16 @@ const BetForm = ({
   });
 
   useEffect(() => {
-    if (!selectedTeamId) return;
+    const teamFound = getMatchByIdResponse?.data.teams.find(
+      ({ team: { id } }) => id === selectedTeamId
+    );
 
-    const teamFound = match?.teams.find(({ id }) => id === selectedTeamId);
+    setValue('amount', 20);
 
     setTotalReturn(
       computeTotalReturn({ amount: 20, odds: teamFound.odds || 0 })
     );
-  }, [match?.teams, selectedTeamId]);
+  }, [getMatchByIdResponse?.data.teams, selectedTeamId, setValue]);
 
   const watchAmount = Number(watch('amount'));
 
@@ -111,6 +109,7 @@ const BetForm = ({
   };
 
   const handleFormSubmit: SubmitHandler<FormInput> = async (formData) => {
+    console.log(formData);
     const { amount: amountFormData, type } = formData;
 
     const amount =
@@ -128,7 +127,9 @@ const BetForm = ({
     handleClose();
   };
 
-  const selectedTeam = match?.teams.find(({ id }) => id === selectedTeamId);
+  const selectedTeam = getMatchByIdResponse?.data.teams.find(
+    ({ team: { id } }) => id === selectedTeamId
+  );
 
   const credits = getTransactionByIdResponse?.data.transactions.reduce(
     (prevValue: number, { amount }) => prevValue + amount,
@@ -181,7 +182,7 @@ const BetForm = ({
             <Stack spacing={2}>
               <Typography variant="h6">Bet on</Typography>
               <Typography>
-                {`${selectedTeam?.name} @${selectedTeam?.odds}`}
+                {`${selectedTeam?.team.name} @${selectedTeam?.odds}`}
               </Typography>
               <form id="bet-form" onSubmit={handleSubmit(handleFormSubmit)}>
                 <input type="hidden" {...register('type')} />

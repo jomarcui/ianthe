@@ -36,7 +36,12 @@ const AddForm = ({
   handleCreateTransaction,
   user: { firstName, lastName, id },
 }: AddFormProps) => {
-  const { control, handleSubmit, register } = useForm<FormInputs>({
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    register,
+  } = useForm<FormInputs>({
     defaultValues: {
       amount: 0,
       type: TransactionType.CREDIT,
@@ -101,14 +106,20 @@ const AddForm = ({
           />
         </FormControl>
         <TextField
+          error={!!errors?.amount?.message}
           fullWidth
-          label="Amount"
+          id="amount-text"
           inputProps={{ step: 'any' }}
-          InputLabelProps={{ shrink: true }}
+          label="Amount"
           onFocus={(event) => event.target.select()}
           required
           type="number"
-          {...register('amount')}
+          {...register('amount', {
+            validate: {
+              greaterThanZero: (value) =>
+                value > 0 || 'must be greather than 0',
+            },
+          })}
         />
       </Stack>
     </Box>
