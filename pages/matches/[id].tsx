@@ -64,7 +64,7 @@ const TeamBetCards = ({
             id === getMatchTransactionsByUserIdResponse?.data[0].team;
 
           return (
-            <Card key={id}>
+            <Card key={id} sx={{ borderRadius: '2rem', boxShadow: 0 }}>
               <CardHeader
                 action={
                   <Button
