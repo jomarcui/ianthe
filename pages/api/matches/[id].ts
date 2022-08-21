@@ -1,9 +1,9 @@
 import dbConnect from '../../../lib/dbConnect';
-import Schedule from '../../../models/Schedule';
+import Match from '../../../models/Match';
 
-const handleError = ({ error, res }) => {
+const handleError = ({ error, res, status = 400 }) => {
   console.error(error);
-  res.status(400).json({ success: false });
+  res.status(status).json({ success: false });
 };
 
 const handler = async (req, res) => {
@@ -17,7 +17,7 @@ const handler = async (req, res) => {
   switch (method) {
     case 'GET':
       try {
-        const schedules = await Schedule.findById(id)
+        const match = await Match.findById(id)
           .populate({
             path: 'league',
             populate: { path: 'sport' },
@@ -26,9 +26,9 @@ const handler = async (req, res) => {
             path: 'teams.team',
           });
 
-        if (!schedules) return res.status(400).json({ success: false });
+        // if (!schedule) return res.status(400).json({ success: false });
 
-        res.status(200).json({ success: true, data: schedules });
+        res.status(200).json({ success: true, data: match });
       } catch (error) {
         handleError({ error, res });
       }

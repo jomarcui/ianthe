@@ -10,7 +10,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useGetSchedulesByLeagueIdQuery } from '../../redux/api/schedulesApi';
+import { useGetMatchesByLeagueIdQuery } from '../../redux/api/matchesApi';
 import { League } from '../../types';
 import ScheduleForm from './ScheduleForm';
 import List from './List';
@@ -29,9 +29,9 @@ const Schedules = ({ leagues }) => {
   const [selectedLeague, setSelectedLeague] = useState<League>(leagues[0]);
 
   const {
-    data: getSchedulesByLeagueIdResponse,
-    isLoading: isGetSchedulesByLeagueIdLoading,
-  } = useGetSchedulesByLeagueIdQuery(selectedLeague.id);
+    data: getMatchesByLeagueIdResponse,
+    isLoading: isGetMatchesByLeagueIdLoading,
+  } = useGetMatchesByLeagueIdQuery(selectedLeague.id);
 
   const handleLeagueButtonClick = (leagueId: string) =>
     setSelectedLeague(leagues.find(({ id }) => id === leagueId));
@@ -78,14 +78,14 @@ const Schedules = ({ leagues }) => {
         </Stack>
       </Stack>
 
-      {isGetSchedulesByLeagueIdLoading ? (
+      {isGetMatchesByLeagueIdLoading ? (
         <Card>
           <CardContent sx={{ textAlign: 'center' }}>
             <CircularProgress />
           </CardContent>
         </Card>
       ) : (
-        renderSchedulesListContent(getSchedulesByLeagueIdResponse.data)
+        renderSchedulesListContent(getMatchesByLeagueIdResponse.data)
       )}
 
       <ScheduleForm

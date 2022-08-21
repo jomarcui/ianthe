@@ -24,9 +24,9 @@ import {
   Typography,
 } from '@mui/material';
 import {
-  useDeleteScheduleByLeagueIdMutation,
-  useUpdateScheduleStatusByLeagueIdMutation,
-} from '../../redux/api/schedulesApi';
+  useDeleteMatchByLeagueIdMutation,
+  useUpdateMatchestatusByLeagueIdMutation,
+} from '../../redux/api/matchesApi';
 import { Status } from '../../enums';
 
 const StyledMenu = styled((props: MenuProps) => (
@@ -88,20 +88,18 @@ const StatusIcon = ({ status }: { status: Status }) => {
 const List = ({ listItems = [] }) => {
   const [scheduleIdSelected, setScheduleIdSelected] = useState(null);
 
-  const [
-    deleteScheduleByLeagueId,
-    { isLoading: isDeleteScheduleByLeagueIdLoading },
-  ] = useDeleteScheduleByLeagueIdMutation();
+  const [deleteMatchByLeagueId, { isLoading: isDeleteMatchByLeagueIdLoading }] =
+    useDeleteMatchByLeagueIdMutation();
 
   const [
-    updateScheduleStatusByLeagueId,
-    { isLoading: isUpdateScheduleStatusByLeagueIdLoading },
-  ] = useUpdateScheduleStatusByLeagueIdMutation();
+    updateMatchStatusByLeagueId,
+    { isLoading: isUpdateMatchStatusByLeagueIdLoading },
+  ] = useUpdateMatchestatusByLeagueIdMutation();
 
   const handleDelete = async (id: string) => {
     setScheduleIdSelected(id);
 
-    await deleteScheduleByLeagueId(id);
+    await deleteMatchByLeagueId(id);
 
     setScheduleIdSelected(null);
   };
@@ -115,7 +113,7 @@ const List = ({ listItems = [] }) => {
   }) => {
     setScheduleIdSelected(id);
 
-    await updateScheduleStatusByLeagueId({ id, payload: { status } });
+    await updateMatchStatusByLeagueId({ id, payload: { status } });
 
     setScheduleIdSelected(null);
   };
@@ -132,8 +130,8 @@ const List = ({ listItems = [] }) => {
         const schedule = new Date(date);
 
         const isDisabled =
-          (isDeleteScheduleByLeagueIdLoading ||
-            isUpdateScheduleStatusByLeagueIdLoading) &&
+          (isDeleteMatchByLeagueIdLoading ||
+            isUpdateMatchStatusByLeagueIdLoading) &&
           id === scheduleIdSelected;
 
         return (

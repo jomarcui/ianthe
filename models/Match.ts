@@ -2,7 +2,7 @@ import { Model, model, models, Schema, Types } from 'mongoose';
 import League from './League';
 import Team from './Team';
 
-type Schedule = {
+type Match = {
   date: Date;
   league: Types.ObjectId;
   status: string;
@@ -13,7 +13,7 @@ type Schedule = {
   }[];
 };
 
-const ScheduleSchema = new Schema<Schedule>(
+const MatchSchema = new Schema<Match>(
   {
     date: {
       required: true,
@@ -56,13 +56,12 @@ const ScheduleSchema = new Schema<Schedule>(
 //   { unique: true }
 // );
 
-ScheduleSchema.virtual('id').get(function () {
+MatchSchema.virtual('id').get(function () {
   return this._id.toHexString();
 });
 
-ScheduleSchema.set('toJSON', {
+MatchSchema.set('toJSON', {
   virtuals: true,
 });
 
-export default (models.Schedule as Model<Schedule>) ||
-  model('Schedule', ScheduleSchema);
+export default (models.Match as Model<Match>) || model('Match', MatchSchema);

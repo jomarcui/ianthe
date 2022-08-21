@@ -1,20 +1,14 @@
 import { Dispatch, SetStateAction, useDeferredValue, useMemo } from 'react';
 import {
   Avatar,
-  Box,
   Card,
   CardContent,
   CardHeader,
   IconButton,
-  List as MuiList,
-  ListItem,
   Stack,
   Typography,
 } from '@mui/material';
-import {
-  AddCircle as AddCircleIcon,
-  Payment as PaymentIcon,
-} from '@mui/icons-material';
+import { AddCircle as AddCircleIcon } from '@mui/icons-material';
 import { User } from '../../types';
 
 type CreditsProps = {

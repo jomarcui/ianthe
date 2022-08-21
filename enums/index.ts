@@ -14,7 +14,14 @@ export enum Team {
   Visitor,
 }
 
+export enum TransactionStatus {
+  ACTIVE = 'ACTIVE',
+  LOSS = 'LOSS',
+  WIN = 'WIN',
+}
+
 export enum TransactionType {
+  BET = 'BET',
   CREDIT = 'CREDIT',
   DEBIT = 'DEBIT',
 }

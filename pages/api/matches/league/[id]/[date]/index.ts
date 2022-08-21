@@ -1,6 +1,6 @@
 import { endOfDay, startOfDay } from 'date-fns';
 import dbConnect from '../../../../../../lib/dbConnect';
-import Schedule from '../../../../../../models/Schedule';
+import Match from '../../../../../../models/Match';
 
 const handler = async (req, res) => {
   const {
@@ -13,7 +13,7 @@ const handler = async (req, res) => {
   switch (method) {
     case 'GET':
       try {
-        const schedules = await Schedule.find({
+        const matches = await Match.find({
           league: id,
           date: {
             $gte: startOfDay(new Date(date)),
@@ -23,7 +23,7 @@ const handler = async (req, res) => {
           .populate('league')
           .populate({ path: 'teams.team' });
 
-        res.status(200).json({ success: true, data: schedules });
+        res.status(200).json({ success: true, data: matches });
       } catch (error) {
         res.status(400).json({ success: false });
       }

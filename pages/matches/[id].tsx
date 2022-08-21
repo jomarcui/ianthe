@@ -7,9 +7,6 @@ import {
   Button,
   Card,
   CardHeader,
-  Grid,
-  List,
-  ListItem,
   Paper,
   Stack,
   Typography,
@@ -105,20 +102,17 @@ const LeagueInfo = ({
     sport: { name: sportName },
   },
 }) => (
-  <>
-    <div>{leagueName}</div>
-    <div>
-      <span style={{ color: 'rgba(0, 0, 0, 0.6)', fontSize: '0.875rem' }}>
-        {sportName}
-      </span>
-    </div>
-  </>
+  <Box>
+    <Typography>{leagueName}</Typography>
+    <Typography style={{ color: 'rgba(0, 0, 0, 0.6)', fontSize: '0.875rem' }}>
+      {sportName}
+    </Typography>
+  </Box>
 );
 
 const Match: NextPage = () => {
   const [matchId, setMatchId] = useState<string>(null);
   const [openBetForm, setOpenBetForm] = useState<boolean>(false);
-
   const [selectedTeamId, setSelectedTeamId] = useState<string>(null);
   const [skipMatch, setSkipMatch] = useState(true);
 
@@ -142,49 +136,34 @@ const Match: NextPage = () => {
     setSelectedTeamId(teamId);
   };
 
-  const handleCloseBetForm = () => setOpenBetForm(false);
+  const handleCloseBetForm = () => {
+    setOpenBetForm(false);
+    setSelectedTeamId(null);
+  };
 
   return (
     <Layout>
-      <Stack spacing={5} sx={{ bgcolor: '#ecf0f1', my: 3 }}>
-        <Box>
-          {isGetMatchByIdLoading ? (
-            <Loader />
-          ) : (
-            !isGetMatchByIdUninitialized && (
-              <LeagueInfo league={getMatchByIdResponse.data.league} />
-            )
-          )}
-        </Box>
-
-        <Box>
-          {isGetMatchByIdLoading ? (
-            <Loader />
-          ) : (
-            !isGetMatchByIdUninitialized && (
-              <Scoreboard teams={getMatchByIdResponse.data.teams} />
-            )
-          )}
-        </Box>
-      </Stack>
-
-      <Stack spacing={2}>
-        {isGetMatchByIdLoading ? (
-          <Loader />
-        ) : (
-          !isGetMatchByIdUninitialized && (
-            <TeamBetCards
-              handleBetClick={handleBetClick}
-              teams={getMatchByIdResponse.data.teams}
-            />
-          )
-        )}
-      </Stack>
+      {isGetMatchByIdLoading ? (
+        <Loader />
+      ) : (
+        !isGetMatchByIdUninitialized && (
+          <Stack spacing={5} sx={{ bgcolor: '#ecf0f1', my: 3 }}>
+            <LeagueInfo league={getMatchByIdResponse.data.league} />
+            <Scoreboard teams={getMatchByIdResponse.data.teams} />
+            <Stack spacing={2}>
+              <TeamBetCards
+                handleBetClick={handleBetClick}
+                teams={getMatchByIdResponse.data.teams}
+              />
+            </Stack>
+          </Stack>
+        )
+      )}
 
       {matchId && (
         <ContainersMatchBetForm
           handleClose={handleCloseBetForm}
-          matchId={matchId}
+          scheduleId={matchId}
           open={openBetForm}
           selectedTeamId={selectedTeamId}
         />

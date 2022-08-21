@@ -18,7 +18,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LoadingButton } from '@mui/lab';
-import { useCreateScheduleMutation } from '../../redux/api/schedulesApi';
+import { useCreateMatchMutation } from '../../redux/api/matchesApi';
 import { Status } from '../../enums';
 import { League } from '../../types';
 import Loader from '../../components/Loader';
@@ -64,9 +64,9 @@ const ScheduleForm = ({
   const [error, setError] = useState(null);
 
   const [
-    createSchedule,
+    createMatch,
     { error: addScheduleError, isLoading: isAddScheduleLoading },
-  ] = useCreateScheduleMutation();
+  ] = useCreateMatchMutation();
 
   useEffect(() => {
     if (addScheduleError) setError(addScheduleError['data']);
@@ -97,7 +97,7 @@ const ScheduleForm = ({
       ],
     };
 
-    await createSchedule(newSchedule);
+    await createMatch(newSchedule);
 
     handleClose();
   };

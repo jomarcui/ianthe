@@ -2,8 +2,17 @@ import dbConnect from '../../../lib/dbConnect';
 import Transaction from '../../../models/Transaction';
 import User from '../../../models/User';
 
+const handleError = ({ error, res, status = 400 }) => {
+  console.error(error);
+  res.status(status).json({ success: false });
+};
+
 const handler = async (req, res) => {
-  const { method } = req;
+  const {
+    body,
+    method,
+    query: { id },
+  } = req;
 
   await dbConnect();
 
@@ -13,8 +22,24 @@ const handler = async (req, res) => {
         const users = await User.find().populate('transactions');
         res.status(200).json({ success: true, data: users });
       } catch (error) {
-        console.error(error);
-        res.status(400).json({ success: false });
+        handleError({ error, res });
+      }
+
+      break;
+
+    case 'PATCH':
+      try {
+        const transaction = await Transaction.findById(id);
+
+        for (const [key, value] of Object.entries(body)) {
+          transaction[key] = value;
+        }
+
+        await transaction.save();
+
+        res.status(200).json({ success: true, data: transaction });
+      } catch (error) {
+        handleError({ error, res });
       }
 
       break;
@@ -31,8 +56,7 @@ const handler = async (req, res) => {
           res.status(200).json({ success: true, data: transaction });
         });
       } catch (error) {
-        console.error(error);
-        res.status(400).json({ success: false });
+        handleError({ error, res });
       }
   }
 };

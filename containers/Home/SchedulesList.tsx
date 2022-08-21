@@ -1,11 +1,7 @@
-import { useGetSchedulesByLeagueIdAndDateQuery } from '../../redux/api/schedulesApi';
+import { useGetMatchesByLeagueIdAndDateQuery } from '../../redux/api/matchesApi';
 import { Card, CardContent, CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
 import SchedulesCard from './SchedulesCard';
-
-type SchedulesListProps = {
-  leagueId: string;
-};
 
 const renderSchedulesListContent = (schedules = []) =>
   !schedules.length ? (
@@ -18,11 +14,15 @@ const renderSchedulesListContent = (schedules = []) =>
     ))
   );
 
+type SchedulesListProps = {
+  leagueId: string;
+};
+
 const SchedulesList = ({ leagueId }: SchedulesListProps) => {
   const {
     data: getSchedulesByLeagueIdAndDateResponse,
     isLoading: isGetSchedulesByLeagueIdAndDateLoading,
-  } = useGetSchedulesByLeagueIdAndDateQuery({
+  } = useGetMatchesByLeagueIdAndDateQuery({
     date: new Date().toDateString(),
     id: leagueId,
   });

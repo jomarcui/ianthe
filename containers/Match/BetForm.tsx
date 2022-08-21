@@ -26,7 +26,7 @@ import {
 } from '../../redux/api/transactionsApi';
 import PleaseSignIn from '../../components/PleaseSignIn';
 import Transition from '../../components/Transition';
-import { TransactionType } from '../../enums';
+import { TransactionStatus, TransactionType } from '../../enums';
 
 enum Operation {
   Add,
@@ -35,15 +35,13 @@ enum Operation {
 
 type BetFormProps = {
   handleClose: () => void;
-  matchId: string;
+  scheduleId: string;
   open: boolean;
   selectedTeamId: string;
 };
 
 type FormInput = {
   amount: number;
-  type: string;
-  user: string;
 };
 
 const computeTotalReturn = ({
@@ -56,13 +54,13 @@ const computeTotalReturn = ({
 
 const BetForm = ({
   handleClose,
-  matchId,
+  scheduleId,
   open,
   selectedTeamId,
 }: BetFormProps) => {
   const [totalReturn, setTotalReturn] = useState(0);
   const { data: session, status: sessionStatus } = useSession();
-  const { data: getMatchByIdResponse } = useGetMatchByIdQuery(matchId);
+  const { data: getMatchByIdResponse } = useGetMatchByIdQuery(scheduleId);
 
   const [createTransaction, { isLoading: isCreateTransactionLoading }] =
     useCreateTransactionMutation();
@@ -83,8 +81,6 @@ const BetForm = ({
   } = useForm<FormInput>({
     defaultValues: {
       amount: 20,
-      type: TransactionType.DEBIT,
-      user: session?.user['id'],
     },
   });
 
@@ -113,16 +109,14 @@ const BetForm = ({
   };
 
   const handleFormSubmit: SubmitHandler<FormInput> = async (formData) => {
-    const { amount: amountFormData, type } = formData;
-
-    const amount =
-      type === TransactionType.CREDIT
-        ? Math.abs(amountFormData)
-        : -Math.abs(amountFormData);
+    const amount = -Math.abs(formData.amount);
 
     const payload = {
-      ...formData,
       amount,
+      schedule: scheduleId,
+      status: TransactionStatus.ACTIVE,
+      type: TransactionType.BET,
+      user: session?.user['id'],
     };
 
     await createTransaction(payload);
@@ -174,8 +168,6 @@ const BetForm = ({
                 {`${selectedTeam?.team.name} @${selectedTeam?.odds}`}
               </Typography>
               <form id="bet-form" onSubmit={handleSubmit(handleFormSubmit)}>
-                <input type="hidden" {...register('type')} />
-                <input type="hidden" {...register('user')} />
                 <Stack spacing={2}>
                   <Grid container>
                     <Grid item xs={6}>

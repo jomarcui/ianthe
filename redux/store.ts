@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import { createWrapper } from 'next-redux-wrapper';
 import leaguesApi from './api/leaguesApi';
 import matchesApi from './api/matchesApi';
-import schedulesApi from './api/schedulesApi';
 import sportsApi from './api/sportsApi';
 import teamsApi from './api/teamsApi';
 import transactionsApi from './api/transactionsApi';
@@ -17,7 +16,6 @@ export const makeStore = () =>
       users: usersSlice,
       [leaguesApi.reducerPath]: leaguesApi.reducer,
       [matchesApi.reducerPath]: matchesApi.reducer,
-      [schedulesApi.reducerPath]: schedulesApi.reducer,
       [sportsApi.reducerPath]: sportsApi.reducer,
       [teamsApi.reducerPath]: teamsApi.reducer,
       [transactionsApi.reducerPath]: transactionsApi.reducer,
@@ -29,7 +27,6 @@ export const makeStore = () =>
       }).concat([
         leaguesApi.middleware,
         matchesApi.middleware,
-        schedulesApi.middleware,
         sportsApi.middleware,
         teamsApi.middleware,
         transactionsApi.middleware,

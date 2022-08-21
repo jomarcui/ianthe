@@ -1,9 +1,9 @@
 import dbConnect from '../../../../../lib/dbConnect';
-import Schedule from '../../../../../models/Schedule';
+import Match from '../../../../../models/Match';
 
-const handleError = ({ error, res }) => {
+const handleError = ({ error, res, status = 400 }) => {
   console.error(error);
-  res.status(400).json({ success: false });
+  res.status(status).json({ success: false });
 };
 
 const handler = async (req, res) => {
@@ -18,7 +18,7 @@ const handler = async (req, res) => {
   switch (method) {
     case 'DELETE':
       try {
-        await Schedule.findByIdAndDelete(id);
+        await Match.findByIdAndDelete(id);
 
         res.status(200).json({ success: true });
       } catch (error) {
@@ -29,13 +29,13 @@ const handler = async (req, res) => {
 
     case 'GET':
       try {
-        const schedules = await Schedule.find({
+        const matches = await Match.find({
           league: id,
         }).populate({ path: 'teams.team' });
 
-        if (!schedules) return res.status(400).json({ success: false });
+        // if (!matches) return res.status(400).json({ success: false });
 
-        res.status(200).json({ success: true, data: schedules });
+        res.status(200).json({ success: true, data: matches });
       } catch (error) {
         handleError({ error, res });
       }
@@ -44,15 +44,15 @@ const handler = async (req, res) => {
 
     case 'PATCH': {
       try {
-        const schedule = await Schedule.findById(id);
+        const match = await Match.findById(id);
 
         for (const [key, value] of Object.entries(body)) {
-          schedule[key] = value;
+          match[key] = value;
         }
 
-        await schedule.save();
+        await match.save();
 
-        res.status(200).json({ success: true, data: schedule });
+        res.status(200).json({ success: true, data: match });
       } catch (error) {
         handleError({ error, res });
       }
@@ -64,14 +64,14 @@ const handler = async (req, res) => {
       try {
         const { date, league, status, teams } = body;
 
-        const newSchedule = await new Schedule({
+        const newMatch = await new Match({
           date,
           league,
           status,
           teams,
         }).save();
 
-        res.status(200).json({ success: true, data: newSchedule });
+        res.status(200).json({ success: true, data: newMatch });
       } catch (error) {
         handleError({ error, res });
       }
