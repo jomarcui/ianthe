@@ -53,6 +53,7 @@ const Home = () => {
                 const isActive = id === selectedLeagueId;
                 const sx = {
                   bgcolor: !isActive && 'white',
+                  borderRadius: '2rem',
                   color: !isActive && 'text.primary',
                 };
 

@@ -36,7 +36,7 @@ const SchedulesCard = ({
   } = teams.find(({ isHome }) => !isHome);
 
   return (
-    <Card>
+    <Card sx={{ borderRadius: '2rem', boxShadow: 0 }}>
       <CardHeader
         action={
           <Link href={`/matches/${id}`}>

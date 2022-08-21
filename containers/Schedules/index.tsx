@@ -46,8 +46,9 @@ const Schedules = ({ leagues }) => {
         </Grid>
         <Grid textAlign="right" item xs>
           <LoadingButton
-            onClick={handleScheduleFormOpen}
             loading={false}
+            onClick={handleScheduleFormOpen}
+            sx={{ borderRadius: '2rem' }}
             variant="contained"
           >
             Add Schedule
@@ -61,6 +62,7 @@ const Schedules = ({ leagues }) => {
             const isActive = id === selectedLeague.id;
             const sx = {
               bgcolor: !isActive && 'white',
+              borderRadius: '2rem',
               color: !isActive && 'text.primary',
             };
 

@@ -152,9 +152,13 @@ const MobileAccountMenuList = ({
 
 const registrationAndLogin = (
   <Stack spacing={2} direction="row">
-    <Button variant="outlined">Register</Button>
+    <Button sx={{ borderRadius: '2rem' }} variant="outlined">
+      Register
+    </Button>
     <Link href="/signin" passHref>
-      <Button variant="contained">Sign-In</Button>
+      <Button sx={{ borderRadius: '2rem' }} variant="contained">
+        Sign-In
+      </Button>
     </Link>
   </Stack>
 );

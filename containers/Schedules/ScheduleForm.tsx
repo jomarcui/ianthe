@@ -228,6 +228,7 @@ const ScheduleForm = ({
                 <Button
                   color="secondary"
                   onClick={handleClose}
+                  sx={{ borderRadius: '2rem' }}
                   variant="contained"
                 >
                   Cancel
@@ -236,6 +237,7 @@ const ScheduleForm = ({
               <Grid item>
                 <LoadingButton
                   loading={isAddScheduleLoading}
+                  sx={{ borderRadius: '2rem' }}
                   type="submit"
                   variant="contained"
                 >

@@ -242,12 +242,19 @@ const BetForm = ({
                   <LoadingButton
                     loading={isCreateTransactionLoading}
                     fullWidth
+                    sx={{ borderRadius: '2rem' }}
                     type="submit"
                     variant="contained"
                   >
                     Place bet
                   </LoadingButton>
-                  <Button fullWidth onClick={handleClose} variant="outlined">
+                  <Button
+                    color="secondary"
+                    fullWidth
+                    onClick={handleClose}
+                    sx={{ borderRadius: '2rem' }}
+                    variant="contained"
+                  >
                     Cancel
                   </Button>
                 </Stack>

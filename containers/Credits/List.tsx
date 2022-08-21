@@ -82,7 +82,7 @@ const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
     <Stack my={2} spacing={2}>
       {usersFilteredByMobileNumber.map(
         ({ firstName, id, lastName, mobileNumber, transactions }) => (
-          <Card key={id}>
+          <Card key={id} sx={{ borderRadius: '2rem', boxShadow: 0 }}>
             <CardHeader
               action={
                 <IconButton

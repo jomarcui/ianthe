@@ -135,7 +135,10 @@ const List = ({ listItems = [] }) => {
           id === scheduleIdSelected;
 
         return (
-          <Card key={id} sx={{ position: 'relative' }}>
+          <Card
+            key={id}
+            sx={{ borderRadius: '2rem', boxShadow: 0, position: 'relative' }}
+          >
             <CardHeader
               action={
                 <CardHeaderAction

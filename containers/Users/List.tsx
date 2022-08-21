@@ -38,7 +38,11 @@ const List = () => {
             <Typography variant="h6">Users List</Typography>
           </Grid>
           <Grid item sx={{ display: 'flex', justifyContent: 'end' }} xs>
-            <Button onClick={() => alert('Soon!')} variant="contained">
+            <Button
+              onClick={() => alert('Soon!')}
+              sx={{ borderRadius: '2rem' }}
+              variant="contained"
+            >
               Create User
             </Button>
           </Grid>

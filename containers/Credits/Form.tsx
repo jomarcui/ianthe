@@ -130,7 +130,12 @@ const AddForm = ({
         />
         <Grid justifyContent="space-between" container>
           <Grid item>
-            <Button onClick={handleDialogClose} variant="outlined">
+            <Button
+              color="secondary"
+              onClick={handleDialogClose}
+              sx={{ borderRadius: '2rem' }}
+              variant="contained"
+            >
               Cancel
             </Button>
           </Grid>
@@ -138,6 +143,7 @@ const AddForm = ({
             <LoadingButton
               loading={isCreateTransactionLoading}
               form="credits-form"
+              sx={{ borderRadius: '2rem' }}
               type="submit"
               variant="contained"
             >
