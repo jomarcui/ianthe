@@ -117,6 +117,7 @@ const Scoreboard = ({ teams = [] }) => {
       <Box sx={{ maxWidth: 113, minWidth: 100 }}>
         <Paper
           sx={{
+            borderRadius: '2rem',
             mb: 2,
             p: 2,
             textAlign: 'center',
@@ -132,6 +133,7 @@ const Scoreboard = ({ teams = [] }) => {
       <Box sx={{ maxWidth: 113, minWidth: 100 }}>
         <Paper
           sx={{
+            borderRadius: '2rem',
             mb: 2,
             p: 2,
             textAlign: 'center',
