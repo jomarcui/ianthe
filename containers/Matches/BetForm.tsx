@@ -35,7 +35,7 @@ enum Operation {
 
 type BetFormProps = {
   handleClose: () => void;
-  scheduleId: string;
+  matchId: string;
   open: boolean;
   selectedTeamId: string;
 };
@@ -54,13 +54,13 @@ const computeTotalReturn = ({
 
 const BetForm = ({
   handleClose,
-  scheduleId,
+  matchId,
   open,
   selectedTeamId,
 }: BetFormProps) => {
   const [totalReturn, setTotalReturn] = useState(0);
   const { data: session, status: sessionStatus } = useSession();
-  const { data: getMatchByIdResponse } = useGetMatchByIdQuery(scheduleId);
+  const { data: getMatchByIdResponse } = useGetMatchByIdQuery(matchId);
 
   const [createTransaction, { isLoading: isCreateTransactionLoading }] =
     useCreateTransactionMutation();
@@ -113,8 +113,9 @@ const BetForm = ({
 
     const payload = {
       amount,
-      schedule: scheduleId,
+      match: matchId,
       status: TransactionStatus.ACTIVE,
+      team: selectedTeamId,
       type: TransactionType.BET,
       user: session?.user['id'],
     };

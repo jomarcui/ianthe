@@ -28,6 +28,10 @@ const matchesApi = createApi({
       query: (id) => `api/matches/${id}`,
       providesTags: ['Match'],
     }),
+    getMatchTransactionsByUserId: build.query({
+      query: ({ id, userId }) => `api/matches/${id}/${userId}`,
+      providesTags: ['Match'],
+    }),
     getMatchesByLeagueId: build.query({
       query: (id) => `api/matches/league/${id}`,
       providesTags: ['Matches'],
@@ -53,6 +57,7 @@ export const {
   useCreateMatchMutation,
   useDeleteMatchByLeagueIdMutation,
   useGetMatchByIdQuery,
+  useGetMatchTransactionsByUserIdQuery,
   useGetMatchesByLeagueIdQuery,
   useGetMatchesByLeagueIdAndDateQuery,
   useMatchesQuery,

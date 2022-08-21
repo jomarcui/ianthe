@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 import {
   Avatar,
   Box,
@@ -11,33 +12,80 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
+import {
+  useGetMatchByIdQuery,
+  useGetMatchTransactionsByUserIdQuery,
+} from '../../redux/api/matchesApi';
 import Layout from '../../components/Layout';
 import Loader from '../../components/Loader';
-import ContainersMatchBetForm from '../../containers/Match/BetForm';
+import ContainersMatchBetForm from '../../containers/Matches/BetForm';
 
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
-const TeamBetCards = ({ handleBetClick, teams = [] }) => (
-  <>
-    {[...teams]
-      .sort((a, b) => b.team.isHome - a.team.isHome)
-      .map(({ odds, team: { id, name } }) => (
-        <Card key={id}>
-          <CardHeader
-            action={
-              <Button onClick={() => handleBetClick(id)}>
-                Bet &#8369;0.00
-              </Button>
-            }
-            avatar={<Avatar>{name.charAt(0)}</Avatar>}
-            title={name}
-            subheader={odds.toString()}
-          />
-        </Card>
-      ))}
-  </>
-);
+const TeamBetCards = ({
+  handleBetClick,
+  matchId,
+  isBetFormOpen,
+  teams = [],
+}) => {
+  const { data: session } = useSession();
+
+  const { data: getMatchTransactionsByUserIdResponse, refetch } =
+    useGetMatchTransactionsByUserIdQuery({
+      id: matchId,
+      userId: session?.user['id'],
+    });
+
+  useEffect(() => {
+    refetch();
+  }, [isBetFormOpen, refetch]);
+
+  const betTotal =
+    getMatchTransactionsByUserIdResponse?.data.reduce(
+      (prevValue, { amount }) => prevValue + Math.abs(amount),
+      0
+    ) || 0;
+
+  const isBetButtonDisabled = ({ id, transaction }) => {
+    if (!transaction) return false;
+
+    return id !== transaction.team;
+  };
+
+  return (
+    <>
+      {[...teams]
+        .sort((a, b) => b.team.isHome - a.team.isHome)
+        .map(({ odds, team: { id, name } }) => {
+          const isBetButtonActive =
+            id === getMatchTransactionsByUserIdResponse?.data[0].team;
+
+          return (
+            <Card key={id}>
+              <CardHeader
+                action={
+                  <Button
+                    disabled={isBetButtonDisabled({
+                      id,
+                      transaction:
+                        getMatchTransactionsByUserIdResponse?.data[0],
+                    })}
+                    onClick={() => handleBetClick(id)}
+                  >
+                    Bet &#8369;
+                    {isBetButtonActive ? betTotal.toFixed(2) : '0.00'}
+                  </Button>
+                }
+                avatar={<Avatar>{name.charAt(0)}</Avatar>}
+                title={name}
+                subheader={odds.toString()}
+              />
+            </Card>
+          );
+        })}
+    </>
+  );
+};
 
 const Scoreboard = ({ teams = [] }) => {
   const [scores, setScores] = useState({ home: 10, visitor: 12 });
@@ -124,6 +172,8 @@ const Match: NextPage = () => {
     isUninitialized: isGetMatchByIdUninitialized,
   } = useGetMatchByIdQuery(getQueryId(router.query.id), { skip: skipMatch });
 
+  // const matchId = useMemo(() => getQueryId(router.query.id), [router.query.id]);
+
   useEffect(() => {
     if (router.query.id) {
       setMatchId(getQueryId(router.query.id));
@@ -153,6 +203,8 @@ const Match: NextPage = () => {
             <Stack spacing={2}>
               <TeamBetCards
                 handleBetClick={handleBetClick}
+                matchId={matchId}
+                isBetFormOpen={openBetForm}
                 teams={getMatchByIdResponse.data.teams}
               />
             </Stack>
@@ -163,7 +215,7 @@ const Match: NextPage = () => {
       {matchId && (
         <ContainersMatchBetForm
           handleClose={handleCloseBetForm}
-          scheduleId={matchId}
+          matchId={matchId}
           open={openBetForm}
           selectedTeamId={selectedTeamId}
         />

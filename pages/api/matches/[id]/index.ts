@@ -1,5 +1,5 @@
-import dbConnect from '../../../lib/dbConnect';
-import Match from '../../../models/Match';
+import dbConnect from '../../../../lib/dbConnect';
+import Match from '../../../../models/Match';
 
 const handleError = ({ error, res, status = 400 }) => {
   console.error(error);
