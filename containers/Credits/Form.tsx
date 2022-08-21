@@ -12,14 +12,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import {
-  MutationDefinition,
-  BaseQueryFn,
-  FetchArgs,
-  FetchBaseQueryError,
-  FetchBaseQueryMeta,
-} from '@reduxjs/toolkit/dist/query';
-import { MutationTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { TransactionType } from '../../enums';
 import { User } from '../../types';
@@ -117,6 +109,7 @@ const AddForm = ({
           fullWidth
           id="amount-text"
           inputProps={{ step: 'any' }}
+          InputProps={{ sx: { borderRadius: '2rem' } }}
           label="Amount"
           onFocus={(event) => event.target.select()}
           required

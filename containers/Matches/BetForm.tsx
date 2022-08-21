@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react';
-import { LoadingButton } from '@mui/lab';
 import {
   Stack,
-  Button,
   Grid,
   Dialog,
-  AppBar,
-  Toolbar,
-  IconButton,
   Typography,
   DialogContent,
   Card,
@@ -16,7 +11,7 @@ import {
   Alert,
   DialogTitle,
 } from '@mui/material';
-import { Close as CloseIcon, Info as InfoIcon } from '@mui/icons-material';
+import { Info as InfoIcon } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGetMatchByIdQuery } from '../../redux/api/matchesApi';
@@ -27,6 +22,7 @@ import {
 import PleaseSignIn from '../../components/PleaseSignIn';
 import Transition from '../../components/Transition';
 import { TransactionStatus, TransactionType } from '../../enums';
+import { RoundedButton, RoundedLoadingButton } from '../../styles/buttons';
 
 enum Operation {
   Add,
@@ -239,24 +235,22 @@ const BetForm = ({
                       <Typography>{errors.amount.message}</Typography>
                     </Alert>
                   )}
-                  <LoadingButton
-                    loading={isCreateTransactionLoading}
-                    fullWidth
-                    sx={{ borderRadius: '2rem' }}
-                    type="submit"
-                    variant="contained"
-                  >
-                    Place bet
-                  </LoadingButton>
-                  <Button
-                    color="secondary"
-                    fullWidth
-                    onClick={handleClose}
-                    sx={{ borderRadius: '2rem' }}
-                    variant="contained"
-                  >
-                    Cancel
-                  </Button>
+                  <Stack justifyContent="space-between" direction="row">
+                    <RoundedButton
+                      color="secondary"
+                      onClick={handleClose}
+                      variant="contained"
+                    >
+                      Cancel
+                    </RoundedButton>
+                    <RoundedLoadingButton
+                      loading={isCreateTransactionLoading}
+                      type="submit"
+                      variant="contained"
+                    >
+                      Place bet
+                    </RoundedLoadingButton>
+                  </Stack>
                 </Stack>
               </form>
             </Stack>

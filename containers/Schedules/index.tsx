@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import {
   Box,
-  Button,
-  Card,
   CardContent,
   CircularProgress,
   Grid,
@@ -14,12 +12,14 @@ import { useGetMatchesByLeagueIdQuery } from '../../redux/api/matchesApi';
 import { League } from '../../types';
 import ScheduleForm from './ScheduleForm';
 import List from './List';
+import { RoundedButton } from '../../styles/buttons';
+import { RoundedCard } from '../../styles/Cards';
 
 const renderSchedulesListContent = (schedules = []) =>
   !schedules.length ? (
-    <Card sx={{ borderRadius: '2rem', boxShadow: 0 }}>
+    <RoundedCard>
       <CardContent>No schedules found.</CardContent>
-    </Card>
+    </RoundedCard>
   ) : (
     <List listItems={schedules} />
   );
@@ -48,10 +48,11 @@ const Schedules = ({ leagues }) => {
           <LoadingButton
             loading={false}
             onClick={handleScheduleFormOpen}
+            size="large"
             sx={{ borderRadius: '2rem' }}
             variant="contained"
           >
-            Add Schedule
+            Create
           </LoadingButton>
         </Grid>
       </Grid>
@@ -67,25 +68,26 @@ const Schedules = ({ leagues }) => {
             };
 
             return (
-              <Button
+              <RoundedButton
                 key={id}
                 onClick={() => handleLeagueButtonClick(id)}
+                size="large"
                 sx={sx}
                 variant="contained"
               >
                 {initialism}
-              </Button>
+              </RoundedButton>
             );
           })}
         </Stack>
       </Stack>
 
       {isGetMatchesByLeagueIdLoading ? (
-        <Card>
+        <RoundedCard>
           <CardContent sx={{ textAlign: 'center' }}>
             <CircularProgress />
           </CardContent>
-        </Card>
+        </RoundedCard>
       ) : (
         renderSchedulesListContent(getMatchesByLeagueIdResponse.data)
       )}

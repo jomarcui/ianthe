@@ -63,6 +63,7 @@ const Credits = ({ users }: CreditsProps) => {
             maxLength: 11,
             placeholder: '0XXXXXXXXXX',
           }}
+          InputProps={{ sx: { borderRadius: '2rem' } }}
           label="Mobile Number"
           name="mobileNumber"
           onFocus={(e) => e.target.select()}

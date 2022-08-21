@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import {
   Avatar,
   Box,
-  Button,
-  Card,
   CardHeader,
   Paper,
   Stack,
@@ -19,6 +17,8 @@ import {
 import Layout from '../../components/Layout';
 import Loader from '../../components/Loader';
 import ContainersMatchBetForm from '../../containers/Matches/BetForm';
+import { RoundedButton } from '../../styles/buttons';
+import { RoundedCard } from '../../styles/Cards';
 
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
@@ -66,10 +66,10 @@ const TeamBetCards = ({
             id === getMatchTransactionsByUserIdResponse?.data[0]?.team;
 
           return (
-            <Card key={id} sx={{ borderRadius: '2rem', boxShadow: 0 }}>
+            <RoundedCard key={id}>
               <CardHeader
                 action={
-                  <Button
+                  <RoundedButton
                     disabled={isBetButtonDisabled({
                       id,
                       transaction:
@@ -79,13 +79,13 @@ const TeamBetCards = ({
                   >
                     Bet &#8369;
                     {isBetButtonActive ? betTotal.toFixed(2) : '0.00'}
-                  </Button>
+                  </RoundedButton>
                 }
                 avatar={<Avatar>{name.charAt(0)}</Avatar>}
                 title={name}
                 subheader={odds.toString()}
               />
-            </Card>
+            </RoundedCard>
           );
         })}
     </>
@@ -204,7 +204,7 @@ const Match: NextPage = () => {
         <Loader />
       ) : (
         !isGetMatchByIdUninitialized && (
-          <Stack spacing={5} sx={{ bgcolor: '#ecf0f1', my: 3 }}>
+          <Stack spacing={5} my={3}>
             <LeagueInfo league={getMatchByIdResponse.data.league} />
             <Scoreboard teams={getMatchByIdResponse.data.teams} />
             <Stack spacing={2}>

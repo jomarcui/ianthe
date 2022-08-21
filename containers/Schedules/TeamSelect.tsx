@@ -11,7 +11,7 @@ const TeamSelect = ({ field, leagueId, watchField }) => {
   const { data: teamsResponse, isLoading: isTeamsLoading } = useGetTeamsQuery();
 
   return (
-    <Select {...field}>
+    <Select {...field} sx={{ borderRadius: '2rem' }}>
       {isTeamsLoading
         ? TeamSelectMenuItemLoading
         : teamsResponse.data

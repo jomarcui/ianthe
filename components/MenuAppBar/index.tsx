@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import {
   AppBar,
@@ -30,6 +30,8 @@ import {
 } from '@mui/icons-material';
 import Link from 'next/link';
 import ListItemButtonLink from '../ListItemButtonLink';
+import AppBreadcrumbs from '../AppBreadcrumbs';
+import titleize from 'titleize';
 
 const MobileMainMenuList = ({
   isMobileMainMenuListOpen,
@@ -164,12 +166,18 @@ const registrationAndLogin = (
 );
 
 const MenuAppBar = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const [isMobileAccountMenuListOpen, setIsMobileAccountMenuListOpen] =
     useState(false);
+
   const [isMobileMainMenuListOpen, setIsMobileMainMenuListOpen] =
     useState(false);
+
+  const getDefaultTextGenerator = useCallback(
+    (subpath: string) => titleize(subpath),
+    []
+  );
 
   const handleMainMenuClick = () => setIsMobileMainMenuListOpen(true);
 
@@ -220,29 +228,39 @@ const MenuAppBar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar elevation={0} position="static" sx={{ bgcolor: 'common.white' }}>
-        <Toolbar>
-          <IconButton
-            aria-label="open main menu drawer"
-            aria-haspopup="true"
-            // color="primary"
-            edge="start"
-            onClick={handleMainMenuClick}
-            size="large"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Box display="flex" flexGrow={1} justifyContent="center">
-            <Link href="/">
-              <a>
-                <Typography color="text.primary">Ianthe</Typography>
-              </a>
-            </Link>
-          </Box>
-          {/* <Box sx={{ flexGrow: 1 }} /> */}
-          {session?.user ? userMenu : registrationAndLogin}
-        </Toolbar>
+      <AppBar
+        position="static"
+        sx={{
+          bgcolor: 'common.white',
+          boxShadow:
+            'rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;',
+        }}
+      >
+        <Stack>
+          <Toolbar>
+            <IconButton
+              aria-label="open main menu drawer"
+              aria-haspopup="true"
+              // color="primary"
+              edge="start"
+              onClick={handleMainMenuClick}
+              size="large"
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box display="flex" flexGrow={1} justifyContent="center">
+              <Link href="/">
+                <a>
+                  <Typography color="text.primary">Ianthe</Typography>
+                </a>
+              </Link>
+            </Box>
+            {/* <Box sx={{ flexGrow: 1 }} /> */}
+            {session?.user ? userMenu : registrationAndLogin}
+          </Toolbar>
+          <AppBreadcrumbs getDefaultTextGenerator={getDefaultTextGenerator} />
+        </Stack>
       </AppBar>
       <MobileAccountMenuList
         isMobileAccountMenuListOpen={isMobileAccountMenuListOpen}

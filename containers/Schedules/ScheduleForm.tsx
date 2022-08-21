@@ -2,7 +2,6 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
-  Button,
   Dialog,
   DialogContent,
   DialogContentText,
@@ -17,13 +16,12 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { LoadingButton } from '@mui/lab';
 import { useCreateMatchMutation } from '../../redux/api/matchesApi';
 import { Status } from '../../enums';
 import { League } from '../../types';
-import Loader from '../../components/Loader';
 import Transition from '../../components/Transition';
 import TeamSelect from './TeamSelect';
+import { RoundedButton, RoundedLoadingButton } from '../../styles/buttons';
 
 type FormInputs = {
   date: Date | null;
@@ -38,6 +36,26 @@ type ScheduleFormProps = {
   open: boolean;
   setOpen: any;
 };
+
+const FormTextField = ({ inputName, id, register }) => (
+  <TextField
+    id={id}
+    label="Odds"
+    inputProps={{
+      maxLength: 13,
+      step: 'any',
+      style: { textAlign: 'right' },
+    }}
+    InputProps={{
+      sx: { borderRadius: '2rem' },
+    }}
+    onFocus={(e) => e.target.select()}
+    required
+    type="number"
+    variant="outlined"
+    {...register(inputName)}
+  />
+);
 
 const ScheduleForm = ({
   league: { id, name },
@@ -110,7 +128,7 @@ const ScheduleForm = ({
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <DialogTitle>Add Schedule</DialogTitle>
+        <DialogTitle>Create Schedule</DialogTitle>
         <DialogContent>
           <DialogContentText>{name}</DialogContentText>
           <Stack
@@ -145,19 +163,29 @@ const ScheduleForm = ({
                 />
               </FormControl>
 
-              <TextField
+              <FormTextField
+                id="home-odds-text"
+                inputName="homeOdds"
+                register={register}
+              />
+
+              {/* <TextField
                 id="text-home-odds"
                 label="Odds"
                 inputProps={{
                   maxLength: 13,
                   step: 'any',
+                  style: { textAlign: 'right' },
+                }}
+                InputProps={{
+                  sx: { borderRadius: '2rem' },
                 }}
                 onFocus={(e) => e.target.select()}
                 required
                 type="number"
                 variant="outlined"
                 {...register('homeOdds')}
-              />
+              /> */}
             </Stack>
 
             <Stack direction="row" spacing={2}>
@@ -176,7 +204,13 @@ const ScheduleForm = ({
                 />
               </FormControl>
 
-              <TextField
+              <FormTextField
+                id="visitor-odds-text"
+                inputName="visitorOdds"
+                register={register}
+              />
+
+              {/* <TextField
                 id="text-visitor-odds"
                 label="Odds"
                 inputProps={{
@@ -188,7 +222,7 @@ const ScheduleForm = ({
                 type="number"
                 variant="outlined"
                 {...register('visitorOdds')}
-              />
+              /> */}
             </Stack>
 
             <Controller
@@ -198,6 +232,7 @@ const ScheduleForm = ({
                 <MobileDatePicker
                   inputFormat="MM/dd/yyyy"
                   inputRef={ref}
+                  InputProps={{ sx: { borderRadius: '2rem' } }}
                   label="Date"
                   minDate={new Date()}
                   onChange={onChange}
@@ -214,6 +249,7 @@ const ScheduleForm = ({
               render={({ field: { onChange, value, ref } }) => (
                 <TimePicker
                   inputRef={ref}
+                  InputProps={{ sx: { borderRadius: '2rem' } }}
                   label="Time"
                   onChange={onChange}
                   renderInput={(params) => <TextField {...params} />}
@@ -222,30 +258,29 @@ const ScheduleForm = ({
               )}
               rules={{ required: true }}
             />
-
-            <Grid container>
-              <Grid item xs>
-                <Button
-                  color="secondary"
-                  onClick={handleClose}
-                  sx={{ borderRadius: '2rem' }}
-                  variant="contained"
-                >
-                  Cancel
-                </Button>
-              </Grid>
-              <Grid item>
-                <LoadingButton
-                  loading={isAddScheduleLoading}
-                  sx={{ borderRadius: '2rem' }}
-                  type="submit"
-                  variant="contained"
-                >
-                  Save
-                </LoadingButton>
-              </Grid>
-            </Grid>
           </Stack>
+          <Grid container my={3}>
+            <Grid item xs>
+              <RoundedButton
+                color="secondary"
+                onClick={handleClose}
+                size="large"
+                variant="contained"
+              >
+                Cancel
+              </RoundedButton>
+            </Grid>
+            <Grid item>
+              <RoundedLoadingButton
+                loading={isAddScheduleLoading}
+                size="large"
+                type="submit"
+                variant="contained"
+              >
+                Save
+              </RoundedLoadingButton>
+            </Grid>
+          </Grid>
         </DialogContent>
       </Dialog>
     </LocalizationProvider>

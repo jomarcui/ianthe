@@ -1,7 +1,6 @@
 import { format } from 'date-fns';
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -11,6 +10,8 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import SportsIcon from '../../components/SportsIcon';
+import { RoundedButton } from '../../styles/buttons';
+import { RoundedCard } from '../../styles/Cards';
 
 type SchedulesCardProps = {
   schedule: any;
@@ -36,11 +37,11 @@ const SchedulesCard = ({
   } = teams.find(({ isHome }) => !isHome);
 
   return (
-    <Card sx={{ borderRadius: '2rem', boxShadow: 0 }}>
+    <RoundedCard>
       <CardHeader
         action={
           <Link href={`/matches/${id}`}>
-            <Button>Bet</Button>
+            <RoundedButton>Bet</RoundedButton>
           </Link>
         }
         avatar={<SportsIcon sportId={sportId} status={status} />}
@@ -66,7 +67,7 @@ const SchedulesCard = ({
           </Grid>
         </Grid>
       </CardContent>
-    </Card>
+    </RoundedCard>
   );
 };
 

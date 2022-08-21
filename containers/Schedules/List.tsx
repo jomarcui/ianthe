@@ -10,7 +10,6 @@ import {
 import {
   alpha,
   Box,
-  Card,
   CardContent,
   CardHeader,
   CircularProgress,
@@ -28,6 +27,7 @@ import {
   useUpdateMatchestatusByLeagueIdMutation,
 } from '../../redux/api/matchesApi';
 import { Status } from '../../enums';
+import { RoundedCard } from '../../styles/Cards';
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -135,10 +135,7 @@ const List = ({ listItems = [] }) => {
           id === scheduleIdSelected;
 
         return (
-          <Card
-            key={id}
-            sx={{ borderRadius: '2rem', boxShadow: 0, position: 'relative' }}
-          >
+          <RoundedCard key={id} sx={{ position: 'relative' }}>
             <CardHeader
               action={
                 <CardHeaderAction
@@ -176,7 +173,7 @@ const List = ({ listItems = [] }) => {
             >
               <CircularProgress />
             </Box>
-          </Card>
+          </RoundedCard>
         );
       })}
     </Stack>

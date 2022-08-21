@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { useGetLeaguesQuery } from '../../redux/api/leaguesApi';
 import { Today as TodayIcon } from '@mui/icons-material';
 import Loader from '../../components/Loader';
 import SchedulesList from './SchedulesList';
+import { RoundedButton } from '../../styles/buttons';
 
 const Home = () => {
   const [selectedLeagueId, setSelectedLeagueId] = useState<string>(null);
@@ -53,19 +54,19 @@ const Home = () => {
                 const isActive = id === selectedLeagueId;
                 const sx = {
                   bgcolor: !isActive && 'white',
-                  borderRadius: '2rem',
                   color: !isActive && 'text.primary',
                 };
 
                 return (
-                  <Button
+                  <RoundedButton
                     key={index}
                     onClick={() => setSelectedLeagueId(id)}
+                    size="large"
                     sx={sx}
                     variant="contained"
                   >
                     {initialism}
-                  </Button>
+                  </RoundedButton>
                 );
               })}
             </Stack>

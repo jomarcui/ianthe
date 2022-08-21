@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useDeferredValue, useMemo } from 'react';
 import {
   Avatar,
-  Card,
   CardContent,
   CardHeader,
   IconButton,
@@ -10,6 +9,7 @@ import {
 } from '@mui/material';
 import { AddCircle as AddCircleIcon } from '@mui/icons-material';
 import { User } from '../../types';
+import { RoundedCard } from '../../styles/Cards';
 
 type CreditsProps = {
   transactions: [];
@@ -82,7 +82,7 @@ const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
     <Stack my={2} spacing={2}>
       {usersFilteredByMobileNumber.map(
         ({ firstName, id, lastName, mobileNumber, transactions }) => (
-          <Card key={id} sx={{ borderRadius: '2rem', boxShadow: 0 }}>
+          <RoundedCard key={id}>
             <CardHeader
               action={
                 <IconButton
@@ -100,7 +100,7 @@ const List = ({ mobileNumber, setSelectedUserId, users }: ListProps) => {
             <CardContent>
               <Credits transactions={transactions} />
             </CardContent>
-          </Card>
+          </RoundedCard>
         )
       )}
     </Stack>
