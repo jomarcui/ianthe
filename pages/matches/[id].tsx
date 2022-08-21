@@ -55,13 +55,15 @@ const TeamBetCards = ({
     return id !== transaction.team;
   };
 
+  console.log(getMatchTransactionsByUserIdResponse);
+
   return (
     <>
       {[...teams]
         .sort((a, b) => b.team.isHome - a.team.isHome)
         .map(({ odds, team: { id, name } }) => {
           const isBetButtonActive =
-            id === getMatchTransactionsByUserIdResponse?.data[0].team;
+            id === getMatchTransactionsByUserIdResponse?.data[0]?.team;
 
           return (
             <Card key={id} sx={{ borderRadius: '2rem', boxShadow: 0 }}>
