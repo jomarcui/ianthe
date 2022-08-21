@@ -1,7 +1,5 @@
-import { LoadingButton } from '@mui/lab';
 import {
   Box,
-  Button,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -14,6 +12,10 @@ import {
 } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { TransactionType } from '../../enums';
+import {
+  RoundedButton,
+  RoundedLoadingButton,
+} from '../../styledComponents/Buttons';
 import { User } from '../../types';
 
 type AddFormProps = {
@@ -123,25 +125,25 @@ const AddForm = ({
         />
         <Grid justifyContent="space-between" container>
           <Grid item>
-            <Button
+            <RoundedButton
               color="secondary"
               onClick={handleDialogClose}
-              sx={{ borderRadius: '2rem' }}
+              size="large"
               variant="contained"
             >
               Cancel
-            </Button>
+            </RoundedButton>
           </Grid>
           <Grid item>
-            <LoadingButton
+            <RoundedLoadingButton
               loading={isCreateTransactionLoading}
               form="credits-form"
-              sx={{ borderRadius: '2rem' }}
+              size="large"
               type="submit"
               variant="contained"
             >
               Create
-            </LoadingButton>
+            </RoundedLoadingButton>
           </Grid>
         </Grid>
       </Stack>

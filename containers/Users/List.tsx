@@ -1,7 +1,8 @@
 import Loader from '../../components/Loader';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useGetUsersQuery } from '../../redux/api/usersApi';
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Grid, Stack, Typography } from '@mui/material';
+import { RoundedButton } from '../../styledComponents/Buttons';
 
 const List = () => {
   const { data: usersResponse, isLoading: isUsersLoading } = useGetUsersQuery();
@@ -38,13 +39,13 @@ const List = () => {
             <Typography variant="h6">Users List</Typography>
           </Grid>
           <Grid item sx={{ display: 'flex', justifyContent: 'end' }} xs>
-            <Button
+            <RoundedButton
               onClick={() => alert('Soon!')}
-              sx={{ borderRadius: '2rem' }}
+              size="large"
               variant="contained"
             >
-              Create User
-            </Button>
+              Create
+            </RoundedButton>
           </Grid>
         </Grid>
       </Stack>

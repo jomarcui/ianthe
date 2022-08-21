@@ -242,12 +242,14 @@ const BetForm = ({
                     <RoundedButton
                       color="secondary"
                       onClick={handleClose}
+                      size="large"
                       variant="contained"
                     >
                       Cancel
                     </RoundedButton>
                     <RoundedLoadingButton
                       loading={isCreateTransactionLoading}
+                      size="large"
                       type="submit"
                       variant="contained"
                     >

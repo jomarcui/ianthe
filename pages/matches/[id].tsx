@@ -55,8 +55,6 @@ const TeamBetCards = ({
     return id !== transaction.team;
   };
 
-  console.log(getMatchTransactionsByUserIdResponse);
-
   return (
     <>
       {[...teams]
@@ -158,7 +156,7 @@ const LeagueInfo = ({
   },
 }) => (
   <Box>
-    <Typography>{leagueName}</Typography>
+    <Typography variant="h6">{leagueName}</Typography>
     <Typography style={{ color: 'rgba(0, 0, 0, 0.6)', fontSize: '0.875rem' }}>
       {sportName}
     </Typography>

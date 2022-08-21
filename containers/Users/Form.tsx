@@ -1,17 +1,13 @@
 import { useForm } from 'react-hook-form';
-import { LoadingButton } from '@mui/lab';
-import {
-  Alert,
-  AlertTitle,
-  Box,
-  Button,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, TextField, Typography } from '@mui/material';
 import { Roles } from '../../enums';
 import { useCreateUserMutation } from '../../redux/api/usersApi';
 import { User } from '../../types';
 import { generate } from '../../utilities/passwordsUtils';
+import {
+  RoundedButton,
+  RoundedLoadingButton,
+} from '../../styledComponents/Buttons';
 
 const Form = () => {
   const [createUser, { data: user, isLoading: createUserIsLoading }] =
@@ -89,26 +85,28 @@ const Form = () => {
           placeholder="0XXXXXXXXXX"
           {...register('password')}
         />
-        <Button
+        <RoundedButton
           fullWidth
           onClick={handleGeneratePassword}
+          size="large"
           sx={{ my: 2 }}
           variant="outlined"
         >
           Generate Password
-        </Button>
+        </RoundedButton>
         <Typography color="GrayText">
           Roles: To be added in the future
         </Typography>
-        <LoadingButton
+        <RoundedLoadingButton
           fullWidth
           loading={createUserIsLoading}
           type="submit"
+          size="large"
           sx={{ mt: 3, mb: 2 }}
           variant="contained"
         >
           Create
-        </LoadingButton>
+        </RoundedLoadingButton>
       </Box>
     </>
   );
