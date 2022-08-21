@@ -4,7 +4,7 @@ import { useGetLeaguesQuery } from '../../redux/api/leaguesApi';
 import { Today as TodayIcon } from '@mui/icons-material';
 import Loader from '../../components/Loader';
 import SchedulesList from './SchedulesList';
-import { RoundedButton } from '../../styles/buttons';
+import { RoundedButton } from '../../styledComponents/Buttons';
 
 const Home = () => {
   const [selectedLeagueId, setSelectedLeagueId] = useState<string>(null);

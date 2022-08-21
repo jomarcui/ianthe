@@ -12,8 +12,8 @@ import { useGetMatchesByLeagueIdQuery } from '../../redux/api/matchesApi';
 import { League } from '../../types';
 import ScheduleForm from './ScheduleForm';
 import List from './List';
-import { RoundedButton } from '../../styles/buttons';
-import { RoundedCard } from '../../styles/Cards';
+import { RoundedButton } from '../../styledComponents/Buttons';
+import { RoundedCard } from '../../styledComponents/Cards';
 
 const renderSchedulesListContent = (schedules = []) =>
   !schedules.length ? (

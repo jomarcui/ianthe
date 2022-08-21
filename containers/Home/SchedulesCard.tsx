@@ -10,8 +10,8 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import SportsIcon from '../../components/SportsIcon';
-import { RoundedButton } from '../../styles/buttons';
-import { RoundedCard } from '../../styles/Cards';
+import { RoundedButton } from '../../styledComponents/Buttons';
+import { RoundedCard } from '../../styledComponents/Cards';
 
 type SchedulesCardProps = {
   schedule: any;

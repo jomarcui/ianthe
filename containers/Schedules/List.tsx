@@ -27,7 +27,7 @@ import {
   useUpdateMatchestatusByLeagueIdMutation,
 } from '../../redux/api/matchesApi';
 import { Status } from '../../enums';
-import { RoundedCard } from '../../styles/Cards';
+import { RoundedCard } from '../../styledComponents/Cards';
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu

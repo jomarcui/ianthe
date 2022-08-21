@@ -17,8 +17,8 @@ import {
 import Layout from '../../components/Layout';
 import Loader from '../../components/Loader';
 import ContainersMatchBetForm from '../../containers/Matches/BetForm';
-import { RoundedButton } from '../../styles/buttons';
-import { RoundedCard } from '../../styles/Cards';
+import { RoundedButton } from '../../styledComponents/Buttons';
+import { RoundedCard } from '../../styledComponents/Cards';
 
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 

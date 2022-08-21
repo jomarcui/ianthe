@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { AddCircle as AddCircleIcon } from '@mui/icons-material';
 import { User } from '../../types';
-import { RoundedCard } from '../../styles/Cards';
+import { RoundedCard } from '../../styledComponents/Cards';
 
 type CreditsProps = {
   transactions: [];

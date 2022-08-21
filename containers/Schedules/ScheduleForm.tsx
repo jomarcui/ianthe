@@ -21,7 +21,10 @@ import { Status } from '../../enums';
 import { League } from '../../types';
 import Transition from '../../components/Transition';
 import TeamSelect from './TeamSelect';
-import { RoundedButton, RoundedLoadingButton } from '../../styles/buttons';
+import {
+  RoundedButton,
+  RoundedLoadingButton,
+} from '../../styledComponents/Buttons';
 
 type FormInputs = {
   date: Date | null;

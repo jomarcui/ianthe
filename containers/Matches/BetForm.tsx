@@ -22,7 +22,10 @@ import {
 import PleaseSignIn from '../../components/PleaseSignIn';
 import Transition from '../../components/Transition';
 import { TransactionStatus, TransactionType } from '../../enums';
-import { RoundedButton, RoundedLoadingButton } from '../../styles/buttons';
+import {
+  RoundedButton,
+  RoundedLoadingButton,
+} from '../../styledComponents/Buttons';
 
 enum Operation {
   Add,
