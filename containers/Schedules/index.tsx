@@ -17,7 +17,7 @@ import List from './List';
 
 const renderSchedulesListContent = (schedules = []) =>
   !schedules.length ? (
-    <Card>
+    <Card sx={{ borderRadius: '2rem', boxShadow: 0 }}>
       <CardContent>No schedules found.</CardContent>
     </Card>
   ) : (
