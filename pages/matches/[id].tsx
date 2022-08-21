@@ -31,10 +31,13 @@ const TeamBetCards = ({
   const { data: session } = useSession();
 
   const { data: getMatchTransactionsByUserIdResponse, refetch } =
-    useGetMatchTransactionsByUserIdQuery({
-      id: matchId,
-      userId: session?.user['id'],
-    });
+    useGetMatchTransactionsByUserIdQuery(
+      {
+        id: matchId,
+        userId: session?.user['id'],
+      },
+      { skip: !session }
+    );
 
   useEffect(() => {
     refetch();
