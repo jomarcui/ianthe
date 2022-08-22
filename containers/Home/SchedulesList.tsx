@@ -2,12 +2,13 @@ import { useGetMatchesByLeagueIdAndDateQuery } from '../../redux/api/matchesApi'
 import { Card, CardContent, CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
 import SchedulesCard from './SchedulesCard';
+import { RoundedCard } from '../../styledComponents/Cards';
 
 const renderSchedulesListContent = (schedules = []) =>
   !schedules.length ? (
-    <Card sx={{ borderRadius: '2rem', boxShadow: 0 }}>
+    <RoundedCard>
       <CardContent>No schedules found.</CardContent>
-    </Card>
+    </RoundedCard>
   ) : (
     schedules.map((schedule) => (
       <SchedulesCard key={schedule.id} schedule={schedule} />
