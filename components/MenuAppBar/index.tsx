@@ -229,11 +229,10 @@ const MenuAppBar = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
+        elevation={0}
         position="static"
         sx={{
           bgcolor: 'common.white',
-          boxShadow:
-            'rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;',
         }}
       >
         <Stack>

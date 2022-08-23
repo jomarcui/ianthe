@@ -12,7 +12,10 @@ import { useGetMatchesByLeagueIdQuery } from '../../redux/api/matchesApi';
 import { League } from '../../types';
 import ScheduleForm from './ScheduleForm';
 import List from './List';
-import { RoundedButton } from '../../styledComponents/Buttons';
+import {
+  RoundedButton,
+  RoundedLoadingButton,
+} from '../../styledComponents/Buttons';
 import { RoundedCard } from '../../styledComponents/Cards';
 
 const renderSchedulesListContent = (schedules = []) =>
@@ -39,24 +42,23 @@ const Schedules = ({ leagues }) => {
   const handleScheduleFormOpen = () => setScheduleFormOpen(true);
 
   return (
-    <Box>
-      <Grid alignItems="center" container my={3}>
+    <Stack my={3} spacing={3}>
+      <Grid alignItems="center" container>
         <Grid item xs>
           <Typography variant="h6">Schedules List</Typography>
         </Grid>
         <Grid textAlign="right" item xs>
-          <LoadingButton
+          <RoundedLoadingButton
             loading={false}
             onClick={handleScheduleFormOpen}
             size="large"
-            sx={{ borderRadius: '2rem' }}
             variant="contained"
           >
             Create
-          </LoadingButton>
+          </RoundedLoadingButton>
         </Grid>
       </Grid>
-      <Stack my={3} spacing={1}>
+      <Stack spacing={1}>
         <Typography>Select League</Typography>
         <Stack direction="row" spacing={1}>
           {leagues.map(({ id, initialism }) => {
@@ -97,7 +99,7 @@ const Schedules = ({ leagues }) => {
         open={scheduleFormOpen}
         setOpen={setScheduleFormOpen}
       />
-    </Box>
+    </Stack>
   );
 };
 

@@ -136,6 +136,7 @@ const ScheduleForm = ({
           <DialogContentText>{name}</DialogContentText>
           <Stack
             component="form"
+            id="schedule-form"
             onSubmit={handleSubmit(handleFormSubmit)}
             my={2}
             spacing={2}
@@ -275,12 +276,13 @@ const ScheduleForm = ({
             </Grid>
             <Grid item>
               <RoundedLoadingButton
+                form="schedule-form"
                 loading={isAddScheduleLoading}
                 size="large"
                 type="submit"
                 variant="contained"
               >
-                Save
+                Create
               </RoundedLoadingButton>
             </Grid>
           </Grid>

@@ -35,7 +35,7 @@ const AddForm = ({
   handleCreateTransaction,
   handleDialogClose,
   isCreateTransactionLoading,
-  user: { firstName, lastName, id },
+  user: { firstName, id, lastName, mobileNumber },
 }: AddFormProps) => {
   const {
     control,
@@ -72,12 +72,13 @@ const AddForm = ({
       id="credits-form"
       onSubmit={handleSubmit(handleFormSubmit)}
     >
-      <Stack spacing={2}>
-        <Typography>
-          <strong>
+      <Stack spacing={3}>
+        <Stack>
+          <Typography variant="h6">
             {firstName} {lastName}
-          </strong>
-        </Typography>
+          </Typography>
+          <Typography>{mobileNumber}</Typography>
+        </Stack>
         <input type="hidden" {...register('user')} />
         <FormControl fullWidth>
           <FormLabel id="transaction-label">Transaction Type</FormLabel>
@@ -110,7 +111,7 @@ const AddForm = ({
           error={!!errors?.amount?.message}
           fullWidth
           id="amount-text"
-          inputProps={{ step: 'any' }}
+          inputProps={{ step: 'any', style: { textAlign: 'right' } }}
           InputProps={{ sx: { borderRadius: '2rem' } }}
           label="Amount"
           onFocus={(event) => event.target.select()}
