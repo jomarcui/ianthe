@@ -93,36 +93,40 @@ const TodaysMatchesByLeagueId = ({
           </Grid>
           <Grid borderLeft="1px solid rgba(0, 0, 0, 0.12)" item xs={5}>
             <Box borderBottom="1px solid #dcdcdc" p={3}>
-              <Typography
-                textAlign="center"
-                fontSize="0.75rem"
-                sx={{ color: 'text.secondary' }}
-              >
-                {nameHomeTeam}
-              </Typography>
-              <RoundedButton
-                fullWidth
-                onClick={(e) => handleBetButtonClick(e, id)}
-                size="large"
-              >
-                {oddsHomeTeam}
-              </RoundedButton>
+              <Stack spacing={1}>
+                <Typography
+                  textAlign="center"
+                  fontSize="0.75rem"
+                  sx={{ color: 'text.secondary' }}
+                >
+                  {nameHomeTeam}
+                </Typography>
+                <RoundedButton
+                  fullWidth
+                  onClick={(e) => handleBetButtonClick(e, id)}
+                  size="large"
+                >
+                  {oddsHomeTeam}
+                </RoundedButton>
+              </Stack>
             </Box>
             <Box p={3}>
-              <Typography
-                textAlign="center"
-                fontSize="0.75rem"
-                sx={{ color: 'text.secondary' }}
-              >
-                {nameVisitorTeam}
-              </Typography>
-              <RoundedButton
-                fullWidth
-                onClick={(e) => handleBetButtonClick(e, id)}
-                size="large"
-              >
-                {oddsVisitorTeam}
-              </RoundedButton>
+              <Stack spacing={1}>
+                <Typography
+                  textAlign="center"
+                  fontSize="0.75rem"
+                  sx={{ color: 'text.secondary' }}
+                >
+                  {nameVisitorTeam}
+                </Typography>
+                <RoundedButton
+                  fullWidth
+                  onClick={(e) => handleBetButtonClick(e, id)}
+                  size="large"
+                >
+                  {oddsVisitorTeam}
+                </RoundedButton>
+              </Stack>
             </Box>
           </Grid>
         </Grid>

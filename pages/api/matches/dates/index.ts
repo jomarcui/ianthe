@@ -22,7 +22,12 @@ const handler = async (req, res) => {
           $gte: startOfDay(new Date(dateStart)),
           $lte: endOfDay(new Date(dateEnd)),
           status: { $ne: 'ENDED' },
-        });
+        })
+          .populate({
+            path: 'league',
+            populate: { path: 'sport' },
+          })
+          .populate({ path: 'teams.team' });
 
         res.status(200).json({ success: true, data: matches });
       } catch (error) {

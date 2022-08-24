@@ -20,7 +20,10 @@ const handler = async (req, res) => {
             $lte: endOfDay(new Date(date)),
           },
         })
-          .populate('league')
+          .populate({
+            path: 'league',
+            populate: { path: 'sport' },
+          })
           .populate({ path: 'teams.team' });
 
         res.status(200).json({ success: true, data: matches });
