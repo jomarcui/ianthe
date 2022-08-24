@@ -28,7 +28,8 @@ const ListItemButtonLink = ({
 }: ListItemButtonLinkProps) => {
   return (
     <ListItem divider>
-      <ListItemButton component={NextLinkComposed} to={href}>
+      {/* <ListItemButton component={NextLinkComposed} to={href}> */}
+      <ListItemButton>
         <Grid alignItems="center" container spacing={2}>
           <Grid item>
             {notificationsCount ? (
