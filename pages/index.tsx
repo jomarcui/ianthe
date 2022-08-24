@@ -60,7 +60,9 @@ const Home: NextPage = () => {
         )}
 
         {isGetLeaguesLoading ? (
-          <CircularProgress />
+          <Box sx={{ textAlign: 'center', p: 3 }}>
+            <CircularProgress />
+          </Box>
         ) : (
           <Box id="leagues-list-component" p={3}>
             <Stack direction="row" spacing={1}>
