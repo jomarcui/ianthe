@@ -9,7 +9,7 @@ const handler = async (req, res) => {
   switch (method) {
     case 'GET':
       try {
-        const leagues = await League.find();
+        const leagues = await League.find().populate('sport');
         res.status(200).json({ success: true, data: leagues });
       } catch (error) {
         console.error(error);

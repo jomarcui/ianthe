@@ -16,3 +16,24 @@ export const RoundedLoadingButton = styled(LoadingButton)(() => ({
   borderRadius: '2rem',
   boxShadow: 'none',
 }));
+
+export const MatchScheduleDateButton = styled(Button)(() => ({
+  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  borderColor: 'rgba(255, 255, 255, 0.2)',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#fff',
+    borderColor: '#fff',
+    boxShadow: 'none',
+    color: '#171618',
+  },
+  '&:active': {
+    boxShadow: 'none',
+    backgroundColor: '#fff',
+    borderColor: '#fff',
+    color: '#171618',
+  },
+  '&:focus': {
+    // boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+  },
+}));

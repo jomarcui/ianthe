@@ -203,7 +203,7 @@ const BetForm = ({
                           {...register('amount', {
                             validate: {
                               lessThanCredits: (value) =>
-                                value < credits || 'insufficient credits',
+                                value <= credits || 'insufficient credits',
                               greaterThanZero: (value) =>
                                 value > 0 || 'must be greater than 0',
                             },
