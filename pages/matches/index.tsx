@@ -226,15 +226,6 @@ const Matches = () => {
                 />
               </Stack>
               <Stack height="100%">
-                <MaximizeRoundedIcon
-                  fontSize="large"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    margin: '0 auto',
-                    position: 'relative',
-                    top: '23px',
-                  }}
-                />
                 <Box
                   bgcolor="background.default"
                   borderRadius="2rem 2rem 0 0"
