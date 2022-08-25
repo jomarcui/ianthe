@@ -95,87 +95,113 @@ const MatchesByDateAndSports = ({
     return result;
   }, []);
 
+  const matchesGroupedByDateGroupedByLeague = Object.values(
+    matchesGroupedByDate
+  )[0].reduce((result, match) => {
+    const {
+      date,
+      league: {
+        sport: { name: sportName },
+      },
+    } = match;
+
+    if (
+      sportName in result &&
+      toDate(result[sportName]['date']) < toDate(date)
+    ) {
+      result[sportName] = [...result[sportName], match];
+    } else {
+      result[sportName] = [match];
+    }
+
+    return result;
+  }, []);
+
   return (
     <>
-      {Object.entries(matchesGroupedByDate).map(([key, value]) => (
-        <Fragment key={key}>
-          {value.map(
-            ({
-              id,
-              date,
-              league: {
-                sport: { name: sportName },
-              },
-              teams,
-            }) => {
-              const {
-                odds: oddsHomeTeam,
-                team: { name: nameHomeTeam },
-              } = teams.find(({ isHome }) => isHome);
+      {Object.entries(matchesGroupedByDateGroupedByLeague).map(
+        ([key, value]: [string, any[]]) => (
+          <Fragment key={key}>
+            {value.map(
+              ({
+                id,
+                date,
+                league: {
+                  sport: { name: sportName },
+                },
+                teams,
+              }) => {
+                const {
+                  odds: oddsHomeTeam,
+                  team: { name: nameHomeTeam },
+                } = teams.find(({ isHome }) => isHome);
 
-              const {
-                odds: oddsVisitorTeam,
-                team: { name: nameVisitorTeam },
-              } = teams.find(({ isHome }) => !isHome);
+                const {
+                  odds: oddsVisitorTeam,
+                  team: { name: nameVisitorTeam },
+                } = teams.find(({ isHome }) => !isHome);
 
-              const oddsDisplayHigherReturn =
-                oddsHomeTeam > oddsVisitorTeam ? oddsVisitorTeam : oddsHomeTeam;
+                const oddsDisplayHigherReturn =
+                  oddsHomeTeam > oddsVisitorTeam
+                    ? oddsVisitorTeam
+                    : oddsHomeTeam;
 
-              const oddsReturn = 20 + 20 * oddsDisplayHigherReturn;
+                const oddsReturn = 20 + 20 * oddsDisplayHigherReturn;
 
-              return (
-                <Fragment key={id}>
-                  <Stack alignItems="center" direction="row" spacing={1}>
-                    <Typography variant="h6">{sportName}</Typography>
-                    <ArrowRightAltRoundedIcon
-                      fontSize="large"
-                      sx={{ color: '#dcdcdc' }}
-                    />
-                  </Stack>
-                  <Box bgcolor="#f9f9f9" borderRadius="2rem">
-                    <Grid container>
-                      <Grid item p={3} xs={7}>
-                        <Box mb="1rem">
+                return (
+                  <Fragment key={id}>
+                    <Stack alignItems="center" direction="row" spacing={1}>
+                      <Typography variant="h6">{sportName}</Typography>
+                      <ArrowRightAltRoundedIcon
+                        fontSize="large"
+                        sx={{ color: '#dcdcdc' }}
+                      />
+                    </Stack>
+                    <Box bgcolor="#f9f9f9" borderRadius="2rem">
+                      <Grid container>
+                        <Grid item p={3} xs={7}>
+                          <Box mb="1rem">
+                            <Typography>
+                              <strong>Philippine Cup</strong>
+                            </Typography>
+                            <Typography fontSize="0.75rem">
+                              {`${nameHomeTeam} vs ${nameVisitorTeam}`}
+                            </Typography>
+                          </Box>
+
                           <Typography>
-                            <strong>Philippine Cup</strong>
+                            {isToday(new Date(date)) && 'Today,'}{' '}
+                            {format(new Date(date), 'h:mmaa')}
                           </Typography>
-                          <Typography fontSize="0.75rem">
-                            {`${nameHomeTeam} vs ${nameVisitorTeam}`}
-                          </Typography>
-                        </Box>
-
-                        <Typography>
-                          {isToday(new Date(date)) && 'Today,'}{' '}
-                          {format(new Date(date), 'h:mmaa')}
-                        </Typography>
-                      </Grid>
-                      <Grid borderLeft="1px solid #dcdcdc" item xs={5}>
-                        <Box borderBottom="1px solid #dcdcdc" p={3}>
-                          <Typography textAlign="center">
-                            {oddsDisplayHigherReturn}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography fontSize="0.75rem">Return</Typography>
-                          <Stack alignItems="center" direction="row">
-                            <Typography fontSize="0.75rem">
-                              &#8369;20.00
+                        </Grid>
+                        <Grid borderLeft="1px solid #dcdcdc" item xs={5}>
+                          <Box borderBottom="1px solid #dcdcdc" p={3}>
+                            <Typography textAlign="center">
+                              {oddsDisplayHigherReturn}
                             </Typography>
-                            <ArrowRightAltRoundedIcon color="success" />
-                            <Typography fontSize="0.75rem">
-                              <strong> &#8369;{oddsReturn.toFixed(2)}</strong>
-                            </Typography>
-                          </Stack>
-                        </Box>
+                          </Box>
+                          <Box p={3}>
+                            <Typography fontSize="0.75rem">Return</Typography>
+                            <Stack alignItems="center" direction="row">
+                              <Typography fontSize="0.75rem">
+                                &#8369;20.00
+                              </Typography>
+                              <ArrowRightAltRoundedIcon color="success" />
+                              <Typography fontSize="0.75rem">
+                                <strong> &#8369;{oddsReturn.toFixed(2)}</strong>
+                              </Typography>
+                            </Stack>
+                          </Box>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  </Box>
-                </Fragment>
-              );
-            }
-          )}
-        </Fragment>
-      ))}
+                    </Box>
+                  </Fragment>
+                );
+              }
+            )}
+          </Fragment>
+        )
+      )}
     </>
   );
 };
