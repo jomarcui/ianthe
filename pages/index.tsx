@@ -76,9 +76,7 @@ const Home: NextPage = () => {
                 <DialogContentText id="add-credits-dialog-description">
                   <Stack alignItems="center" direction="row" spacing={1}>
                     <InfoRoundedIcon color="info" fontSize="large" />
-                    <Typography>
-                      Please cash-in via GCash to 09XXXXXXXX
-                    </Typography>
+                    <span>Please cash-in via GCash to 09XXXXXXXX</span>
                   </Stack>
                 </DialogContentText>
               </DialogContent>

@@ -56,83 +56,90 @@ const TodaysMatchesByLeagueId = ({
       </RoundedCard>
     );
 
-  return matches.map(({ date, id, teams }) => {
-    const {
-      odds: oddsHomeTeam,
-      team: { id: idHomeTeam, name: nameHomeTeam },
-    } = teams.find(({ isHome }) => isHome);
+  return (
+    <Stack spacing={2}>
+      {matches.map(({ date, id, teams }) => {
+        const {
+          odds: oddsHomeTeam,
+          team: { name: nameHomeTeam },
+        } = teams.find(({ isHome }) => isHome);
 
-    const {
-      odds: oddsVisitorTeam,
-      team: { id: idVisitorTeam, name: nameVisitorTeam },
-    } = teams.find(({ isHome }) => !isHome);
+        const {
+          odds: oddsVisitorTeam,
+          team: { name: nameVisitorTeam },
+        } = teams.find(({ isHome }) => !isHome);
 
-    return (
-      <RoundedCard key={id} sx={{ bgcolor: '#f9f9f9' }}>
-        <Grid container>
-          <Grid item p={3} xs={7}>
-            <Box
-              display="flex"
-              justifyContent="center"
-              flexDirection="column"
-              height="100%"
-            >
-              <Box mb="1rem">
-                <Typography>
-                  <strong>Philippine Cup</strong>
-                </Typography>
-                <Typography fontSize="0.75rem" sx={{ color: 'text.secondary' }}>
-                  {`${nameHomeTeam} vs ${nameVisitorTeam}`}
-                </Typography>
-              </Box>
-              <Stack alignItems="center" direction="row" spacing={1}>
-                <ScheduleRoundedIcon fontSize="large" />
-                <Typography>{format(new Date(date), 'h:mm b')}</Typography>
-              </Stack>
-            </Box>
-          </Grid>
-          <Grid borderLeft="1px solid rgba(0, 0, 0, 0.12)" item xs={5}>
-            <Box borderBottom="1px solid #dcdcdc" p={3}>
-              <Stack spacing={1}>
-                <Typography
-                  textAlign="center"
-                  fontSize="0.75rem"
-                  sx={{ color: 'text.secondary' }}
+        return (
+          <RoundedCard key={id} sx={{ bgcolor: '#f9f9f9' }}>
+            <Grid container>
+              <Grid item p={3} xs={7}>
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  flexDirection="column"
+                  height="100%"
                 >
-                  {nameHomeTeam}
-                </Typography>
-                <RoundedButton
-                  fullWidth
-                  onClick={(e) => handleBetButtonClick(e, id)}
-                  size="large"
-                >
-                  {oddsHomeTeam}
-                </RoundedButton>
-              </Stack>
-            </Box>
-            <Box p={3}>
-              <Stack spacing={1}>
-                <Typography
-                  textAlign="center"
-                  fontSize="0.75rem"
-                  sx={{ color: 'text.secondary' }}
-                >
-                  {nameVisitorTeam}
-                </Typography>
-                <RoundedButton
-                  fullWidth
-                  onClick={(e) => handleBetButtonClick(e, id)}
-                  size="large"
-                >
-                  {oddsVisitorTeam}
-                </RoundedButton>
-              </Stack>
-            </Box>
-          </Grid>
-        </Grid>
-      </RoundedCard>
-    );
-  });
+                  <Box mb="1rem">
+                    <Typography>
+                      <strong>Philippine Cup</strong>
+                    </Typography>
+                    <Typography
+                      fontSize="0.75rem"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {`${nameHomeTeam} vs ${nameVisitorTeam}`}
+                    </Typography>
+                  </Box>
+                  <Stack alignItems="center" direction="row" spacing={1}>
+                    <ScheduleRoundedIcon fontSize="large" />
+                    <Typography>{format(new Date(date), 'h:mm b')}</Typography>
+                  </Stack>
+                </Box>
+              </Grid>
+              <Grid borderLeft="1px solid rgba(0, 0, 0, 0.12)" item xs={5}>
+                <Box borderBottom="1px solid #dcdcdc" p={3}>
+                  <Stack spacing={1}>
+                    <Typography
+                      textAlign="center"
+                      fontSize="0.75rem"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {nameHomeTeam}
+                    </Typography>
+                    <RoundedButton
+                      fullWidth
+                      onClick={(e) => handleBetButtonClick(e, id)}
+                      size="large"
+                    >
+                      {oddsHomeTeam}
+                    </RoundedButton>
+                  </Stack>
+                </Box>
+                <Box p={3}>
+                  <Stack spacing={1}>
+                    <Typography
+                      textAlign="center"
+                      fontSize="0.75rem"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {nameVisitorTeam}
+                    </Typography>
+                    <RoundedButton
+                      fullWidth
+                      onClick={(e) => handleBetButtonClick(e, id)}
+                      size="large"
+                    >
+                      {oddsVisitorTeam}
+                    </RoundedButton>
+                  </Stack>
+                </Box>
+              </Grid>
+            </Grid>
+          </RoundedCard>
+        );
+      })}
+    </Stack>
+  );
 };
 
 export default TodaysMatchesByLeagueId;
