@@ -273,8 +273,8 @@ const Match: NextPage = () => {
                 flexGrow={1}
                 p={3}
                 sx={{
-                  borderTopLeftRadius: '1.5rem',
-                  borderTopRightRadius: '1.5rem',
+                  borderTopLeftRadius: '2rem',
+                  borderTopRightRadius: '2rem',
                 }}
               >
                 <Stack height="100%" spacing={2}>
