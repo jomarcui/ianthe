@@ -1,5 +1,9 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import User from '../../../models/User';
+import dbConnect from '../../../lib/dbConnect';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 /**
  * Takes a token, and returns a new token with updated
@@ -87,33 +91,81 @@ export default NextAuth({
   providers: [
     CredentialsProvider({
       async authorize({ mobileNumber, password }) {
-        const payload = {
-          mobileNumber: mobileNumber,
-          password: password,
-        };
+        await dbConnect();
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/auth`, {
-          body: JSON.stringify(payload),
-          headers: {
-            'Accept-Language': 'en-US',
-            'Content-Type': 'application/json',
-          },
-          method: 'POST',
-        });
+        const user = await User.findOne({ mobileNumber });
 
-        const user = await res.json();
+        const isPasswordsMatch = await bcrypt.compare(password, user.password);
 
-        if (!res.ok) {
-          throw new Error(user.exception);
+        if (isPasswordsMatch) {
+          // const accessToken = jwt.sign(
+          //   {
+          //     userInfo: {
+          //       mobileNumber: user.mobileNumber,
+          //     },
+          //   },
+          //   process.env.NEXTAUTH_SECRET,
+          //   { expiresIn: '59s' }
+          // );
+
+          // const refreshToken = jwt.sign(
+          //   { mobileNumber: user.mobileNumber },
+          //   process.env.REFRESH_TOKEN_SECRET,
+          //   { expiresIn: '1d' }
+          // );
+
+          // user.refreshToken = refreshToken;
+
+          user.save();
+
+          return {
+            // accessToken,
+            // refreshToken,
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`,
+          };
+        } else {
+          return null;
         }
 
-        // If no error and we have user data, return it
-        if (res.ok && user) {
-          return user;
-        }
+        // user.save().then(() => {
+        // res.cookie('jwt', refreshToken, {
+        //   httpOnly: true,
+        //   maxAge: 24 * 60 * 60 * 1000,
+        //   sameSite: 'None',
+        //   secure: true,
+        // });
 
-        // Return null if user data could not be retrieved
-        return null;
+        // res.status(200).json({
+        //   accessToken,
+        //   refreshToken,
+        //   id: user.id,
+        //   name: `${user.firstName} ${user.lastName}`,
+        // });
+        // })
+
+        // const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/auth`, {
+        //   body: JSON.stringify(payload),
+        //   headers: {
+        //     'Accept-Language': 'en-US',
+        //     'Content-Type': 'application/json',
+        //   },
+        //   method: 'POST',
+        // });
+
+        // const user = await res.json();
+
+        // if (!res.ok) {
+        //   throw new Error(user.exception);
+        // }
+
+        // // If no error and we have user data, return it
+        // if (res.ok && user) {
+        //   return user;
+        // }
+
+        // // Return null if user data could not be retrieved
+        // return null;
       },
       // The credentials is used to generate a suitable form on the sign in page.
       // You can specify whatever fields you are expecting to be submitted.

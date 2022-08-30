@@ -6,7 +6,7 @@ type User = {
   lastName: string;
   mobileNumber: string;
   password: string;
-  roles: [];
+  refreshToken: string;
   transactions?: Types.ObjectId[];
 };
 
@@ -31,9 +31,8 @@ const UserSchema = new Schema<User>(
       required: [true, 'Please provide a password for this user. '],
       type: String,
     },
-    roles: {
-      required: true,
-      type: [],
+    refreshToken: {
+      type: String,
     },
     transactions: [
       {
