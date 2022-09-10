@@ -1,8 +1,22 @@
-import { ScheduleRounded as ScheduleRoundedIcon } from '@mui/icons-material';
-import { Box, CircularProgress, Grid, Stack, Typography } from '@mui/material';
+import {
+  CellTowerRounded,
+  CheckCircleRounded,
+  ScheduleRounded,
+  ScheduleRounded as ScheduleRoundedIcon,
+} from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { format } from 'date-fns';
 import Router from 'next/router';
 import { MouseEvent } from 'react';
+import { Status } from '../../../enums';
 import { useGetMatchesByLeagueIdAndDateQuery } from '../../../redux/api/matchesApi';
 import { RoundedButton } from '../../../styledComponents/Buttons';
 import { RoundedCard } from '../../../styledComponents/Cards';
@@ -32,6 +46,31 @@ const TodaysMatchesByLeagueId = ({
     matchId: string
   ) => Router.push(`/matches/${matchId}`);
 
+  const getMatchIcon = (status) => {
+    const StatusIcon = {
+      [Status.Ended]: CheckCircleRounded,
+      [Status.Live]: CellTowerRounded,
+      [Status.Soon]: ScheduleRounded,
+    };
+
+    const IconColor = {
+      [Status.Ended]: 'disabled',
+      [Status.Live]: 'error',
+      [Status.Soon]: 'info',
+    };
+
+    const Icon = StatusIcon[status];
+    const color = IconColor[status];
+
+    if (status === Status.Live) {
+      return (
+        <Chip color={color} icon={<Icon fontSize="small" />} label={status} />
+      );
+    }
+
+    return <Icon color={color} fontSize="large" />;
+  };
+
   // if no data found and api has finished the request
   if (!getMatchesByLeagueIdAndDateData && !isGetMatchesByLeagueIdAndDateLoading)
     return null;
@@ -58,7 +97,7 @@ const TodaysMatchesByLeagueId = ({
 
   return (
     <Stack spacing={2}>
-      {matches.map(({ date, id, teams }) => {
+      {matches.map(({ date, id, status, teams }) => {
         const {
           odds: oddsHomeTeam,
           team: { name: nameHomeTeam },
@@ -91,8 +130,12 @@ const TodaysMatchesByLeagueId = ({
                     </Typography>
                   </Box>
                   <Stack alignItems="center" direction="row" spacing={1}>
-                    <ScheduleRoundedIcon fontSize="large" />
-                    <Typography>{format(new Date(date), 'h:mm b')}</Typography>
+                    {getMatchIcon(status)}
+                    {status !== Status.Live && (
+                      <Typography>
+                        {format(new Date(date), 'h:mm b')}
+                      </Typography>
+                    )}
                   </Stack>
                 </Box>
               </Grid>
@@ -106,12 +149,16 @@ const TodaysMatchesByLeagueId = ({
                     >
                       {nameHomeTeam}
                     </Typography>
+                    {/* <Typography textAlign="center" fontWeight={500}>
+                      {`${oddsHomeTeam}-1`}
+                    </Typography> */}
                     <RoundedButton
                       fullWidth
                       onClick={(e) => handleBetButtonClick(e, id)}
                       size="large"
+                      variant="contained"
                     >
-                      {oddsHomeTeam}
+                      Bet {`${oddsHomeTeam}-1`}
                     </RoundedButton>
                   </Stack>
                 </Box>
@@ -124,12 +171,16 @@ const TodaysMatchesByLeagueId = ({
                     >
                       {nameVisitorTeam}
                     </Typography>
+                    {/* <Typography textAlign="center" fontWeight={500}>
+                      {`${oddsVisitorTeam}-1`}
+                    </Typography> */}
                     <RoundedButton
                       fullWidth
                       onClick={(e) => handleBetButtonClick(e, id)}
                       size="large"
+                      variant="contained"
                     >
-                      {oddsVisitorTeam}
+                      Bet {`${oddsVisitorTeam}-1`}
                     </RoundedButton>
                   </Stack>
                 </Box>

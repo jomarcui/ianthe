@@ -25,33 +25,40 @@ const Home: NextPage = () => {
     <ComponentsLayout>
       <Stack>
         <ContainersCommonUserActionBar />
-
         {isGetLeaguesLoading ? (
           <Box sx={{ textAlign: 'center', p: 3 }}>
             <CircularProgress />
           </Box>
         ) : (
           <Box id="leagues-list-component" p={3}>
+            <Box mb={2}>
+              <Typography variant="h6">Select League</Typography>
+            </Box>
             <Stack direction="row" spacing={1}>
-              {getLeaguesData.data.map(({ id, sport: { id: sportId } }) => {
-                const isButtonActive = id === selectedLeagueId;
+              {getLeaguesData.data.map(
+                ({ id, initialism, sport: { id: sportId } }) => {
+                  const isButtonActive = id === selectedLeagueId;
 
-                const sx = {
-                  bgcolor: !isButtonActive && '#f9f9f9',
-                  color: !isButtonActive && '#bdc3c7',
-                };
+                  const sx = {
+                    bgcolor: !isButtonActive && '#f9f9f9',
+                    color: !isButtonActive && '#bdc3c7',
+                  };
 
-                return (
-                  <LoadingButton
-                    key={id}
-                    onClick={() => setSelectedLeagueId(id)}
-                    sx={{ borderRadius: '1.5rem', boxShadow: 0, p: 2, ...sx }}
-                    variant="contained"
-                  >
-                    <SportIcon sportId={sportId} />
-                  </LoadingButton>
-                );
-              })}
+                  return (
+                    <LoadingButton
+                      key={id}
+                      onClick={() => setSelectedLeagueId(id)}
+                      sx={{ borderRadius: '1.5rem', boxShadow: 0, p: 2, ...sx }}
+                      variant="contained"
+                    >
+                      <Stack>
+                        <SportIcon sportId={sportId} />
+                        <div>{initialism}</div>
+                      </Stack>
+                    </LoadingButton>
+                  );
+                }
+              )}
             </Stack>
           </Box>
         )}
