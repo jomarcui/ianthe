@@ -4,6 +4,7 @@ import { LoadingButton } from '@mui/lab';
 import {
   Card,
   CardContent,
+  CardHeader,
   CircularProgress,
   Stack,
   Tab,
@@ -53,9 +54,9 @@ function a11yProps(index: number) {
 
 const Home: NextPage = () => {
   const [selectedLeague, setSelectedLeague] = useState<any>(null);
-  const [selectedLeagueId, setSelectedLeagueId] = useState<string>(null);
-
-  const [value, setValue] = useState('62e14be33b17ae7b977921e9');
+  const [selectedLeagueId, setSelectedLeagueId] = useState<string>(
+    '62e14be33b17ae7b977921e9'
+  );
 
   const { data: getLeaguesData, isLoading: isGetLeaguesLoading } =
     useGetLeaguesQuery();
@@ -64,14 +65,11 @@ const Home: NextPage = () => {
     if (!getLeaguesData) return;
 
     setSelectedLeague(getLeaguesData.data[0]);
-    setValue(getLeaguesData.data[0].id);
-    // setSelectedLeagueId(getLeaguesData.data[0].id);
+    setSelectedLeagueId(getLeaguesData.data[0].id);
   }, [getLeaguesData]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: any) => {
-    setValue(newValue);
+  const handleChange = (event: React.SyntheticEvent, newValue: any) =>
     setSelectedLeagueId(newValue);
-  };
 
   const Logo = {
     NBA: '/nba.png',
@@ -86,10 +84,11 @@ const Home: NextPage = () => {
           <ContainersCommonUserActionBar />
 
           <Card>
+            <CardHeader title="Today's Events" />
             <CardContent>
               <Stack spacing={3}>
                 <Box id="league-select">
-                  <Typography variant="h6">Today&apos;s Events</Typography>
+                  {/* <Typography variant="h6">Today&apos;s Events</Typography> */}
                   {isGetLeaguesLoading ? (
                     <Box textAlign="center">
                       <CircularProgress />
@@ -99,7 +98,7 @@ const Home: NextPage = () => {
                       <Tabs
                         aria-label="league tabs"
                         onChange={handleChange}
-                        value={value}
+                        value={selectedLeagueId}
                       >
                         {getLeaguesData.data.map(
                           (league: { id: string; initialism: string }) => {

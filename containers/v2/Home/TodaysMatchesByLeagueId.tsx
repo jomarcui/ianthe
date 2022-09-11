@@ -1,28 +1,71 @@
 import {
   CellTowerRounded,
   CheckCircleRounded,
+  KeyboardArrowRightOutlined as KeyboardArrowRightOutlinedIcon,
   ScheduleRounded,
   ScheduleRounded as ScheduleRoundedIcon,
 } from '@mui/icons-material';
 import {
+  Avatar,
+  Badge,
   Box,
   Button,
   Card,
+  CardActions,
   CardContent,
+  CardHeader,
   Chip,
   CircularProgress,
   Grid,
+  IconButton,
   Stack,
+  styled,
   Typography,
 } from '@mui/material';
 import { format } from 'date-fns';
 import Image from 'next/image';
+import Link from 'next/link';
 import Router from 'next/router';
 import { MouseEvent } from 'react';
 import { Status } from '../../../enums';
 import { useGetMatchesByLeagueIdAndDateQuery } from '../../../redux/api/matchesApi';
 import { RoundedButton } from '../../../styledComponents/Buttons';
 import { RoundedCard } from '../../../styledComponents/Cards';
+
+const LiveBadgeStyled = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: -1,
+      left: -1,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}));
+
+const MatchCardStyled = styled(Card)(({ theme }) => ({
+  '& .MuiCardHeader-action': {
+    alignSelf: 'inherit',
+  },
+}));
 
 type TodaysMatchesByLeagueIdProps = {
   leagueId: string;
@@ -59,20 +102,53 @@ const TodaysMatchesByLeagueId = ({
     const IconColor = {
       [Status.Ended]: 'disabled',
       [Status.Live]: 'error',
-      [Status.Soon]: 'info',
     };
 
     const Icon = StatusIcon[status];
     const color = IconColor[status];
 
     return (
-      <Chip
-        color={color}
-        label={time || status}
-        icon={<Icon color={color} fontSize="small" />}
-        size="small"
-      />
+      <Stack alignItems="center" direction="row" spacing={1}>
+        <Icon color={color} fontSize="small" />
+        <Typography color={color} fontSize="small">
+          {time || status}
+        </Typography>
+      </Stack>
+      // <Chip
+      //   color={color}
+      //   label={time || status}
+      //   icon={<Icon color={color} fontSize="small" />}
+      // />
     );
+  };
+
+  const getMatchStatusAvatar = (status) => {
+    if (status === Status.Live)
+      return (
+        <LiveBadgeStyled
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          overlap="circular"
+          variant="dot"
+        >
+          <Avatar sx={{ bgcolor: '#d32f2f' }}>
+            {getMatchStatusIcon(status)}
+          </Avatar>
+        </LiveBadgeStyled>
+      );
+
+    return <Avatar>{getMatchStatusIcon(status)}</Avatar>;
+  };
+
+  const getMatchStatusIcon = (status) => {
+    const StatusIcon = {
+      [Status.Ended]: CheckCircleRounded,
+      [Status.Live]: CellTowerRounded,
+      [Status.Soon]: ScheduleRounded,
+    };
+
+    const Icon = StatusIcon[status];
+
+    return <Icon fontSize="small" />;
   };
 
   // if no data found and api has finished the request
@@ -113,85 +189,72 @@ const TodaysMatchesByLeagueId = ({
         } = teams.find(({ isHome }) => !isHome);
 
         return (
-          <Card key={id} sx={{ bgcolor: '#f9f9f9' }}>
-            <CardContent>
-              <Stack spacing={1}>
-                <Stack spacing={1}>
-                  <Box textAlign="center">
-                    {getMatchChip({
-                      status,
-                      time:
-                        status === Status.Live
-                          ? null
-                          : format(new Date(date), 'h:mm b'),
-                    })}
-                  </Box>
-                  <Box>
-                    <Typography
-                      fontSize="small"
-                      fontWeight={500}
-                      textAlign="center"
-                    >
-                      {nameHomeTeam}
-                    </Typography>
-                    <Typography
-                      fontSize="small"
-                      fontWeight={500}
-                      textAlign="center"
-                    >
-                      {nameVisitorTeam}
-                    </Typography>
-                  </Box>
-                </Stack>
-                <Grid container>
-                  <Grid item xs={6}>
-                    <Stack>
-                      <Box textAlign="center">
-                        <Image
-                          alt={nameHomeTeam}
-                          height={50}
-                          layout="fixed"
-                          src={`/logos/${nameHomeTeam}.png`}
-                          width={50}
-                        />
-                      </Box>
-                      <Box px={3} textAlign="center">
-                        <Button
-                          onClick={(e) => handleBetButtonClick(e, id)}
-                          size="small"
-                          variant="contained"
-                        >
-                          Bet
-                        </Button>
-                      </Box>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Stack>
-                      <Box textAlign="center">
-                        <Image
-                          alt={nameVisitorTeam}
-                          height={50}
-                          layout="fixed"
-                          src={`/logos/${nameVisitorTeam}.png`}
-                          width={50}
-                        />
-                      </Box>
-                      <Box px={3} textAlign="center">
-                        <Button
-                          onClick={(e) => handleBetButtonClick(e, id)}
-                          size="small"
-                          variant="contained"
-                        >
-                          Bet
-                        </Button>
-                      </Box>
-                    </Stack>
-                  </Grid>
-                </Grid>
-              </Stack>
-            </CardContent>
-          </Card>
+          <MatchCardStyled key={id}>
+            <CardHeader
+              action={
+                <Button
+                  sx={{ borderRadius: 28, minWidth: 'initial', p: '6px' }}
+                  variant="contained"
+                >
+                  <KeyboardArrowRightOutlinedIcon />
+                </Button>
+              }
+              avatar={getMatchStatusAvatar(status)}
+              subheader={
+                <>
+                  <Typography fontSize="small" fontWeight={500}>
+                    {nameHomeTeam}
+                  </Typography>
+                  <Typography color="InactiveCaptionText" fontSize="small">
+                    vs
+                  </Typography>
+                  <Typography fontSize="small" fontWeight={500}>
+                    {nameVisitorTeam}
+                  </Typography>
+                </>
+                // status === Status.Live
+                //   ? Status.Live
+                //   : format(new Date(date), 'h:mm b')
+              }
+              title={
+                <Typography fontSize="small" fontWeight="500">
+                  {status === Status.Live
+                    ? Status.Live
+                    : format(new Date(date), 'h:mm b')}
+                </Typography>
+              }
+            />
+            {/* <CardContent>
+              <Typography fontSize="small" fontWeight={500}>
+                {nameHomeTeam}
+              </Typography>
+              <Typography color="InactiveCaptionText" fontSize="small">
+                vs
+              </Typography>
+              <Typography fontSize="small" fontWeight={500}>
+                {nameVisitorTeam}
+              </Typography>
+            </CardContent> */}
+            {/* <CardActions>
+              {getMatchChip({
+                status,
+                time:
+                  status === Status.Live
+                    ? null
+                    : format(new Date(date), 'h:mm b'),
+              })}
+              <Link href={`/matches/${id}`} passHref>
+                <Button
+                  component="a"
+                  size="small"
+                  sx={{ ml: 'auto' }}
+                  variant="contained"
+                >
+                  View
+                </Button>
+              </Link>
+            </CardActions> */}
+          </MatchCardStyled>
         );
       })}
     </Stack>
