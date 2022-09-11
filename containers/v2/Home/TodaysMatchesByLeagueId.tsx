@@ -14,6 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import { format } from 'date-fns';
+import Image from 'next/image';
 import Router from 'next/router';
 import { MouseEvent } from 'react';
 import { Status } from '../../../enums';
@@ -142,45 +143,67 @@ const TodaysMatchesByLeagueId = ({
               <Grid borderLeft="1px solid rgba(0, 0, 0, 0.12)" item xs={5}>
                 <Box borderBottom="1px solid #dcdcdc" p={3}>
                   <Stack spacing={1}>
-                    <Typography
+                    <Image
+                      alt={nameHomeTeam}
+                      height={75}
+                      src={`/logos/${nameHomeTeam}.png`}
+                      style={{ backgroundColor: 'black' }}
+                      width={75}
+                    />
+                    {/* <Typography
                       textAlign="center"
                       fontSize="0.75rem"
                       sx={{ color: 'text.secondary' }}
                     >
                       {nameHomeTeam}
-                    </Typography>
-                    {/* <Typography textAlign="center" fontWeight={500}>
-                      {`${oddsHomeTeam}-1`}
                     </Typography> */}
+                    <Typography
+                      textAlign="center"
+                      fontSize="small"
+                      fontWeight={500}
+                    >
+                      {`${oddsHomeTeam}-1`}
+                    </Typography>
                     <RoundedButton
                       fullWidth
                       onClick={(e) => handleBetButtonClick(e, id)}
                       size="large"
                       variant="contained"
                     >
-                      Bet {`${oddsHomeTeam}-1`}
+                      Bet
                     </RoundedButton>
                   </Stack>
                 </Box>
                 <Box p={3}>
                   <Stack spacing={1}>
-                    <Typography
+                    <Image
+                      alt={nameVisitorTeam}
+                      height={75}
+                      src={`/logos/${nameVisitorTeam}.png`}
+                      style={{ backgroundColor: 'black' }}
+                      width={75}
+                    />
+                    {/* <Typography
                       textAlign="center"
                       fontSize="0.75rem"
                       sx={{ color: 'text.secondary' }}
                     >
                       {nameVisitorTeam}
-                    </Typography>
-                    {/* <Typography textAlign="center" fontWeight={500}>
-                      {`${oddsVisitorTeam}-1`}
                     </Typography> */}
+                    <Typography
+                      fontSize="small"
+                      fontWeight={500}
+                      textAlign="center"
+                    >
+                      {`${oddsVisitorTeam}-1`}
+                    </Typography>
                     <RoundedButton
                       fullWidth
                       onClick={(e) => handleBetButtonClick(e, id)}
                       size="large"
                       variant="contained"
                     >
-                      Bet {`${oddsVisitorTeam}-1`}
+                      Bet
                     </RoundedButton>
                   </Stack>
                 </Box>
