@@ -18,6 +18,7 @@ import {
   ListItemText,
   MenuList,
   Button,
+  styled,
 } from '@mui/material';
 import {
   AddOutlined as AddOutlinedIcon,
@@ -28,6 +29,12 @@ import {
 import { RoundedButton } from '../../styledComponents/Buttons';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
+
+const AccountCardStyled = styled(Card)(({ theme }) => ({
+  '& .MuiCardHeader-action': {
+    alignSelf: 'inherit',
+  },
+}));
 
 const UserActionBar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -49,15 +56,18 @@ const UserActionBar = () => {
   return (
     <>
       {sessionStatus === 'authenticated' ? (
-        <Card id="user-action-bar">
+        <AccountCardStyled id="user-action-card">
           <CardHeader
             action={
               <Button
-                onClick={handleClick}
-                sx={{ borderRadius: 28, minWidth: 'initial', p: '6px' }}
+                startIcon={<AddOutlinedIcon />}
+                onClick={handleAddCreditsButtonClick}
+                size="small"
+                // sx={{ borderRadius: 28, minWidth: 'initial', p: '6px' }}
                 variant="contained"
               >
-                <MoreVertOutlinedIcon />
+                Cash In
+                {/* <MoreVertOutlinedIcon /> */}
               </Button>
             }
             avatar={
@@ -68,7 +78,7 @@ const UserActionBar = () => {
             subheader="&#8369;0.00"
             title={session.user.name}
           />
-        </Card>
+        </AccountCardStyled>
       ) : (
         <Card>
           <Stack direction="row" spacing={2}>

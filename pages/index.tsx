@@ -88,7 +88,6 @@ const Home: NextPage = () => {
             <CardContent>
               <Stack spacing={3}>
                 <Box id="league-select">
-                  {/* <Typography variant="h6">Today&apos;s Events</Typography> */}
                   {isGetLeaguesLoading ? (
                     <Box textAlign="center">
                       <CircularProgress />
@@ -124,41 +123,6 @@ const Home: NextPage = () => {
                         )}
                       </Tabs>
                     </Box>
-                    // <Box id="leagues-list-component">
-                    //   <Stack direction="row" spacing={1}>
-                    //     {getLeaguesData.data.map((league) => {
-                    //       const {
-                    //         id,
-                    //         initialism,
-                    //         sport: { id: sportId },
-                    //       } = league;
-                    //       const isButtonActive = id === selectedLeague?.id;
-
-                    //       const sx = {
-                    //         bgcolor: !isButtonActive && '#f9f9f9',
-                    //         color: !isButtonActive && '#bdc3c7',
-                    //       };
-
-                    //       return (
-                    //         <LoadingButton
-                    //           key={id}
-                    //           onClick={() => setSelectedLeague(league)}
-                    //           sx={{ borderRadius: '1.5rem', boxShadow: 0, p: 2, ...sx }}
-                    //           variant={isButtonActive ? 'contained' : 'text'}
-                    //         >
-                    //           <Stack>
-                    //             <Image
-                    //               alt=""
-                    //               height="75px"
-                    //               src={Logo[initialism]}
-                    //               width="177px"
-                    //             />
-                    //           </Stack>
-                    //         </LoadingButton>
-                    //       );
-                    //     })}
-                    //   </Stack>
-                    // </Box>
                   )}
                 </Box>
                 <ContainersHomeTodaysMatchesByLeagueId
