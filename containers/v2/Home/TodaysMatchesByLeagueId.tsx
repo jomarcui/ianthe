@@ -22,6 +22,45 @@ const MatchCardStyled = styled(Card)(({ theme }) => ({
   },
 }));
 
+const getMatchStatus = ({ status, date }) => {
+  switch (status) {
+    case Status.Ended:
+      return (
+        <Typography
+          color="InactiveCaptionText"
+          fontSize="small"
+          fontWeight={500}
+        >
+          ENDED
+        </Typography>
+      );
+
+    case Status.Live:
+      return (
+        <Chip
+          color="error"
+          label={
+            <Typography fontSize="small" fontWeight={500}>
+              {Status.Live}
+            </Typography>
+          }
+          size="small"
+          sx={{ borderRadius: '4px' }}
+        />
+      );
+
+    case Status.Soon:
+      return (
+        <Typography fontSize="small" fontWeight={500}>
+          {format(new Date(date), 'h:mm b')}
+        </Typography>
+      );
+
+    default:
+      break;
+  }
+};
+
 type TodaysMatchesByLeagueIdProps = {
   leagueId: string;
 };
@@ -106,24 +145,7 @@ const TodaysMatchesByLeagueId = ({
                   </Typography>
                 </>
               }
-              title={
-                status === Status.Live ? (
-                  <Chip
-                    color="error"
-                    label={
-                      <Typography fontSize="small" fontWeight={500}>
-                        {Status.Live}
-                      </Typography>
-                    }
-                    size="small"
-                    sx={{ borderRadius: '4px' }}
-                  />
-                ) : (
-                  <Typography fontSize="small" fontWeight={500}>
-                    {format(new Date(date), 'h:mm b')}
-                  </Typography>
-                )
-              }
+              title={getMatchStatus({ status, date })}
             />
           </MatchCardStyled>
         );
