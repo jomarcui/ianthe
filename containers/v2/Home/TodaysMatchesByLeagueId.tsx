@@ -101,14 +101,14 @@ const TodaysMatchesByLeagueId = ({
       {matches.map(({ date, id, status, teams }) => {
         const {
           odds: oddsHomeTeam,
-          team: { name: nameHomeTeam },
+          team: { name: nameHomeTeam, sportId: sportIdHomeTeam },
         } = teams.find(({ isHome }) => isHome);
 
         const {
           odds: oddsVisitorTeam,
-          team: { name: nameVisitorTeam },
+          team: { name: nameVisitorTeam, sportId: sportIdVisitorTeam },
         } = teams.find(({ isHome }) => !isHome);
-
+        // console.log(teams.find(({ isHome }) => isHome));
         return (
           <RoundedCard key={id} sx={{ bgcolor: '#f9f9f9' }}>
             <Grid container>
@@ -120,15 +120,31 @@ const TodaysMatchesByLeagueId = ({
                   height="100%"
                 >
                   <Box mb="1rem">
-                    <Typography>
+                    {/* <Typography>
                       <strong>Philippine Cup</strong>
-                    </Typography>
-                    <Typography
-                      fontSize="0.75rem"
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      {`${nameHomeTeam} vs ${nameVisitorTeam}`}
-                    </Typography>
+                    </Typography> */}
+                    <Stack>
+                      <Typography
+                        fontSize="small"
+                        // fontWeight="500"
+                        // sx={{ color: 'text.secondary' }}
+                      >
+                        {nameHomeTeam}
+                      </Typography>
+                      <Typography
+                        fontSize="small"
+                        sx={{ color: 'text.secondary' }}
+                      >
+                        vs
+                      </Typography>
+                      <Typography
+                        fontSize="small"
+                        // fontWeight="500"
+                        // sx={{ color: 'text.secondary' }}
+                      >
+                        {nameVisitorTeam}
+                      </Typography>
+                    </Stack>
                   </Box>
                   <Stack alignItems="center" direction="row" spacing={1}>
                     {getMatchIcon(status)}
@@ -143,13 +159,22 @@ const TodaysMatchesByLeagueId = ({
               <Grid borderLeft="1px solid rgba(0, 0, 0, 0.12)" item xs={5}>
                 <Box borderBottom="1px solid #dcdcdc" p={3}>
                   <Stack spacing={1}>
-                    <Image
-                      alt={nameHomeTeam}
-                      height={75}
-                      src={`/logos/${nameHomeTeam}.png`}
-                      style={{ backgroundColor: 'black' }}
-                      width={75}
-                    />
+                    <Box textAlign="center">
+                      <Image
+                        alt={nameHomeTeam}
+                        height={50}
+                        layout="fixed"
+                        src={`/logos/${nameHomeTeam}.png`}
+                        // style={{
+                        //   backgroundColor:
+                        //     sportIdHomeTeam === '62e14b643b17ae7b977921e8'
+                        //       ? 'black'
+                        //       : 'white',
+                        // }}
+                        width={50}
+                      />
+                    </Box>
+
                     {/* <Typography
                       textAlign="center"
                       fontSize="0.75rem"
@@ -176,13 +201,22 @@ const TodaysMatchesByLeagueId = ({
                 </Box>
                 <Box p={3}>
                   <Stack spacing={1}>
-                    <Image
-                      alt={nameVisitorTeam}
-                      height={75}
-                      src={`/logos/${nameVisitorTeam}.png`}
-                      style={{ backgroundColor: 'black' }}
-                      width={75}
-                    />
+                    <Box textAlign="center">
+                      <Image
+                        alt={nameVisitorTeam}
+                        height={50}
+                        layout="fixed"
+                        src={`/logos/${nameVisitorTeam}.png`}
+                        // style={{
+                        //   backgroundColor:
+                        //     sportIdVisitorTeam === '62e14b643b17ae7b977921e8'
+                        //       ? 'black'
+                        //       : 'white',
+                        // }}
+                        width={50}
+                      />
+                    </Box>
+
                     {/* <Typography
                       textAlign="center"
                       fontSize="0.75rem"
