@@ -7,6 +7,8 @@ import {
 import {
   Box,
   Button,
+  Card,
+  CardContent,
   Chip,
   CircularProgress,
   Grid,
@@ -47,7 +49,7 @@ const TodaysMatchesByLeagueId = ({
     matchId: string
   ) => Router.push(`/matches/${matchId}`);
 
-  const getMatchIcon = (status) => {
+  const getMatchChip = ({ status, time }) => {
     const StatusIcon = {
       [Status.Ended]: CheckCircleRounded,
       [Status.Live]: CellTowerRounded,
@@ -63,13 +65,14 @@ const TodaysMatchesByLeagueId = ({
     const Icon = StatusIcon[status];
     const color = IconColor[status];
 
-    if (status === Status.Live) {
-      return (
-        <Chip color={color} icon={<Icon fontSize="small" />} label={status} />
-      );
-    }
-
-    return <Icon color={color} fontSize="large" />;
+    return (
+      <Chip
+        color={color}
+        label={time || status}
+        icon={<Icon color={color} fontSize="small" />}
+        size="small"
+      />
+    );
   };
 
   // if no data found and api has finished the request
@@ -108,142 +111,87 @@ const TodaysMatchesByLeagueId = ({
           odds: oddsVisitorTeam,
           team: { name: nameVisitorTeam, sportId: sportIdVisitorTeam },
         } = teams.find(({ isHome }) => !isHome);
-        // console.log(teams.find(({ isHome }) => isHome));
-        return (
-          <RoundedCard key={id} sx={{ bgcolor: '#f9f9f9' }}>
-            <Grid container>
-              <Grid item p={3} xs={7}>
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  flexDirection="column"
-                  height="100%"
-                >
-                  <Box mb="1rem">
-                    {/* <Typography>
-                      <strong>Philippine Cup</strong>
-                    </Typography> */}
-                    <Stack>
-                      <Typography
-                        fontSize="small"
-                        // fontWeight="500"
-                        // sx={{ color: 'text.secondary' }}
-                      >
-                        {nameHomeTeam}
-                      </Typography>
-                      <Typography
-                        fontSize="small"
-                        sx={{ color: 'text.secondary' }}
-                      >
-                        vs
-                      </Typography>
-                      <Typography
-                        fontSize="small"
-                        // fontWeight="500"
-                        // sx={{ color: 'text.secondary' }}
-                      >
-                        {nameVisitorTeam}
-                      </Typography>
-                    </Stack>
-                  </Box>
-                  <Stack alignItems="center" direction="row" spacing={1}>
-                    {getMatchIcon(status)}
-                    {status !== Status.Live && (
-                      <Typography>
-                        {format(new Date(date), 'h:mm b')}
-                      </Typography>
-                    )}
-                  </Stack>
-                </Box>
-              </Grid>
-              <Grid borderLeft="1px solid rgba(0, 0, 0, 0.12)" item xs={5}>
-                <Box borderBottom="1px solid #dcdcdc" p={3}>
-                  <Stack spacing={1}>
-                    <Box textAlign="center">
-                      <Image
-                        alt={nameHomeTeam}
-                        height={50}
-                        layout="fixed"
-                        src={`/logos/${nameHomeTeam}.png`}
-                        // style={{
-                        //   backgroundColor:
-                        //     sportIdHomeTeam === '62e14b643b17ae7b977921e8'
-                        //       ? 'black'
-                        //       : 'white',
-                        // }}
-                        width={50}
-                      />
-                    </Box>
 
-                    {/* <Typography
+        return (
+          <Card key={id} sx={{ bgcolor: '#f9f9f9' }}>
+            <CardContent>
+              <Stack spacing={1}>
+                <Stack spacing={1}>
+                  <Box textAlign="center">
+                    {getMatchChip({
+                      status,
+                      time:
+                        status === Status.Live
+                          ? null
+                          : format(new Date(date), 'h:mm b'),
+                    })}
+                  </Box>
+                  <Box>
+                    <Typography
+                      fontSize="small"
+                      fontWeight={500}
                       textAlign="center"
-                      fontSize="0.75rem"
-                      sx={{ color: 'text.secondary' }}
                     >
                       {nameHomeTeam}
-                    </Typography> */}
+                    </Typography>
                     <Typography
-                      textAlign="center"
                       fontSize="small"
                       fontWeight={500}
-                    >
-                      {`${oddsHomeTeam}-1`}
-                    </Typography>
-                    <RoundedButton
-                      fullWidth
-                      onClick={(e) => handleBetButtonClick(e, id)}
-                      size="large"
-                      variant="contained"
-                    >
-                      Bet
-                    </RoundedButton>
-                  </Stack>
-                </Box>
-                <Box p={3}>
-                  <Stack spacing={1}>
-                    <Box textAlign="center">
-                      <Image
-                        alt={nameVisitorTeam}
-                        height={50}
-                        layout="fixed"
-                        src={`/logos/${nameVisitorTeam}.png`}
-                        // style={{
-                        //   backgroundColor:
-                        //     sportIdVisitorTeam === '62e14b643b17ae7b977921e8'
-                        //       ? 'black'
-                        //       : 'white',
-                        // }}
-                        width={50}
-                      />
-                    </Box>
-
-                    {/* <Typography
                       textAlign="center"
-                      fontSize="0.75rem"
-                      sx={{ color: 'text.secondary' }}
                     >
                       {nameVisitorTeam}
-                    </Typography> */}
-                    <Typography
-                      fontSize="small"
-                      fontWeight={500}
-                      textAlign="center"
-                    >
-                      {`${oddsVisitorTeam}-1`}
                     </Typography>
-                    <RoundedButton
-                      fullWidth
-                      onClick={(e) => handleBetButtonClick(e, id)}
-                      size="large"
-                      variant="contained"
-                    >
-                      Bet
-                    </RoundedButton>
-                  </Stack>
-                </Box>
-              </Grid>
-            </Grid>
-          </RoundedCard>
+                  </Box>
+                </Stack>
+                <Grid container>
+                  <Grid item xs={6}>
+                    <Stack>
+                      <Box textAlign="center">
+                        <Image
+                          alt={nameHomeTeam}
+                          height={50}
+                          layout="fixed"
+                          src={`/logos/${nameHomeTeam}.png`}
+                          width={50}
+                        />
+                      </Box>
+                      <Box px={3} textAlign="center">
+                        <Button
+                          onClick={(e) => handleBetButtonClick(e, id)}
+                          size="small"
+                          variant="contained"
+                        >
+                          Bet
+                        </Button>
+                      </Box>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Stack>
+                      <Box textAlign="center">
+                        <Image
+                          alt={nameVisitorTeam}
+                          height={50}
+                          layout="fixed"
+                          src={`/logos/${nameVisitorTeam}.png`}
+                          width={50}
+                        />
+                      </Box>
+                      <Box px={3} textAlign="center">
+                        <Button
+                          onClick={(e) => handleBetButtonClick(e, id)}
+                          size="small"
+                          variant="contained"
+                        >
+                          Bet
+                        </Button>
+                      </Box>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Stack>
+            </CardContent>
+          </Card>
         );
       })}
     </Stack>
