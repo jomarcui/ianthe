@@ -192,12 +192,15 @@ const TodaysMatchesByLeagueId = ({
           <MatchCardStyled key={id}>
             <CardHeader
               action={
-                <Button
-                  sx={{ borderRadius: 28, minWidth: 'initial', p: '6px' }}
-                  variant="contained"
-                >
-                  <KeyboardArrowRightOutlinedIcon />
-                </Button>
+                <Link href={`/matches/${id}`} passHref>
+                  <Button
+                    component="a"
+                    sx={{ borderRadius: 28, minWidth: 'initial', p: '6px' }}
+                    variant="contained"
+                  >
+                    <KeyboardArrowRightOutlinedIcon />
+                  </Button>
+                </Link>
               }
               avatar={getMatchStatusAvatar(status)}
               subheader={
