@@ -17,6 +17,7 @@ import {
   ListItemIcon,
   ListItemText,
   MenuList,
+  Button,
 } from '@mui/material';
 import {
   AddOutlined as AddOutlinedIcon,
@@ -51,9 +52,13 @@ const UserActionBar = () => {
         <Card id="user-action-bar">
           <CardHeader
             action={
-              <IconButton onClick={handleClick}>
+              <Button
+                onClick={handleClick}
+                sx={{ borderRadius: 28, minWidth: 'initial', p: '6px' }}
+                variant="contained"
+              >
                 <MoreVertOutlinedIcon />
-              </IconButton>
+              </Button>
             }
             avatar={
               <Avatar>{`${session.user.name.split(' ')[0][0]}${
@@ -63,48 +68,6 @@ const UserActionBar = () => {
             subheader="&#8369;0.00"
             title={session.user.name}
           />
-          {/* <CardContent>
-            <Stack alignItems="center" direction="row" spacing={1}>
-              <Avatar>{`${session.user.name.split(' ')[0][0]}${
-                session.user.name.split(' ')[1][0]
-              }`}</Avatar>
-              <Box>
-                <Typography>My Credits: &#8369;0.00</Typography>
-              </Box>
-              <RoundedButton onClick={handleAddCreditsButtonClick}>
-                <Stack alignItems="center" direction="row">
-                  <span>&#8369;0.00</span>
-                  <AddRoundedIcon fontSize="small" />
-                </Stack>
-              </RoundedButton>
-            </Stack>
-            <Dialog
-              open={isAddCreditsDialogOpen}
-              onClose={handleAddCreditsDialogClose}
-              aria-labelledby="add-credits-dialog-title"
-              aria-describedby="add-credits-dialog-description"
-            >
-              <DialogTitle id="add-credits-dialog-title">
-                Add Credits
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="add-credits-dialog-description">
-                  <Stack alignItems="center" direction="row" spacing={1}>
-                    <InfoRoundedIcon color="info" fontSize="large" />
-                    <span>Please cash-in via GCash to 09XXXXXXXX</span>
-                  </Stack>
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <RoundedButton
-                  size="large"
-                  onClick={handleAddCreditsDialogClose}
-                >
-                  OK
-                </RoundedButton>
-              </DialogActions>
-            </Dialog>
-          </CardContent> */}
         </Card>
       ) : (
         <Card>
