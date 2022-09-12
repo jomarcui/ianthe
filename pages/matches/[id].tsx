@@ -291,7 +291,7 @@ const Match: NextPage = () => {
                         alignItems="center"
                         display="flex"
                         height="100%"
-                        justifyContent="center"
+                        justifyContent="end"
                       >
                         <Typography fontSize="1.5rem" fontWeight={500}>
                           0
@@ -316,7 +316,7 @@ const Match: NextPage = () => {
                         alignItems="center"
                         display="flex"
                         height="100%"
-                        justifyContent="center"
+                        justifyContent="end"
                       >
                         <Typography fontSize="1.5rem" fontWeight={500}>
                           0
