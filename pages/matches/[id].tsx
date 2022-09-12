@@ -62,7 +62,13 @@ const BetCard = ({ team }: BetCardProps) => {
 
   const handleBetModalOpen = () => setBetModalOpen(true);
 
-  const getReturns = ({ amount = 0, odds = 0 }) => {
+  const getReturns = ({
+    amount = 0,
+    odds = 0,
+  }: {
+    amount: number | string;
+    odds: number;
+  }) => {
     if (Number.isNaN(amount)) return 0;
 
     const returnsMultiplier = Number(odds) - 1;
