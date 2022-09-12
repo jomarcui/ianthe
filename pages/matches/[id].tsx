@@ -3,8 +3,12 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import {
+  Alert,
+  AlertTitle,
   Avatar,
   Box,
+  Card,
+  CardContent,
   CardHeader,
   CircularProgress,
   Grid,
@@ -21,7 +25,10 @@ import Loader from '../../components/Loader';
 import ContainersMatchBetForm from '../../containers/Matches/BetForm';
 import { RoundedButton } from '../../styledComponents/Buttons';
 import { RoundedCard } from '../../styledComponents/Cards';
-import ContainersCommonUserActionBar from '../../containers/Common/UserActionBar';
+import ContainersCommonUserActionCard from '../../containers/Common/UserActionCard';
+import { Status } from '../../enums';
+import { ScoreboardOutlined as ScoreboardOutlinedIcon } from '@mui/icons-material';
+import Image from 'next/image';
 
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
@@ -164,37 +171,6 @@ const Scoreboard = ({ teams = [] }) => {
             </Typography>
           </Grid>
         </Grid>
-        {/* <Box sx={{ maxWidth: 113, minWidth: 100 }}>
-        <Paper
-          sx={{
-            borderRadius: '1.5rem',
-            mb: 2,
-            p: 2,
-            textAlign: 'center',
-          }}
-        >
-          <span style={{ fontSize: '3rem' }}>{scores.home}</span>
-        </Paper>
-        <Typography align="center" variant="body2">
-          {teams.find(({ isHome }) => isHome).team.name}
-        </Typography>
-      </Box>
-      <div style={{ paddingTop: '2rem' }}>vs</div>
-      <Box sx={{ maxWidth: 113, minWidth: 100 }}>
-        <Paper
-          sx={{
-            borderRadius: '1.5rem',
-            mb: 2,
-            p: 2,
-            textAlign: 'center',
-          }}
-        >
-          <span style={{ fontSize: '3rem' }}>{scores.visitor}</span>
-        </Paper>
-        <Typography align="center" variant="body2">
-          {teams.find(({ isHome }) => !isHome).team.name}
-        </Typography>
-      </Box> */}
       </Stack>
     </Box>
   );
@@ -233,6 +209,7 @@ const Match: NextPage = () => {
 
   const {
     data: getMatchByIdData,
+    isFetching: isGetMatchByIdFetching,
     isLoading: isGetMatchByIdLoading,
     isUninitialized: isGetMatchByIdUninitialized,
   } = useGetMatchByIdQuery(getQueryId(router.query.id), { skip: skipMatch });
@@ -256,9 +233,128 @@ const Match: NextPage = () => {
     setSelectedTeamId(null);
   };
 
+  const renderMatchCard = (match: any) => {
+    if (!match)
+      return (
+        <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          No match found.
+        </Alert>
+      );
+
+    const { status, teams } = match;
+
+    switch (status) {
+      case Status.Ended:
+        return <Alert severity="success">This match has ended.</Alert>;
+
+      case Status.Live:
+        return (
+          <Card>
+            <div>1</div>
+          </Card>
+        );
+
+      case Status.Soon:
+        const {
+          team: { name: nameHomeTeam },
+        } = teams.find(({ isHome }) => isHome);
+        const {
+          team: { name: nameVisitorTeam },
+        } = teams.find(({ isHome }) => !isHome);
+
+        return (
+          <Box>
+            <Stack spacing={3}>
+              <Alert severity="info">This match is coming soon.</Alert>
+
+              <Card>
+                <CardHeader
+                  avatar={<ScoreboardOutlinedIcon />}
+                  title="Scoreboard"
+                />
+                <CardContent>
+                  <Grid container>
+                    <Grid item xs={10}>
+                      <Stack alignItems="center" direction="row" spacing={1}>
+                        <Image
+                          alt={nameHomeTeam}
+                          height={50}
+                          src={`/logos/${nameHomeTeam}.png`}
+                          width={50}
+                        />
+                        <Typography fontSize="small">{nameHomeTeam}</Typography>
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Box
+                        alignItems="center"
+                        display="flex"
+                        height="100%"
+                        justifyContent="center"
+                      >
+                        <Typography fontSize="1.5rem" fontWeight={500}>
+                          0
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={10}>
+                      <Stack alignItems="center" direction="row" spacing={1}>
+                        <Image
+                          alt={nameVisitorTeam}
+                          height={50}
+                          src={`/logos/${nameVisitorTeam}.png`}
+                          width={50}
+                        />
+                        <Typography fontSize="small">
+                          {nameVisitorTeam}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Box
+                        alignItems="center"
+                        display="flex"
+                        height="100%"
+                        justifyContent="center"
+                      >
+                        <Typography fontSize="1.5rem" fontWeight={500}>
+                          0
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Stack>
+          </Box>
+        );
+
+      default:
+        break;
+    }
+  };
+
+  console.log(getMatchByIdData);
+
   return (
     <ComponentsLayout>
-      {isGetMatchByIdLoading ? (
+      <Box p={3}>
+        <Stack spacing={3}>
+          <ContainersCommonUserActionCard />
+
+          {isGetMatchByIdFetching ||
+            (isGetMatchByIdLoading && (
+              <Box textAlign="center">
+                <CircularProgress />
+              </Box>
+            ))}
+
+          {getMatchByIdData && renderMatchCard(getMatchByIdData.data)}
+        </Stack>
+      </Box>
+
+      {/* {isGetMatchByIdLoading ? (
         <Box textAlign="center" p={3}>
           <CircularProgress />
         </Box>
@@ -298,7 +394,7 @@ const Match: NextPage = () => {
             </Stack>
           </Box>
         )
-      )}
+      )} */}
 
       {matchId && (
         <ContainersMatchBetForm

@@ -5,7 +5,7 @@ import { Box } from '@mui/system';
 import ComponentsLayout from '../components/Layout';
 import { useGetLeaguesQuery } from '../redux/api/leaguesApi';
 import ContainersHomeTodaysMatchesByLeagueId from '../containers/v2/Home/TodaysMatchesByLeagueId';
-import ContainersCommonUserActionBar from '../containers/Common/UserActionBar';
+import ContainersCommonUserActionCard from '../containers/Common/UserActionCard';
 import Image from 'next/image';
 
 function a11yProps(index: number) {
@@ -44,7 +44,7 @@ const Home: NextPage = () => {
     <ComponentsLayout>
       <Box p={3}>
         <Stack spacing={3}>
-          <ContainersCommonUserActionBar />
+          <ContainersCommonUserActionCard />
 
           <Box>
             <Typography variant="h6">Today&apos;s Events</Typography>
