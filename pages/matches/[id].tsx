@@ -44,183 +44,16 @@ import { LoadingButton } from '@mui/lab';
 
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
-const TeamBetCards = ({
-  handleBetClick,
-  matchId,
-  isBetFormOpen,
-  teams = [],
-}) => {
-  const { data: session } = useSession();
-
-  const { data: getMatchTransactionsByUserIdResponse, refetch } =
-    useGetMatchTransactionsByUserIdQuery(
-      {
-        id: matchId,
-        userId: session?.user['id'],
-      },
-      { skip: !session }
-    );
-
-  useEffect(() => {
-    refetch();
-  }, [isBetFormOpen, refetch]);
-
-  const betTotal =
-    getMatchTransactionsByUserIdResponse?.data.reduce(
-      (prevValue, { amount }) => prevValue + Math.abs(amount),
-      0
-    ) || 0;
-
-  const isBetButtonDisabled = ({ id, transaction }) => {
-    if (!transaction) return false;
-
-    return id !== transaction.team;
-  };
-
-  return (
-    <>
-      {[...teams]
-        .sort((a, b) => b.team.isHome - a.team.isHome)
-        .map(({ odds, team: { id, name } }) => {
-          const isBetButtonActive =
-            id === getMatchTransactionsByUserIdResponse?.data[0]?.team;
-
-          return (
-            <RoundedCard key={id}>
-              <CardHeader
-                action={
-                  <RoundedButton
-                    disabled={isBetButtonDisabled({
-                      id,
-                      transaction:
-                        getMatchTransactionsByUserIdResponse?.data[0],
-                    })}
-                    onClick={() => handleBetClick(id)}
-                    size="large"
-                    variant="outlined"
-                  >
-                    Bet &#8369;
-                    {isBetButtonActive ? betTotal.toFixed(2) : '0.00'}
-                  </RoundedButton>
-                }
-                avatar={<Avatar>{name.charAt(0)}</Avatar>}
-                title={name}
-                subheader={odds.toString()}
-              />
-            </RoundedCard>
-          );
-        })}
-    </>
-  );
-};
-
-const Scoreboard1 = ({ teams = [] }) => {
-  const [scores, setScores] = useState({ home: 10, visitor: 12 });
-
-  useEffect(() => {
-    const scoresInterval = setInterval(() => {
-      const teamNumber = Math.floor(Math.random() * 2);
-
-      if (teamNumber) {
-        setScores(({ home, visitor }) => ({
-          home,
-          visitor: visitor + Math.floor(Math.random() * 2) + 1,
-        }));
-      } else
-        setScores(({ home, visitor }) => ({
-          visitor,
-          home: home + Math.floor(Math.random() * 2) + 1,
-        }));
-    }, 5000);
-
-    return () => clearInterval(scoresInterval);
-  }, []);
-
-  const {
-    team: { name: nameHomeTeam },
-  } = teams.find(({ isHome }) => isHome);
-  const {
-    team: { name: nameVisitorTeam },
-  } = teams.find(({ isHome }) => !isHome);
-
-  return (
-    <Box p={3}>
-      <Stack direction="row" justifyContent="center" spacing={3}>
-        <Grid container>
-          <Grid alignItems="center" display="flex" item xs={8}>
-            <Typography sx={{ color: 'primary.contrastText' }}>
-              {nameHomeTeam}
-            </Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography
-              fontSize="3rem"
-              fontWeight="500"
-              sx={{ color: 'primary.contrastText' }}
-              textAlign="right"
-            >
-              {scores.home}
-            </Typography>
-          </Grid>
-          <Grid item pl={3} xs={12}>
-            <Typography sx={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-              vs
-            </Typography>
-          </Grid>
-          <Grid alignItems="center" display="flex" item xs={8}>
-            <Typography sx={{ color: 'primary.contrastText' }}>
-              {nameVisitorTeam}
-            </Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography
-              fontSize="3rem"
-              fontWeight="500"
-              sx={{ color: 'primary.contrastText' }}
-              textAlign="right"
-            >
-              {scores.visitor}
-            </Typography>
-          </Grid>
-        </Grid>
-      </Stack>
-    </Box>
-  );
-};
-
-const LeagueInfo = ({
-  league: {
-    name: leagueName,
-    sport: { name: sportName },
-  },
-}) => (
-  <Box p={3}>
-    <Typography
-      sx={{ color: 'primary.contrastText' }}
-      textAlign="center"
-      variant="h6"
-    >
-      {leagueName}
-    </Typography>
-    <Typography
-      style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.875rem' }}
-      textAlign="center"
-    >
-      {sportName}
-    </Typography>
-  </Box>
-);
-
 type BetCardProps = {
   team: any;
 };
 
 const BetCard = ({ team }: BetCardProps) => {
   const [betModalOpen, setBetModalOpen] = useState(false);
-  const [amount, setAmount] = useState(20);
+  const [amount, setAmount] = useState('20');
 
   const handleAmountTextChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setAmount(parseInt(event.target.value));
+    setAmount(event.target.value);
 
   const handleAmountTextFocus = (event: FocusEvent<HTMLInputElement>) =>
     event.target.select();
@@ -472,8 +305,6 @@ const Match: NextPage = () => {
     return (
       <Box>
         <Stack spacing={3}>
-          <StatusAlert config={statusAlert[status]} />
-
           {status === Status.Live && (
             <Chip
               color="error"
@@ -485,11 +316,18 @@ const Match: NextPage = () => {
           )}
 
           <Card>
-            <CardHeader
-              avatar={<ScoreboardOutlinedIcon />}
-              title="Scoreboard"
-              subheader={initialism}
-            />
+            {statusAlert[status] ? (
+              <CardHeader
+                avatar={<ScoreboardOutlinedIcon />}
+                title="Scoreboard"
+                subheader={initialism}
+              />
+            ) : (
+              <CardHeader
+                title={<StatusAlert config={statusAlert[status]} />}
+              />
+            )}
+
             <CardContent>
               <Scoreboard teams={teams} />
             </CardContent>
@@ -505,69 +343,29 @@ const Match: NextPage = () => {
   );
 
   const teams = [homeTeam, visitorTeam];
-  console.log(teams);
+
   return (
     <ComponentsLayout>
       <Box p={3}>
         <Stack spacing={3}>
-          <ContainersCommonUserActionCard />
+          <>
+            <ContainersCommonUserActionCard />
 
-          {isGetMatchByIdFetching ||
-            (isGetMatchByIdLoading && (
-              <Box textAlign="center">
-                <CircularProgress />
-              </Box>
+            {isGetMatchByIdFetching ||
+              (isGetMatchByIdLoading && (
+                <Box textAlign="center">
+                  <CircularProgress />
+                </Box>
+              ))}
+
+            {getMatchByIdData && renderMatchCard(getMatchByIdData.data)}
+
+            {teams.map((team, index) => (
+              <BetCard key={index} team={team} />
             ))}
-
-          {getMatchByIdData && renderMatchCard(getMatchByIdData.data)}
-
-          {teams.map((team, index) => (
-            <BetCard key={index} team={team} />
-          ))}
+          </>
         </Stack>
       </Box>
-
-      {/* {isGetMatchByIdLoading ? (
-        <Box textAlign="center" p={3}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        !isGetMatchByIdUninitialized && (
-          <Box bgcolor="primary.main" height="100vh">
-            <Stack height="100%">
-              <LeagueInfo league={getMatchByIdData.data.league} />
-              <Scoreboard teams={getMatchByIdData.data.teams} />
-              <Box
-                bgcolor="common.white"
-                flexGrow={1}
-                p={3}
-                sx={{
-                  borderTopLeftRadius: '2rem',
-                  borderTopRightRadius: '2rem',
-                }}
-              >
-                <Stack height="100%" spacing={2}>
-                  <TeamBetCards
-                    handleBetClick={handleBetClick}
-                    matchId={matchId}
-                    isBetFormOpen={openBetForm}
-                    teams={getMatchByIdData.data.teams}
-                  />
-                  <Box flexGrow={1} id="match-transaction-history">
-                    <Typography my={3} variant="h6">
-                      Transaction History
-                    </Typography>
-                    <Stack pl={3}>
-                      <Typography>Placed Php20.00 to Akari Chargers</Typography>
-                      <Typography>Placed Php50.00 to Akari Chargers</Typography>
-                    </Stack>
-                  </Box>
-                </Stack>
-              </Box>
-            </Stack>
-          </Box>
-        )
-      )} */}
 
       {matchId && (
         <ContainersMatchBetForm
