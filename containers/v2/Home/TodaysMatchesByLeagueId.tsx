@@ -70,23 +70,18 @@ const TodaysMatchesByLeagueId = ({
 }: TodaysMatchesByLeagueIdProps) => {
   const {
     data: getMatchesByLeagueIdAndDateData,
+    isFetching: isGetMatchesByLeagueIdAndDateFetching,
     isLoading: isGetMatchesByLeagueIdAndDateLoading,
-  } = useGetMatchesByLeagueIdAndDateQuery(
-    {
-      date: new Date().toDateString(),
-      id: leagueId,
-    },
-    {
-      skip: !leagueId,
-    }
-  );
-
-  // if no data found and api has finished the request
-  if (!getMatchesByLeagueIdAndDateData && !isGetMatchesByLeagueIdAndDateLoading)
-    return null;
+  } = useGetMatchesByLeagueIdAndDateQuery({
+    date: new Date().toDateString(),
+    id: leagueId,
+  });
 
   // if request was made
-  if (isGetMatchesByLeagueIdAndDateLoading)
+  if (
+    isGetMatchesByLeagueIdAndDateFetching ||
+    isGetMatchesByLeagueIdAndDateLoading
+  )
     return (
       <RoundedCard sx={{ textAlign: 'center', bgcolor: '#f9f9f9', p: 3 }}>
         <CircularProgress />
