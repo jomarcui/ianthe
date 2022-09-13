@@ -361,8 +361,6 @@ const Match: NextPage = () => {
       },
     };
 
-    console.log(statusAlert[status]);
-
     return (
       <Box>
         <Stack spacing={3}>
