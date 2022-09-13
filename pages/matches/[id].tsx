@@ -1,4 +1,11 @@
-import { ChangeEvent, FocusEvent, useEffect, useState } from 'react';
+import {
+  ChangeEvent,
+  Dispatch,
+  FocusEvent,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
@@ -45,22 +52,67 @@ import { LoadingButton } from '@mui/lab';
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
 type BetCardProps = {
+  handleClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   team: any;
 };
 
-const BetCard = ({ team }: BetCardProps) => {
-  const [betModalOpen, setBetModalOpen] = useState(false);
-  const [amount, setAmount] = useState('20');
+const BetCard = ({ handleClick, team }: BetCardProps) => {
+  if (!team) return null;
 
-  const handleAmountTextChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setAmount(event.target.value);
+  const {
+    odds,
+    team: { id, name },
+  } = team;
 
-  const handleAmountTextFocus = (event: FocusEvent<HTMLInputElement>) =>
+  return (
+    <>
+      <Card>
+        <CardHeader
+          action={
+            <LoadingButton onClick={handleClick} value={id} variant="contained">
+              Bet
+            </LoadingButton>
+          }
+          avatar={
+            <Avatar sx={{ height: 32, width: 32 }}>
+              <AttachMoneyOutlinedIcon fontSize="small" />
+            </Avatar>
+          }
+          subheader={`Return ${(Number(odds) - 1) * 100}%`}
+          title={name}
+        />
+      </Card>
+    </>
+  );
+};
+
+type BetDialogProps = {
+  handleClose: () => void;
+  isOpen: boolean;
+  team: any;
+  title: string;
+};
+
+const BetDialog = ({ handleClose, isOpen, team, title }: BetDialogProps) => {
+  const [state, setState] = useState({ amount: null });
+
+  useEffect(
+    () =>
+      setState((prevState) => ({
+        ...prevState,
+        amount: 20,
+      })),
+    [team]
+  );
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setState((prevState) => ({
+      ...prevState,
+      [event.target.name]: event.target.value,
+    }));
+
+  const handleFocus = (event: FocusEvent<HTMLInputElement>) =>
     event.target.select();
-
-  const handleBetModalClose = () => setBetModalOpen(false);
-
-  const handleBetModalOpen = () => setBetModalOpen(true);
 
   const getReturns = ({
     amount = 0,
@@ -84,78 +136,52 @@ const BetCard = ({ team }: BetCardProps) => {
   } = team;
 
   return (
-    <>
-      <Card>
-        <CardHeader
-          action={
-            <LoadingButton onClick={handleBetModalOpen} variant="contained">
-              Bet
-            </LoadingButton>
-          }
-          avatar={
-            <Avatar sx={{ height: 32, width: 32 }}>
-              <AttachMoneyOutlinedIcon fontSize="small" />
-            </Avatar>
-          }
-          subheader={`Return ${(Number(odds) - 1) * 100}%`}
-          title={name}
-        />
-      </Card>
-      <Dialog
-        fullWidth
-        maxWidth="lg"
-        onClose={handleBetModalClose}
-        open={betModalOpen}
-      >
-        <DialogTitle>{name}</DialogTitle>
-        <DialogContent>
-          <Box component="form">
-            <Stack spacing={1}>
-              <Box my={1}>
-                <TextField
-                  placeholder="0.00"
-                  id="amount-text"
-                  inputProps={{ step: 0 }}
-                  label="Amount"
-                  onChange={handleAmountTextChange}
-                  onFocus={handleAmountTextFocus}
-                  required
-                  type="number"
-                  value={amount}
-                  variant="outlined"
-                />
-              </Box>
-              <Stack justifyContent="space-between" direction="row" spacing={1}>
-                <Typography fontSize="small">Number of bets</Typography>
-                <Typography fontSize="small">0</Typography>
-              </Stack>
-              <Stack justifyContent="space-between" direction="row" spacing={1}>
-                <Typography fontSize="small">Odds</Typography>
-                <Typography fontSize="small">{`${
-                  (Number(odds) - 1) * 100
-                }%`}</Typography>
-              </Stack>
-              <Stack justifyContent="space-between" direction="row" spacing={1}>
-                <Typography fontWeight={500}>Total Returns</Typography>
-                <Typography fontWeight={500}>
-                  {getReturns({ amount, odds })}
-                </Typography>
-              </Stack>
+    <Dialog fullWidth maxWidth="lg" onClose={handleClose} open={isOpen}>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        <Box component="form">
+          <Stack spacing={1}>
+            <Box my={1}>
+              <TextField
+                placeholder="0.00"
+                id="amount-text"
+                inputProps={{ step: 0 }}
+                label="Amount"
+                name="amount"
+                onChange={handleChange}
+                onFocus={handleFocus}
+                required
+                type="number"
+                value={state.amount}
+                variant="outlined"
+              />
+            </Box>
+            <Stack justifyContent="space-between" direction="row" spacing={1}>
+              <Typography fontSize="small">Number of bets</Typography>
+              <Typography fontSize="small">0</Typography>
             </Stack>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            color="secondary"
-            onClick={handleBetModalClose}
-            variant="contained"
-          >
-            Cancel
-          </Button>
-          <LoadingButton variant="contained">Place Bet</LoadingButton>
-        </DialogActions>
-      </Dialog>
-    </>
+            <Stack justifyContent="space-between" direction="row" spacing={1}>
+              <Typography fontSize="small">Odds</Typography>
+              <Typography fontSize="small">{`${
+                (Number(odds) - 1) * 100
+              }%`}</Typography>
+            </Stack>
+            <Stack justifyContent="space-between" direction="row" spacing={1}>
+              <Typography fontWeight={500}>Total Returns</Typography>
+              <Typography fontWeight={500}>
+                {getReturns({ odds, amount: state.amount })}
+              </Typography>
+            </Stack>
+          </Stack>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} variant="outlined">
+          Cancel
+        </Button>
+        <LoadingButton variant="contained">Place Bet</LoadingButton>
+      </DialogActions>
+    </Dialog>
   );
 };
 
@@ -240,9 +266,17 @@ const StatusAlert = ({ config }: StatusAlertProps) => {
   return <Alert severity={severity}>{description}</Alert>;
 };
 
+const useTeam = ({
+  teamId = null,
+  teams = [],
+}: {
+  teamId: string;
+  teams: any[];
+}) => teams.find(({ team: { id } }) => id === teamId);
+
 const Match: NextPage = () => {
+  const [isBetFormDialogOpen, setIsBetFormDialogOpen] = useState(false);
   const [matchId, setMatchId] = useState<string>(null);
-  const [openBetForm, setOpenBetForm] = useState<boolean>(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string>(null);
   const [skipMatch, setSkipMatch] = useState(true);
 
@@ -255,6 +289,11 @@ const Match: NextPage = () => {
     isUninitialized: isGetMatchByIdUninitialized,
   } = useGetMatchByIdQuery(getQueryId(router.query.id), { skip: skipMatch });
 
+  const selectedTeam = useTeam({
+    teamId: selectedTeamId,
+    teams: getMatchByIdData?.data.teams,
+  });
+
   // const matchId = useMemo(() => getQueryId(router.query.id), [router.query.id]);
 
   useEffect(() => {
@@ -264,14 +303,17 @@ const Match: NextPage = () => {
     }
   }, [router.query.id]);
 
-  const handleBetClick = (teamId: string) => {
-    setOpenBetForm(true);
+  const handleBetClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const teamId = event.currentTarget.value;
+
+    setIsBetFormDialogOpen(true);
     setSelectedTeamId(teamId);
   };
 
-  const handleCloseBetForm = () => {
-    setOpenBetForm(false);
-    setSelectedTeamId(null);
+  const handleBetFormDialogClose = () => {
+    setIsBetFormDialogOpen(false);
   };
 
   const renderMatchCard = (match: any) => {
@@ -367,20 +409,29 @@ const Match: NextPage = () => {
             {getMatchByIdData && renderMatchCard(getMatchByIdData.data)}
 
             {teams.map((team, index) => (
-              <BetCard key={index} team={team} />
+              <BetCard handleClick={handleBetClick} key={index} team={team} />
             ))}
           </>
         </Stack>
       </Box>
 
       {matchId && (
+        <BetDialog
+          handleClose={handleBetFormDialogClose}
+          isOpen={isBetFormDialogOpen}
+          team={selectedTeam}
+          title={selectedTeam?.team.name}
+        />
+      )}
+
+      {/* {matchId && (
         <ContainersMatchBetForm
           handleClose={handleCloseBetForm}
           matchId={matchId}
           open={openBetForm}
           selectedTeamId={selectedTeamId}
         />
-      )}
+      )} */}
     </ComponentsLayout>
   );
 };
