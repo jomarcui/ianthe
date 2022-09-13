@@ -69,7 +69,12 @@ const BetCard = ({ handleClick, team }: BetCardProps) => {
       <Card>
         <CardHeader
           action={
-            <LoadingButton onClick={handleClick} value={id} variant="contained">
+            <LoadingButton
+              onClick={handleClick}
+              size="small"
+              value={id}
+              variant="contained"
+            >
               Bet
             </LoadingButton>
           }
@@ -176,10 +181,12 @@ const BetDialog = ({ handleClose, isOpen, team, title }: BetDialogProps) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} variant="outlined">
+        <Button onClick={handleClose} size="small" variant="outlined">
           Cancel
         </Button>
-        <LoadingButton variant="contained">Place Bet</LoadingButton>
+        <LoadingButton size="small" variant="contained">
+          Place Bet
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
@@ -263,7 +270,11 @@ const StatusAlert = ({ config }: StatusAlertProps) => {
 
   const { description, severity } = config;
 
-  return <Alert severity={severity}>{description}</Alert>;
+  return (
+    <Alert severity={severity} variant="filled">
+      {description}
+    </Alert>
+  );
 };
 
 const useTeam = ({
@@ -350,6 +361,8 @@ const Match: NextPage = () => {
       },
     };
 
+    console.log(statusAlert[status]);
+
     return (
       <Box>
         <Stack spacing={3}>
@@ -363,19 +376,14 @@ const Match: NextPage = () => {
             />
           )}
 
-          <Card>
-            {statusAlert[status] ? (
-              <CardHeader
-                avatar={<ScoreboardOutlinedIcon />}
-                title="Scoreboard"
-                subheader={initialism}
-              />
-            ) : (
-              <CardHeader
-                title={<StatusAlert config={statusAlert[status]} />}
-              />
-            )}
+          {statusAlert[status] && <StatusAlert config={statusAlert[status]} />}
 
+          <Card>
+            <CardHeader
+              avatar={<ScoreboardOutlinedIcon />}
+              subheader={initialism}
+              title="Scoreboard"
+            />
             <CardContent>
               <Scoreboard teams={teams} />
             </CardContent>
