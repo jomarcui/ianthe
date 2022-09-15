@@ -1,5 +1,8 @@
 import { Stack, Avatar, Card, CardHeader, Button, styled } from '@mui/material';
-import { AddOutlined as AddOutlinedIcon } from '@mui/icons-material';
+import {
+  AddOutlined as AddOutlinedIcon,
+  InfoOutlined as InfoOutlinedIcon,
+} from '@mui/icons-material';
 import { RoundedButton } from '../../styledComponents/Buttons';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
@@ -22,10 +25,10 @@ const UserActionCard = () => {
           <CardHeader
             action={
               <Button
-                startIcon={<AddOutlinedIcon />}
+                startIcon={<InfoOutlinedIcon />}
                 onClick={handleAddCreditsButtonClick}
-                size="small"
-                variant="contained"
+                // size="small"
+                // variant="contained"
               >
                 Cash In
               </Button>
