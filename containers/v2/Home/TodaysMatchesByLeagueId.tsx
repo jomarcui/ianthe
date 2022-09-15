@@ -6,12 +6,14 @@ import {
   CardHeader,
   Chip,
   CircularProgress,
+  IconButton,
   Stack,
   styled,
   Typography,
 } from '@mui/material';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { Dispatch, SetStateAction } from 'react';
 import { Status } from '../../../enums';
 import { useGetMatchesByLeagueIdAndDateQuery } from '../../../redux/api/matchesApi';
 import { RoundedCard } from '../../../styledComponents/Cards';
@@ -63,10 +65,12 @@ const getMatchStatus = ({ status, date }) => {
 
 type TodaysMatchesByLeagueIdProps = {
   leagueId: string;
+  setIsBackdropOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 const TodaysMatchesByLeagueId = ({
   leagueId,
+  setIsBackdropOpen,
 }: TodaysMatchesByLeagueIdProps) => {
   const {
     data: getMatchesByLeagueIdAndDateData,
@@ -76,6 +80,8 @@ const TodaysMatchesByLeagueId = ({
     date: new Date().toDateString(),
     id: leagueId,
   });
+
+  const handleGoToMatchClick = () => setIsBackdropOpen(true);
 
   // if request was made
   if (
@@ -118,13 +124,9 @@ const TodaysMatchesByLeagueId = ({
             <CardHeader
               action={
                 <Link href={`/matches/${id}`} passHref>
-                  <Button
-                    component="a"
-                    sx={{ borderRadius: 28, minWidth: 'initial', p: '6px' }}
-                    variant="contained"
-                  >
+                  <IconButton component="a" onClick={handleGoToMatchClick}>
                     <KeyboardArrowRightOutlinedIcon />
-                  </Button>
+                  </IconButton>
                 </Link>
               }
               subheader={

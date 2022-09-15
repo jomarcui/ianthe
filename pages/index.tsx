@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { NextPage } from 'next';
-import { CircularProgress, Stack, Tab, Tabs, Typography } from '@mui/material';
+import {
+  Backdrop,
+  CircularProgress,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import { Box } from '@mui/system';
 import ComponentsLayout from '../components/Layout';
 import { useGetLeaguesQuery } from '../redux/api/leaguesApi';
@@ -16,6 +23,7 @@ function a11yProps(index: number) {
 }
 
 const Home: NextPage = () => {
+  const [isBackdropOpen, setIsBackdropOpen] = useState(false);
   // TODO: Remove hard code
   const [selectedLeagueId, setSelectedLeagueId] = useState<string>(
     '62e14be33b17ae7b977921e9'
@@ -45,7 +53,6 @@ const Home: NextPage = () => {
       <Box p={3}>
         <Stack spacing={3}>
           <ContainersCommonUserActionCard />
-
           <Box>
             <Typography variant="h6">Today&apos;s Events</Typography>
             <Stack spacing={3}>
@@ -89,11 +96,18 @@ const Home: NextPage = () => {
               </Box>
               <ContainersHomeTodaysMatchesByLeagueId
                 leagueId={selectedLeagueId}
+                setIsBackdropOpen={setIsBackdropOpen}
               />
             </Stack>
           </Box>
         </Stack>
       </Box>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isBackdropOpen}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </ComponentsLayout>
   );
 };
