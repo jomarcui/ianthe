@@ -4,6 +4,7 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
+  Grid,
   Paper,
 } from '@mui/material';
 import {
@@ -62,8 +63,11 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <ThemeProvider theme={theme}>
-      {/* <ComponentsMenuAppBar /> */}
-      <Box>{children}</Box>
+      <Grid container justifyContent="center">
+        <Grid item>
+          <Box>{children}</Box>
+        </Grid>
+      </Grid>
       <Paper
         elevation={0}
         sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
