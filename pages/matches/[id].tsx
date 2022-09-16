@@ -47,7 +47,6 @@ const Match: NextPage = () => {
     data: getMatchByIdData,
     isFetching: isGetMatchByIdFetching,
     isLoading: isGetMatchByIdLoading,
-    isUninitialized: isGetMatchByIdUninitialized,
   } = useGetMatchByIdQuery(getQueryId(router.query.id), { skip: skipMatch });
 
   const selectedTeam = useTeam({
@@ -91,7 +90,7 @@ const Match: NextPage = () => {
     } = match;
 
     type StatusAlert = {
-      [status in Status]: {
+      [status: string]: {
         description: string;
         severity: 'error' | 'info';
       };
@@ -102,7 +101,6 @@ const Match: NextPage = () => {
         description: 'This match has ended.',
         severity: 'error',
       },
-      [Status.Live]: null,
       [Status.Soon]: {
         description: 'This match is coming soon.',
         severity: 'info',
@@ -153,12 +151,11 @@ const Match: NextPage = () => {
           <>
             <ContainersCommonUserActionCard />
 
-            {isGetMatchByIdFetching ||
-              (isGetMatchByIdLoading && (
-                <Box textAlign="center">
-                  <CircularProgress />
-                </Box>
-              ))}
+            {(isGetMatchByIdFetching || isGetMatchByIdLoading) && (
+              <Box textAlign="center">
+                <CircularProgress />
+              </Box>
+            )}
 
             {getMatchByIdData && renderMatchCard(getMatchByIdData.data)}
 

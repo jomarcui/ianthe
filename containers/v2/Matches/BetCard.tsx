@@ -8,7 +8,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  Paper,
   ListItemAvatar,
   Alert,
   Stack,
@@ -18,10 +17,11 @@ import {
 import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import { useGetTransactionByIdQuery } from '../../../redux/api/transactionsApi';
+import * as Styled from './Matches.styles';
 
 const getReturnPercentage = (odds: number) => (odds - 1) * 100;
 
-const getReturn = ({ amount, returnPercentage }) =>
+const getReturn = ({ amount, returnPercentage }): Number =>
   amount + amount * (returnPercentage / 100);
 
 type BetCardProps = {
@@ -52,25 +52,23 @@ const BetCard = ({ betDisabled, handleClick, matchId, team }: BetCardProps) => {
       .filter(({ match, team }) => match === matchId && team === teamId)
       .map(({ amount, createdAt }) => ({ amount, createdAt }));
 
-  const totalAmount = transactionsByMatchIdAndTeamId?.reduce(
+  const totalAmount: Number = transactionsByMatchIdAndTeamId?.reduce(
     (result: any, { amount }: any) => result + amount,
     0
   );
-
-  console.log(totalAmount);
 
   return (
     <Card>
       <CardHeader
         action={
           <Button
-            disabled={betDisabled}
+            disabled={betDisabled || !totalAmount}
             onClick={handleClick}
             size="small"
             value={teamId}
             variant="contained"
           >
-            Bet
+            {!!totalAmount ? 'Bet' : 'Closed'}
           </Button>
         }
         avatar={
@@ -80,41 +78,25 @@ const BetCard = ({ betDisabled, handleClick, matchId, team }: BetCardProps) => {
         title={name}
       />
 
-      {!!transactionsByMatchIdAndTeamId?.length && (
+      {!!totalAmount && (
         <CardContent>
-          <Stack spacing={3}>
-            {totalAmount && (
-              <Alert severity="info">
-                <AlertTitle>Win</AlertTitle>
-                <Typography fontSize="2rem" fontWeight={700}>
-                  &#8369;
-                  {getReturn({
-                    amount: totalAmount,
-                    returnPercentage: getReturnPercentage(odds),
-                  }).toFixed(2)}
-                </Typography>
-              </Alert>
-            )}
-
-            <List disablePadding>
-              {transactionsByMatchIdAndTeamId.map(
-                ({ amount, createdAt }, index) => (
-                  <ListItem disableGutters disablePadding key={index}>
-                    <ListItemAvatar sx={{ textAlign: 'center' }}>
-                      <PaidIcon fontSize="small" />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={`₱${amount.toFixed(2)}`}
-                      secondary={format(
-                        new Date(createdAt),
-                        `EE MM/dd/yyyy 'at' h:mm a`
-                      )}
-                    />
-                  </ListItem>
-                )
-              )}
-            </List>
-          </Stack>
+          <Styled.PossibleReturnAmount>
+            <Typography sx={{ color: '#fff' }}>
+              <>Potential Winnings from your &#8369;{totalAmount.toFixed(2)}</>
+            </Typography>
+            <Typography
+              fontSize="2rem"
+              fontWeight={700}
+              textAlign="right"
+              sx={{ color: '#fff' }}
+            >
+              &#8369;
+              {getReturn({
+                amount: totalAmount,
+                returnPercentage: getReturnPercentage(odds),
+              }).toFixed(2)}
+            </Typography>
+          </Styled.PossibleReturnAmount>
         </CardContent>
       )}
     </Card>

@@ -36,8 +36,14 @@
     "@types/bcrypt": "^5.0.0",
     "@types/node": "^18.0.6",
     "@types/react": "^18.0.15",
-    "eslint": "8.20.0",
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "eslint": "^8.23.1",
     "eslint-config-next": "12.2.2",
-    "typescript": "^4.7.4"
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.5",
+    "eslint-plugin-promise": "^6.0.1",
+    "eslint-plugin-react": "^7.31.8",
+    "typescript": "^4.8.3"
   }
 }
