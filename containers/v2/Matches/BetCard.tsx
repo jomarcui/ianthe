@@ -52,10 +52,12 @@ const BetCard = ({ betDisabled, handleClick, matchId, team }: BetCardProps) => {
       .filter(({ match, team }) => match === matchId && team === teamId)
       .map(({ amount, createdAt }) => ({ amount, createdAt }));
 
-  const totalAmount = transactionsByMatchIdAndTeamId.reduce(
-    (result, { amount }) => result + amount,
+  const totalAmount = transactionsByMatchIdAndTeamId?.reduce(
+    (result: any, { amount }: any) => result + amount,
     0
   );
+
+  console.log(totalAmount);
 
   return (
     <Card>
@@ -78,7 +80,7 @@ const BetCard = ({ betDisabled, handleClick, matchId, team }: BetCardProps) => {
         title={name}
       />
 
-      {!!transactionsByMatchIdAndTeamId.length && (
+      {!!transactionsByMatchIdAndTeamId?.length && (
         <CardContent>
           <Stack spacing={3}>
             {totalAmount && (
