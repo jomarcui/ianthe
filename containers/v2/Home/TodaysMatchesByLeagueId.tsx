@@ -1,7 +1,6 @@
 import { KeyboardArrowRightOutlined as KeyboardArrowRightOutlinedIcon } from '@mui/icons-material';
 import {
   Box,
-  Button,
   Card,
   CardHeader,
   Chip,
@@ -16,7 +15,6 @@ import Link from 'next/link';
 import { Dispatch, SetStateAction } from 'react';
 import { Status } from '../../../enums';
 import { useGetMatchesByLeagueIdAndDateQuery } from '../../../redux/api/matchesApi';
-import { RoundedCard } from '../../../styledComponents/Cards';
 
 const MatchCardStyled = styled(Card)(({ theme }) => ({
   '& .MuiCardHeader-action': {
@@ -89,9 +87,9 @@ const TodaysMatchesByLeagueId = ({
     isGetMatchesByLeagueIdAndDateLoading
   )
     return (
-      <RoundedCard sx={{ textAlign: 'center', bgcolor: '#f9f9f9', p: 3 }}>
+      <Card sx={{ textAlign: 'center', bgcolor: '#f9f9f9', p: 3 }}>
         <CircularProgress />
-      </RoundedCard>
+      </Card>
     );
 
   const { data: matches } = getMatchesByLeagueIdAndDateData;
@@ -99,11 +97,11 @@ const TodaysMatchesByLeagueId = ({
   // if no data was found
   if (!matches.length)
     return (
-      <RoundedCard sx={{ bgcolor: '#f9f9f9' }}>
+      <Card sx={{ bgcolor: '#f9f9f9' }}>
         <Box p={3}>
           <Typography>No matches found.</Typography>
         </Box>
-      </RoundedCard>
+      </Card>
     );
 
   return (
@@ -130,7 +128,7 @@ const TodaysMatchesByLeagueId = ({
                 </Link>
               }
               subheader={
-                <>
+                <Box mt={1}>
                   <Typography fontSize="small" fontWeight={500}>
                     {nameHomeTeam}
                   </Typography>
@@ -140,7 +138,7 @@ const TodaysMatchesByLeagueId = ({
                   <Typography fontSize="small" fontWeight={500}>
                     {nameVisitorTeam}
                   </Typography>
-                </>
+                </Box>
               }
               title={getMatchStatus({ status, date })}
             />
