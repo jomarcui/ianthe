@@ -62,13 +62,13 @@ const BetCard = ({ betDisabled, handleClick, matchId, team }: BetCardProps) => {
       <CardHeader
         action={
           <Button
-            disabled={betDisabled || !totalAmount}
+            disabled={betDisabled}
             onClick={handleClick}
             size="small"
             value={teamId}
             variant="contained"
           >
-            {!!totalAmount ? 'Bet' : 'Closed'}
+            Bet
           </Button>
         }
         avatar={
