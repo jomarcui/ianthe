@@ -50,7 +50,7 @@ const Home: NextPage = () => {
 
   return (
     <ComponentsLayout>
-      <Box p={3}>
+      <Box p={3} width="100%">
         <Stack spacing={3}>
           <ContainersCommonUserActionCard />
           <Box>

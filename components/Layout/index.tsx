@@ -63,11 +63,9 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Grid container justifyContent="center">
-        <Grid item>
-          <Box>{children}</Box>
-        </Grid>
-      </Grid>
+      <Box display="flex" justifyContent="center" maxWidth={425} mx="auto">
+        {children}
+      </Box>
       <Paper
         elevation={0}
         sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
