@@ -82,9 +82,9 @@ const Match: NextPage = () => {
           Match not found.
         </Alert>
       );
-
+    console.log(match)
     const {
-      league: { initialism },
+      league: { initialism, sport: { name: sportName } },
       status,
       teams,
     } = match;
@@ -125,8 +125,8 @@ const Match: NextPage = () => {
           <Card>
             <CardHeader
               avatar={<ScoreboardOutlinedIcon />}
-              subheader={initialism}
-              title="Scoreboard"
+              // subheader={initialism}
+              title={initialism}
             />
             <CardContent>
               <Scoreboard teams={teams} />
@@ -146,7 +146,7 @@ const Match: NextPage = () => {
 
   return (
     <ComponentsLayout>
-      <Box p={3}>
+      <Box p={3} width="100%">
         <Stack spacing={3}>
           <>
             <ContainersCommonUserActionCard />
