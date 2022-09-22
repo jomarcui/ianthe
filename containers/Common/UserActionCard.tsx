@@ -1,4 +1,4 @@
-import { Stack, Avatar, Card, CardHeader, Button, styled } from '@mui/material';
+import { Stack, Avatar, Card, CardHeader, Button, styled, Alert } from '@mui/material';
 import {
   AddOutlined as AddOutlinedIcon,
   InfoOutlined as InfoOutlinedIcon,
@@ -6,6 +6,8 @@ import {
 import { RoundedButton } from '../../styledComponents/Buttons';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
+import { useGetTransactionByIdQuery } from '../../redux/api/transactionsApi';
+import { getTotalCredits } from '../../helpers/transactionsHelper';
 
 const AccountCardStyled = styled(Card)(({ theme }) => ({
   '& .MuiCardHeader-action': {
@@ -15,6 +17,12 @@ const AccountCardStyled = styled(Card)(({ theme }) => ({
 
 const UserActionCard = () => {
   const { data: session, status: sessionStatus } = useSession();
+  const { data: getTransactionByIdData } = useGetTransactionByIdQuery(
+    session?.user['id'],
+    {
+      skip: !session,
+    }
+  );
 
   const handleAddCreditsButtonClick = () => alert('click');
 
@@ -24,21 +32,14 @@ const UserActionCard = () => {
         <AccountCardStyled id="user-action-card">
           <CardHeader
             action={
-              <Button
-                startIcon={<InfoOutlinedIcon />}
-                onClick={handleAddCreditsButtonClick}
-                // size="small"
-                // variant="contained"
-              >
-                Cash In
-              </Button>
+              <Button startIcon={<InfoOutlinedIcon />} >Cash in</Button>
             }
             avatar={
-              <Avatar>{`${session.user.name.split(' ')[0][0]}${
-                session.user.name.split(' ')[1][0]
-              }`}</Avatar>
+              <Avatar>{`${session.user.name.split(' ')[0][0]}${session.user.name.split(' ')[1][0]
+                }`}</Avatar>
             }
-            subheader="&#8369;0.00"
+            subheader={`₱${getTotalCredits(getTransactionByIdData?.data.transactions).toFixed(2)}`}
+            subheaderTypographyProps={{ fontWeight: 700 }}
             title={session.user.name}
           />
         </AccountCardStyled>

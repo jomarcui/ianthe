@@ -10,23 +10,12 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TransactionStatus, TransactionType } from '../../../enums';
-import { useCreateTransactionMutation } from '../../../redux/api/transactionsApi';
-
-type BetDialogProps = {
-  handleClose: () => void;
-  isOpen: boolean;
-  matchId: string;
-  team: any;
-  title: string;
-};
-
-type BetFormInput = {
-  amount: number;
-};
+import { getTotalNumberOfBetsByQuery } from '../../../helpers/transactionsHelper';
+import { useCreateTransactionMutation, useGetTransactionByIdQuery } from '../../../redux/api/transactionsApi';
 
 const getReturnPercentage = (odds: number) => (odds - 1) * 100;
 
@@ -44,6 +33,18 @@ const getReturn = ({
   return Number(amount) * returnsMultiplier + Number(amount);
 };
 
+type BetDialogProps = {
+  handleClose: () => void;
+  isOpen: boolean;
+  matchId: string;
+  team: any;
+  title: string;
+};
+
+type BetFormInput = {
+  amount: number;
+};
+
 const BetDialog = ({
   handleClose,
   isOpen,
@@ -57,6 +58,12 @@ const BetDialog = ({
     },
   });
   const { data: session } = useSession();
+  const { data: getTransactionByIdData } = useGetTransactionByIdQuery(
+    session?.user['id'],
+    {
+      skip: !session,
+    }
+  );
   const [createTransaction, { isLoading: isCreateTransactionLoading }] =
     useCreateTransactionMutation();
 
@@ -64,6 +71,8 @@ const BetDialog = ({
 
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) =>
     event.target.select();
+
+  const handleSigninClick = () => signIn();
 
   const onSubmit: SubmitHandler<BetFormInput> = async ({ amount }) => {
     const {
@@ -84,11 +93,31 @@ const BetDialog = ({
     handleClose();
   };
 
+  const renderActionButton = () => {
+    if (session) {
+      return (
+        <LoadingButton
+          form="bet-form"
+          loading={isCreateTransactionLoading}
+          size="small"
+          type="submit"
+          variant="contained"
+        >
+          Place Bet
+        </LoadingButton>
+      )
+    }
+
+    return <Button onClick={handleSigninClick} size="small" variant="contained">Sign in</Button>
+  }
+
   if (!team) return null;
 
-  const { odds } = team;
+  const { odds, team: { id: teamId } } = team;
 
   const watchAmount = Number(watch('amount'));
+
+  const totalNumberOfBets = getTotalNumberOfBetsByQuery({ filterQuery: ({ match, team }) => match === matchId && team === teamId, transactions: getTransactionByIdData?.data.transactions });
 
   return (
     <Dialog fullWidth maxWidth="lg" onClose={handleClose} open={isOpen}>
@@ -110,10 +139,9 @@ const BetDialog = ({
                 {...register('amount')}
               />
             </Box>
-            <Stack justifyContent="space-between" direction="row" spacing={1}>
-              <Typography fontSize="small">Number of bets</Typography>
-              <Typography fontSize="small">0</Typography>
-            </Stack>
+            {totalNumberOfBets && (
+              <Typography fontSize="small">You have a total of <strong>{totalNumberOfBets} bet(s)</strong> on this team.</Typography>
+            )}
             <Stack justifyContent="space-between" direction="row" spacing={1}>
               <Typography fontSize="small">Odds</Typography>
               <Typography fontSize="small">{`${getReturnPercentage(
@@ -133,15 +161,7 @@ const BetDialog = ({
         <Button onClick={handleClose} size="small" variant="outlined">
           Cancel
         </Button>
-        <LoadingButton
-          form="bet-form"
-          loading={isCreateTransactionLoading}
-          size="small"
-          type="submit"
-          variant="contained"
-        >
-          Place Bet
-        </LoadingButton>
+        {renderActionButton()}
       </DialogActions>
     </Dialog>
   );

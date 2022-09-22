@@ -24,6 +24,8 @@ import StatusAlert from '../../containers/v2/Matches/StatusAlert';
 import Scoreboard from '../../containers/v2/Matches/Scoreboard';
 import BetCard from '../../containers/v2/Matches/BetCard';
 import BetDialog from '../../containers/v2/Matches/BetDialog';
+import { useGetTransactionByIdQuery } from '../../redux/api/transactionsApi';
+import { useSession } from 'next-auth/react';
 
 const getQueryId = (id: string | string[]) => (Array.isArray(id) ? id[0] : id);
 
@@ -40,6 +42,13 @@ const Match: NextPage = () => {
   const [matchId, setMatchId] = useState<string>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string>(null);
   const [skipMatch, setSkipMatch] = useState(true);
+  const { data: session } = useSession();
+  const { data: getTransactionByIdData } = useGetTransactionByIdQuery(
+    session?.user['id'],
+    {
+      skip: !session,
+    }
+  );
 
   const router = useRouter();
 
@@ -82,7 +91,7 @@ const Match: NextPage = () => {
           Match not found.
         </Alert>
       );
-    console.log(match)
+
     const {
       league: { initialism, sport: { name: sportName } },
       status,
@@ -106,6 +115,8 @@ const Match: NextPage = () => {
         severity: 'info',
       },
     };
+
+    console.log(getTransactionByIdData)
 
     return (
       <Box>

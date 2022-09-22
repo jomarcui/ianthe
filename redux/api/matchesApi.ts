@@ -47,7 +47,6 @@ const matchesApi = createApi({
       query: ({ date, id }) => `api/matches/league/${id}/${date}`,
       providesTags: ['Matches'],
     }),
-
     updateMatchestatusByLeagueId: build.mutation({
       query: ({ id, payload }) => ({
         url: `api/matches/league/${id}`,
